@@ -4,9 +4,15 @@
 ## Business Requirements
 > Answering the "What for?" or "Why?" of the business (commercial, financial, or strategic goals).
 
-- BR-01: ...
-- BR-02: ...
-- BR-03: ...
+- BR-01: Delete the manual creation of bills and payment prosecution for liberating the CEO the administrative charge and allowing the team to focus on 
+         the main product and enterprise growth.
+- BR-02: Provide an independent and internal web product from Brain for centralization, automatization and payment follow-up.
+- BR-03: Reduce to the minimum the execution time of any administrative procedure or billing to under one minute, avoiding steep learning curves.
+- BR-04: Guaranteeing the Cash-Flow assuring the bill payment in a standard term of 5 days, preventing clients for unsubscribing with debts.
+- BR-05: Providing the company of an operative basis for scaling clients, preparing the operative for future administrative departments.
+- BR-06: Assuring anual update of the recurrent incomes revising the anual facturation stretch of each client for adjusting prices automatically.
+- BR-07: Proposing finalcial visibility direction of the performance and the accounting statement of the company revenue.
+- BR-08: Minimizing the development and technological infrastructure using free, or low cost solutions according to the budget of a Start-up.
 
 ## User Requirements
 > Answering "What does the user want to achieve?" (Customer or actor goals).
