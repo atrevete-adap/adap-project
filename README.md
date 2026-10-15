@@ -28,7 +28,7 @@ This project models and designs an **independent, internal responsive web applic
 | **Héctor Encinas García** | `@HecTPlay` | Team Member |
 | **Deniz Klaastjerk Inan** | `@DenizUMA` | Team Member |
 | **Víctor Navas Ramos** | `@victornr1` | Team Member |
-| **Pablo Pérez Arcas** | — | Team Member |
+| **Pablo Pérez Arcas** | `@ByCur` | Team Member |
 
 - **Project Board (GitHub Projects):** [ADAP - Atrévete](https://github.com/orgs/atrevete-adap/projects)
 
