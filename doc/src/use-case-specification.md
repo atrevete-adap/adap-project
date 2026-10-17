@@ -297,7 +297,7 @@ The field order follows the repository’s Cockburn-style template. Each use cas
 * **Supporting Actors / Triggers:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-03; UR: UR-10, UR-12; FR: FR2, FR2.3, FR2.8, FR2.9, FR2.10, FR2.14, FR2.16, FR14.6; NFR-01, NFR-02, NFR-04, NFR-05.
+* **Related requirements:** BR-02; UR: UR-10, UR-12; FR: FR2, FR2.3, FR2.8, FR2.9, FR2.10, FR2.14, FR2.16, FR14.6; NFR-01, NFR-02, NFR-04, NFR-05.
 * **Source:** E pp. 3-5, 16.
 * **Stakeholders & Interests:**
   * *Turbine:* correct operations, explainable balances, and limited manual work.
@@ -329,7 +329,7 @@ The field order follows the repository’s Cockburn-style template. Each use cas
 * **Supporting Actors / Triggers:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Subfunction
-* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-12, UR-13; FR: FR2.4, FR2.5, FR2.11, FR2.12, FR2.13, FR2.15, FR2.20, FR14.3; NFR-01, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-04; UR: UR-12, UR-13; FR: FR2.4, FR2.5, FR2.11, FR2.12, FR2.13, FR2.15, FR2.20, FR14.3; NFR-01, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3-5, 8-9, 14.
 * **Stakeholders & Interests:**
   * *Turbine:* correct operations, explainable balances, and limited manual work.
@@ -362,7 +362,7 @@ The field order follows the repository’s Cockburn-style template. Each use cas
 * **Supporting Actors / Triggers:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-03, BR-04; UR: UR-12; FR: FR2.1, FR9.2, FR14, FR14.1, FR14.2; NFR-03, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-12; FR: FR2.1, FR9.2, FR14, FR14.1, FR14.2; NFR-03, NFR-05, NFR-06.
 * **Source:** E pp. 4, 9, 14, 17.
 * **Stakeholders & Interests:**
   * *Turbine:* correct operations, explainable balances, and limited manual work.
@@ -395,7 +395,7 @@ The field order follows the repository’s Cockburn-style template. Each use cas
 * **Supporting Actors / Triggers:** Email service; optional simulated WhatsApp service
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Subfunction
-* **Related requirements:** BR-03, BR-04; UR: UR-19; FR: FR2.6, FR2.7, FR2.17, FR2.18, FR13.1; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-04; UR: UR-19; FR: FR2.6, FR2.7, FR2.17, FR2.18, FR13.1; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 5, 12, 15.
 * **Stakeholders & Interests:**
   * *Turbine:* correct operations, explainable balances, and limited manual work.
@@ -428,7 +428,7 @@ The field order follows the repository’s Cockburn-style template. Each use cas
 * **Supporting Actors / Triggers:** Simulated Stripe; alternative providers such as Revolut/bank adapters are replaceable sources
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-03, BR-04; UR: UR-21; FR: FR3, FR3.6, FR3.7, FR3.8, FR3.9, FR3.10, FR15.3, FR15.4; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-04; UR: UR-21; FR: FR3, FR3.6, FR3.7, FR3.8, FR3.9, FR3.10, FR15.3, FR15.4; NFR-04, NFR-05, NFR-06.
 * **Source:** E p. 6.
 * **Stakeholders & Interests:**
   * *Turbine:* correct operations, explainable balances, and limited manual work.
@@ -462,7 +462,7 @@ The field order follows the repository’s Cockburn-style template. Each use cas
 * **Supporting Actors / Triggers:** Email service; optional simulated WhatsApp service
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-03, BR-04; UR: none yet (no UR covers automated reminders; see #5); FR: FR3.1, FR3.2, FR3.3, FR3.4, FR3.5, FR3.11, FR3.13, FR13.5; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-04; UR: none yet (no UR covers automated reminders; see #5); FR: FR3.1, FR3.2, FR3.3, FR3.4, FR3.5, FR3.11, FR3.13, FR13.5; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 5-6, 9, 13, 15.
 * **Stakeholders & Interests:**
   * *Turbine:* correct operations, explainable balances, and limited manual work.
@@ -624,7 +624,7 @@ The field order follows the repository’s Cockburn-style template. Each use cas
 * **Supporting Actors / Triggers:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-03, BR-05; UR: UR-30; FR: FR5.2, FR6.6, FR13, FR13.1, FR13.2, FR13.3, FR13.4, FR13.5; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-01, BR-02, BR-03, BR-05; UR: UR-30; FR: FR5.2, FR6.6, FR13, FR13.1, FR13.2, FR13.3, FR13.4, FR13.5; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 2-5, 9-10, 12.
 * **Stakeholders & Interests:**
   * *Turbine:* correct operations, explainable balances, and limited manual work.
@@ -751,7 +751,7 @@ The field order follows the repository’s Cockburn-style template. Each use cas
 * **Supporting Actors / Triggers:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-03, BR-04; UR: UR-20; FR: FR3.11, FR12, FR12.1, FR12.2, FR12.3, FR12.4; NFR-02, NFR-04, NFR-05.
+* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-20; FR: FR3.11, FR12, FR12.1, FR12.2, FR12.3, FR12.4; NFR-02, NFR-04, NFR-05.
 * **Source:** E pp. 5-6, 10-11, 15.
 * **Stakeholders & Interests:**
   * *Turbine:* correct operations, explainable balances, and limited manual work.
