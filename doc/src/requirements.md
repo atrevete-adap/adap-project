@@ -186,7 +186,7 @@
   - Dependencies / Relationships: FR3.2, FR7.
 - **FR3.12.** Uncollectible debt. Authorised users can mark a debt as uncollectible or cancelled with a reason and approval; this is a distinct state from paid.
   - Dependencies / Relationships: FR2.11, FR11.
-- **FR3.13.** Working calendar. Reminders falling on weekends or configured holidays will be moved to the next working day (see C9).
+- **FR3.13.** Working calendar. Customer communications (reminders and notices) falling on weekends or configured holidays will be moved to the next working day; the legal due date of the invoice does not move. The rule is configurable by the super administrator (see C9).
   - Dependencies / Relationships: FR3.1, FR13.5.
 
 #### FR4. Cancellation
@@ -195,7 +195,7 @@
   - Dependencies / Relationships: FR2.1.
 - **FR4.1.** Collection after cancellation. If a cancelled customer has unpaid invoices, the system will notify them that they must be paid and will continue the reminder flow until they are paid.
   - Dependencies / Relationships: FR4, FR3.2.
-- **FR4.2.** Cancellation with outstanding debt *(see C4)*. Outstanding debt will not block the commercial cancellation indefinitely: recurrence stops on the effective date and collection of existing invoices continues. Pending item: confirm with the client whether an unpaid one-off invoice still blocks cancellation.
+- **FR4.2.** Cancellation with outstanding debt *(see C4)*. Outstanding debt will not block the commercial cancellation indefinitely: recurrence stops on the effective date and collection of existing invoices continues. This also applies to unpaid one-off invoices: they do not block the cancellation, and their collection continues (see C4).
   - Dependencies / Relationships: FR4, FR4.1.
 - **FR4.3.** Outstanding invoice query (API). The system will provide an API that returns whether a given customer has outstanding obligations, with the minimum authorised detail.
   - Dependencies / Relationships: FR3, FR15.
@@ -418,9 +418,9 @@
 - **C3. Creating customers.**
   - *Statements:* Employees create customers, but "No" was recorded for "possibility of creating a customer".
   - *Interpretation:* The "No" referred to customer self-registration, confirmed by the extended meeting (no self-registration, internal users create records). Customer creation is kept (FR1, FR6.3).
-- **C4. Cancellation with unpaid invoices** *(open)*.
+- **C4. Cancellation with unpaid invoices** *(resolved, team decision)*.
   - *Statements:* First meeting: "you cannot cancel because this invoice is unpaid", "we will cancel you when you meet the next invoice you have to pay", and an open one-off invoice must be paid before leaving; but also "if you notify your cancellation, no more invoices are issued to you". Extended meeting: debt must not block cancellation forever; recurrence stops and collection continues.
-  - *Interpretation:* We follow the later statement (FR4.2 updated). **To confirm at next review:** whether unpaid one-off invoices still block cancellation as a special case.
+  - *Interpretation:* The cancellation always proceeds: new recurring invoices stop from the effective date, and collection of all previous invoices, one-off invoices included, continues until they are paid (FR4, FR4.1, FR4.2). Source (extended meeting): "I do not want a debt to block the commercial cancellation forever, but at the same time I do not want the outstanding payment to disappear when the customer is cancelled." *Team decision, to be validated at the next client review.*
 - **C5. Partial payments** *(resolved by client)*.
   - *Statements:* "No installment payments" vs. "partially reconciled" state.
   - *Interpretation:* Installments are not a commercial option, but partial or excess payments can happen and are handled as discrepancies (FR3.8).
@@ -432,15 +432,15 @@
 - **C8. Backups vs. activity log** *(resolved)*.
   - *Statements:* FR9 mixed backups with "all application activity".
   - *Interpretation:* The client distinguished auditing (what happened) from backups (recovery): split into FR9 and FR9.1.
-- **C9. Working calendar scope** *(open)*.
+- **C9. Working calendar scope** *(resolved, team decision)*.
   - *Statements:* Communications falling on weekends/holidays "may" be moved to the next working day.
-  - *Interpretation:* We move reminders only (FR3.13). **To confirm:** whether the due date itself also moves, and whether the rule is mandatory or configurable.
+  - *Interpretation:* Only communications (reminders and notices) move to the next working day; the legal due date does not move. The rule is configurable by the super administrator, with weekends and a small holiday calendar for Spain (FR3.13, FR13.5). Source (extended meeting): "we may want to move the communication to the next working day [...] The important thing is that the rule is defined and consistent." *Team decision, to be validated at the next client review.*
 - **C10. Anomaly warning vs. high-amount approval**.
   - *Statements:* Unusual amounts should warn but not always block; high one-off invoices may require approval.
   - *Interpretation:* Two separate configurable rules: a non-blocking deviation warning (FR2.16) and an approval threshold (FR11).
-- **C11. Using retained data for marketing** *(open)*.
+- **C11. Using retained data for marketing** *(resolved by the later statement)*.
   - *Statements:* First meeting: logical deletion keeps customer data "so that you can, in the future, have a marketing campaign" (the client agreed). Extended meeting: billing data must not be used automatically for commercial campaigns; that is a different purpose.
-  - *Interpretation:* We follow the later statement: data is retained for legal and historical reasons (FR1.5), and no marketing use is built into this system (FR16.2). **To confirm** at next review.
+  - *Interpretation:* Retained data is kept for legal and historical reasons only (FR1.5) and is never used for marketing in this system (FR16.2). Source (extended meeting): "This application must not automatically use billing data for commercial campaigns. That would be another purpose and would have to be handled separately." *Team decision, to be validated at the next client review.*
 - **C12. Login identifier** *(resolved)*.
   - *Statements:* "Username and password" vs. "email and password" with a verified Turbine email.
   - *Interpretation:* The username is the corporate email (FR6.1).
