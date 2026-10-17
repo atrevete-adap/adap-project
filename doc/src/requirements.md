@@ -29,38 +29,36 @@
 - UR-08: Customer status tracking and business timeline.
 
 #### B. Quotations, Invoicing, and Document Lifecycle
-- UR-09: Quotation creation and invoice conversion.
-- UR-10: One-off invoice creation, concept  catalog, and cost centers 
-- UR-11: Proration preview for mid-month sign-ups.
-- UR-12: Automatic drafts, validation, and anomalous amount alerts.
-- UR-13: Viewing and downloading corporate PDF invoices.
-- UR-14: Corrective invoice (administratives can rectify errors or process refunds).
-- UR-15: Administrative migration of historical invoices.
+- UR-09: One-off invoice creation, concept  catalog, and cost centers 
+- UR-10: Proration preview for mid-month sign-ups.
+- UR-11: Automatic drafts, validation, and anomalous amount alerts.
+- UR-12: Viewing and downloading corporate PDF invoices.
+- UR-13: Corrective invoice (administratives can rectify errors or process refunds).
 
 #### C. Approvals, Annual Rate Reviews, and Accounting Closings
-- UR-16: Approval workflow and inbox with separation of duties.
-- UR-17: Annual revenue tier review campaign.
-- UR-18: Adminoistrative period closing and controlled reopening.
+- UR-14: Approval workflow and inbox with separation of duties.
+- UR-15: Annual revenue tier review campaign.
+- UR-16: Adminoistrative period closing and controlled reopening.
 
 #### D. Deliveries, Payment Reminders, Reconciliation, and Billing Issues
-- UR-19: Delivery tracking and bounce email handling.
-- UR-20: Automated payment reminders and overdue follow-up schedule.
-- UR-21: Billing issue management, comments, and attachments.
-- UR-22: Manual payment reconciliation, partial settlements and reversal.
-- UR-23: Controlled write-off of uncollectible debt.
+- UR-17: Delivery tracking and bounce email handling.
+- UR-18: Automated payment reminders and overdue follow-up schedule.
+- UR-19: Billing issue management, comments, and attachments.
+- UR-20: Manual payment reconciliation, partial settlements and reversal.
+- UR-21: Controlled write-off of uncollectible debt.
 
 #### E. Daily Operations, Search, Financial Dashboard, and Reporting
-- UR-24: Daily work screen and actionable notification.
-- UR-25: Immediate global search, saved views and quick access.
-- UR-26: Controlled bulk actions and background processing.
-- UR-27: Financial dashboard with drill-down and budget targets.
-- UR-28: Report exports, scheduled summaries, and accounting packages.
+- UR-22: Daily work screen and actionable notification.
+- UR-23: Immediate global search, saved views and quick access.
+- UR-24: Controlled bulk actions and background processing.
+- UR-25: Financial dashboard with drill-down and budget targets.
+- UR-26: Report exports, scheduled summaries, and accounting packages.
 
 #### F. Users, Global Configuration, Auditing, and Monitoring
-- UR-29: Corporate authentication, account lifecycle and session control.
-- UR-30: Portfolio assignment and temporary absence delegation.
-- UR-31: Global system configuration and simulation testing.
-- UR-32: Immutable auditing, system health monitoring privacy, and backups (Superadministrators related).
+- UR-27: Corporate authentication, account lifecycle and session control.
+- UR-28: Portfolio assignment and temporary absence delegation.
+- UR-29: Global system configuration and simulation testing.
+- UR-30: Immutable auditing, system health monitoring privacy, and backups (Superadministrators related).
 
 
 ## System Requirements
