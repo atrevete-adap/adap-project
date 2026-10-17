@@ -18,6 +18,7 @@
 ## User Requirements
 > Answering "What does the user want to achieve?" (Customer or actor goals).
 
+A. Customer, Contact, and Commercial Agreement Management
 - UR-01: International commercial and tax customer registration.
 - UR-02: Multiple contacts per company and channel consent management.
 - UR-03: CSV customer import with validation and preview.
@@ -26,6 +27,8 @@
 - UR-06: Temporary subscription pause and reactivation.
 - UR-07: Commercial cancellation with outstanding debt retention.
 - UR-08: Customer status tracking and business timeline.
+
+B. Quotations, Invoicing, and Document Lifecycle
 - UR-09: Quotation creation and invoice conversion.
 - UR-10: One-off invoice creation, concept  catalog, and cost centers 
 - UR-11: Proration preview for mid-month sign-ups.
@@ -33,18 +36,26 @@
 - UR-13: Viewing and downloading corporate PDF invoices.
 - UR-14: Corrective invoice (administratives can rectify errors or process refunds).
 - UR-15: Administrative migration of historical invoices.
+
+C. Approvals, Annual Rate Reviews, and Accounting Closings
 - UR-16: Approval workflow and inbox with separation of duties.
 - UR-17: Annual revenue tier review campaign.
 - UR-18: Adminoistrative period closing and controlled reopening.
+
+D. Deliveries, Payment Reminders, Reconciliation, and Billing Issues
 - UR-19: Delivery tracking and bounce email handling.
 - UR-20: Billing issue management, comments, and attachments.
 - UR-21: Manual payment reconciliation, partial settlements and reversal.
 - UR-22: Controlled write-off of uncollectible debt.
+
+E. Daily Operations, Search, Financial Dashboard, and Reporting
 - UR-23: Daily work screen and actionable notification.
 - UR-24: Immediate global search, saved views and quick access.
 - UR-25: Controlled bulk actions and background processing.
 - UR-26: Financial dashboard with drill-down and budget targets.
 - UR-27: Report exports, scheduled summaries, and accounting packages.
+
+F. Users, Global Configuration, Auditing, and Monitoring
 - UR-28: Corporate authentication, account lifecycle and session control.
 - UR-29: Portfolio assignment and temporary absence delegation.
 - UR-30: Global system configuration and simulation testing.
