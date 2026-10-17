@@ -44,22 +44,23 @@
 
 #### D. Deliveries, Payment Reminders, Reconciliation, and Billing Issues
 - UR-19: Delivery tracking and bounce email handling.
-- UR-20: Billing issue management, comments, and attachments.
-- UR-21: Manual payment reconciliation, partial settlements and reversal.
-- UR-22: Controlled write-off of uncollectible debt.
+- UR-20: Automated payment reminders and overdue follow-up schedule.
+- UR-21: Billing issue management, comments, and attachments.
+- UR-22: Manual payment reconciliation, partial settlements and reversal.
+- UR-23: Controlled write-off of uncollectible debt.
 
 #### E. Daily Operations, Search, Financial Dashboard, and Reporting
-- UR-23: Daily work screen and actionable notification.
-- UR-24: Immediate global search, saved views and quick access.
-- UR-25: Controlled bulk actions and background processing.
-- UR-26: Financial dashboard with drill-down and budget targets.
-- UR-27: Report exports, scheduled summaries, and accounting packages.
+- UR-24: Daily work screen and actionable notification.
+- UR-25: Immediate global search, saved views and quick access.
+- UR-26: Controlled bulk actions and background processing.
+- UR-27: Financial dashboard with drill-down and budget targets.
+- UR-28: Report exports, scheduled summaries, and accounting packages.
 
 #### F. Users, Global Configuration, Auditing, and Monitoring
-- UR-28: Corporate authentication, account lifecycle and session control.
-- UR-29: Portfolio assignment and temporary absence delegation.
-- UR-30: Global system configuration and simulation testing.
-- UR-31: Immutable auditing, system health monitoring privacy, and backups (Superadministrators related).
+- UR-29: Corporate authentication, account lifecycle and session control.
+- UR-30: Portfolio assignment and temporary absence delegation.
+- UR-31: Global system configuration and simulation testing.
+- UR-32: Immutable auditing, system health monitoring privacy, and backups (Superadministrators related).
 
 
 ## System Requirements
