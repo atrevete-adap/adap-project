@@ -1,4 +1,12 @@
-@startuml
+' Turbine — Internal Invoicing & Payment Tracking System (Submission 1)
+' The model is split into four views of the same system so that each one
+' can be read on its own. Use case IDs match doc/src/use-case-specification.md.
+' A use case that appears in two views (UC-09, UC-11, UC-23) is the same use case.
+
+'==================================================================
+' View 1 — Access and administration
+'==================================================================
+@startuml use-case-diagram-1-administration
 left to right direction
 
 skinparam shadowing false
@@ -22,13 +30,254 @@ skinparam arrow {
     Color #2B3E6A
 }
 
+title View 1 — Access and administration
+
 '=== Actors ===
+actor "Operational User\n(Reader / Assigned Staff)" as OpUser
+actor "Administrator" as Admin
+actor "Super Administrator" as SuperAdmin
+actor "Time" as Time <<timer>>
+Admin -|> OpUser
+SuperAdmin -|> Admin
 
 '=== System Boundary ===
-rectangle "System Name" {
-    '=== Use Cases ===
+rectangle "Turbine Invoicing & Collections System" {
+    usecase "UC-01 Access the\ninternal application" as UC01
+    usecase "UC-04 Manage internal\nuser accounts" as UC04
+    usecase "UC-05 Assign and\ndelegate customers" as UC05
+    usecase "UC-17 Consult financial\ndashboard and reports" as UC17
+    usecase "UC-18 Configure billing and\nautomation policies" as UC18
+    usecase "UC-19 Inspect audit and\nautomation health" as UC19
+    usecase "UC-20 Create and\nrestore a backup" as UC20
+    usecase "UC-24 Close or reopen an\nadministrative period" as UC24
 }
 
 '=== Relationships ===
+OpUser --> UC01
+Admin --> UC05
+Admin --> UC17
+Admin --> UC24
+SuperAdmin --> UC04
+SuperAdmin --> UC18
+SuperAdmin --> UC19
+SuperAdmin --> UC20
+UC20 <-- Time
+
+note right of UC01
+  Precondition of every staff use case:
+  corporate e-mail domain only, and every
+  action rechecks role and customer scope.
+  NFR-04
+end note
+
+note right of UC17
+  Responsive & accessible (WCAG 2.1 AA),
+  P95 < 2 s with 5,000 customers.
+  NFR-02, NFR-03
+end note
+
+@enduml
+
+'==================================================================
+' View 2 — Customers and subscriptions
+'==================================================================
+@startuml use-case-diagram-2-customers
+left to right direction
+
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam actor {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam arrow {
+    Color #2B3E6A
+}
+
+title View 2 — Customers and subscriptions
+
+'=== Actors ===
+actor "Operational User\n(Reader / Assigned Staff)" as OpUser
+actor "Administrator" as Admin
+actor "Time" as Time <<timer>>
+actor "External Application\n(Brain / API client)" as ExtApp
+Admin -|> OpUser
+
+'=== System Boundary ===
+rectangle "Turbine Invoicing & Collections System" {
+    usecase "UC-02 Maintain customer\nand contact records" as UC02
+    usecase "UC-03 Import customers\nfrom CSV" as UC03
+    usecase "UC-06 Manage a monthly\nsubscription" as UC06
+    usecase "UC-07 Review the annual\nrevenue band and rate" as UC07
+    usecase "UC-15 Record a subscription\ncancellation" as UC15
+    usecase "UC-16 Query a customer's\noutstanding obligations" as UC16
+    usecase "UC-09 Issue an invoice" as UC09
+    usecase "UC-23 Decide a sensitive\nfinancial approval" as UC23
+}
+
+'=== Relationships ===
+OpUser --> UC02
+OpUser --> UC06
+Admin --> UC03
+Admin --> UC07
+Admin --> UC15
+Admin --> UC23
+Time --> UC07
+ExtApp --> UC15
+ExtApp --> UC16
+
+UC15 ..> UC16 : <<include>>
+UC09 ..> UC06 : <<extend>>\n(mid-month start:\nprorated invoice)
+UC23 ..> UC06 : <<extend>>\n(discount or\ncommercial exception)
+
+note bottom of UC15
+  Cancellation stops new monthly invoices
+  from the effective date, but previous
+  debt keeps being collected.
+end note
+
+@enduml
+
+'==================================================================
+' View 3 — Invoicing
+'==================================================================
+@startuml use-case-diagram-3-invoicing
+left to right direction
+
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam actor {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam arrow {
+    Color #2B3E6A
+}
+
+title View 3 — Invoicing
+
+'=== Actors ===
+actor "Operational User\n(Reader / Assigned Staff)" as OpUser
+actor "Administrator" as Admin
+actor "Time" as Time <<timer>>
+actor "Communication Service\n(Email / WhatsApp)" as CommSrv <<system>>
+Admin -|> OpUser
+
+'=== System Boundary ===
+rectangle "Turbine Invoicing & Collections System" {
+    usecase "UC-08 Prepare a\none-off invoice" as UC08
+    usecase "UC-09 Issue an invoice" as UC09
+    usecase "UC-10 Generate monthly\nrecurring invoices" as UC10
+    usecase "UC-11 Deliver an\nissued invoice" as UC11
+    usecase "UC-21 Correct an\nissued invoice" as UC21
+    usecase "UC-23 Decide a sensitive\nfinancial approval" as UC23
+}
+
+'=== Relationships ===
+OpUser --> UC08
+OpUser --> UC09
+Admin --> UC21
+Admin --> UC23
+Time --> UC10
+UC11 --> CommSrv
+
+UC10 ..> UC09 : <<include>>
+UC21 ..> UC09 : <<include>>
+UC09 ..> UC11 : <<include>>
+UC23 ..> UC08 : <<extend>>\n(amount or discount\nabove threshold)
+UC23 ..> UC21 : <<extend>>\n(correction above\nthreshold)
+
+note bottom of UC10
+  Idempotent: one invoice per subscription
+  and billing period; recoverable after
+  downtime. NFR-06
+end note
+
+@enduml
+
+'==================================================================
+' View 4 — Collections and follow-up
+'==================================================================
+@startuml use-case-diagram-4-collections
+left to right direction
+
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam actor {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam arrow {
+    Color #2B3E6A
+}
+
+title View 4 — Collections and follow-up
+
+'=== Actors ===
+actor "Operational User\n(Reader / Assigned Staff)" as OpUser
+actor "Time" as Time <<timer>>
+actor "Payment Provider\n(Stripe / Revolut)" as PayProv <<system>>
+actor "Communication Service\n(Email / WhatsApp)" as CommSrv <<system>>
+
+'=== System Boundary ===
+rectangle "Turbine Invoicing & Collections System" {
+    usecase "UC-11 Deliver an\nissued invoice" as UC11
+    usecase "UC-12 Reconcile a payment\nwith an invoice" as UC12
+    usecase "UC-13 Run invoice reminders\nand overdue follow-up" as UC13
+    usecase "UC-14 Review assigned work\nand internal notifications" as UC14
+    usecase "UC-22 Resolve a billing\nor delivery issue" as UC22
+}
+
+'=== Relationships ===
+OpUser --> UC12
+OpUser --> UC14
+OpUser --> UC22
+Time --> UC12
+Time --> UC13
+UC11 --> CommSrv
+UC13 --> CommSrv
+UC12 --> PayProv
+
+UC22 ..> UC11 : <<extend>>\n(delivery bounced)
+UC22 ..> UC12 : <<extend>>\n(no clear reference or\namount mismatch)
+
+note bottom of UC13
+  Reminders stop as soon as the payment
+  is reconciled; customer-specific payment
+  terms override the default 5 days.
+end note
 
 @enduml
