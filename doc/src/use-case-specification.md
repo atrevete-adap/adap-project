@@ -1,27 +1,846 @@
 # Use Case Specifications
 
+> Working draft prepared for team review on 2026-10-15, using repository `main` at `4b091606e7400725b548a839adcf0f51abf94830`. This replaces the empty specification template only. The requirements document and Adam’s diagram are not modified.
+>
+> This is not the final synchronized submission: UR and FR are still placeholders in the inspected baseline and the diagram is empty. UC identifiers below are proposed stable identifiers for coordination with Adam. Existing BR and NFR references are real baseline IDs; their presence does not imply that the provisional wording has been approved.
+
+## 1. Scope and source convention
+
+The system is Turbine’s independent internal invoicing and collections application. Customers and their contacts receive communications but never log into it. Brain or another external application can call a restricted API; it is outside the system boundary. Payment and communication services are external supporting actors and may be simulated.
+
+`E p. n` refers to the PDF page number of *TurbineH - Transcripción de reunión extendida en inglés.pdf*, the 18-page extended client transcript supplied for the project. The team WhatsApp checklist and current README define the coordination baseline; later client clarifications that conflict with them are explicitly recorded in [the integration review](submission1-integration-review.md). This draft distinguishes source-supported behavior from proposed decisions requiring agreement.
+
+The field order follows the repository’s Cockburn-style template. `FN-*` names are temporary capability keys for collaboration; they are **not** assigned FR identifiers. Deniz must replace the pending FR mapping with the final FR IDs, and Héctor must supply the UR mapping, before the document is declared ready.
+
+## 2. Actors and common rules
+
+| Actor | Capability used in this draft |
+| --- | --- |
+| Super Administrator | Global policies, rate tables, series, audit and backup/recovery; elevated approvals when configured. No automatic inheritance of the global financial dashboard. |
+| Administrator | Global operational management, assignments, permitted approvals, and the global financial dashboard. |
+| Reader / Assigned User | Operational staff, despite the misleading Reader name. Can create/read/update permitted records only for assigned or validly delegated customers. No self-assignment, global rates, global financial dashboard, or global audit/backups. |
+| External application | Separately authenticated and scoped debt queries or controlled cancellation requests. No customer interactive account. |
+| Payment provider | Simulated Stripe is the priority; queries and notifications provide transaction evidence. Revolut/bank sources can be added without changing the invoice model. |
+| Communication service | Email by default; complementary WhatsApp with channel consent. Simulated providers are acceptable. |
+| Time event | Initiates system-owned automation. It is an internal trigger, not a mandatory external Scheduler actor in UML. |
+
+- **R-01 Authorization:** every protected action, including direct downloads and API requests, rechecks role and customer scope. Authentication is a precondition of internal user goals, not an automatic `include` edge from every use case to login.
+- **R-02 Financial consistency:** issued snapshots and original PDFs are preserved; corrections, payments, and collection status have distinct evidence. Read-only invoice consultation never changes amounts.
+- **R-03 Reliable automation:** the same logical issuance, billing-period item, payment transaction, or reminder occurrence cannot be applied twice. Failures have explicit outcomes and recoverable stages.
+- **R-04 Historical and privacy controls:** operational deactivation is logical and preserves outstanding obligations. Retention/deletion follows an approved, category-specific policy; this draft does not assert a universal five-year legal deadline.
+- **R-05 Role interpretation:** only the Administrator financial role grants the global financial dashboard. Whether Super Administrator also holds that role is an explicit assignment decision, not an implicit inheritance edge.
+- **R-06 Quantitative targets:** use the existing NFR definitions for testing. Their numerical targets are the team’s proposed acceptance conditions, not measurements already achieved by a running system.
+
+## 3. Proposed use case inventory
+
+| ID | Use case | Coordination key |
+| --- | --- | --- |
+| [UC-01](#uc-01) | Access the internal application | `FN-AUTH` |
+| [UC-02](#uc-02) | Maintain customer and contact records | `FN-CUSTOMERS` |
+| [UC-03](#uc-03) | Import customers from CSV | `FN-CSV` |
+| [UC-04](#uc-04) | Manage internal user accounts | `FN-USERS` |
+| [UC-05](#uc-05) | Assign and delegate customers | `FN-ASSIGNMENTS` |
+| [UC-06](#uc-06) | Manage a monthly subscription | `FN-SUBSCRIPTIONS` |
+| [UC-07](#uc-07) | Review the annual revenue band and rate | `FN-RATE-REVIEW` |
+| [UC-08](#uc-08) | Prepare a one-off invoice | `FN-ONEOFF` |
+| [UC-09](#uc-09) | Issue an invoice | `FN-ISSUANCE` |
+| [UC-10](#uc-10) | Generate monthly recurring invoices | `FN-MONTHLY` |
+| [UC-11](#uc-11) | Deliver an issued invoice | `FN-DELIVERY` |
+| [UC-12](#uc-12) | Reconcile a payment with an invoice | `FN-PAYMENTS` |
+| [UC-13](#uc-13) | Run invoice reminders and overdue follow-up | `FN-REMINDERS` |
+| [UC-14](#uc-14) | Review assigned work and internal notifications | `FN-NOTIFICATIONS` |
+| [UC-15](#uc-15) | Record a subscription cancellation | `FN-CANCELLATION` |
+| [UC-16](#uc-16) | Query a customer’s outstanding obligations through the API | `FN-DEBT-API` |
+| [UC-17](#uc-17) | Consult the financial dashboard and export reports | `FN-FINANCE` |
+| [UC-18](#uc-18) | Configure system-wide billing and automation policies | `FN-CONFIG` |
+| [UC-19](#uc-19) | Inspect business audit and automation health | `FN-AUDIT` |
+| [UC-20](#uc-20) | Create and restore a backup | `FN-BACKUPS` |
+| [UC-21](#uc-21) | Correct an issued invoice | `FN-CORRECTIONS` |
+| [UC-22](#uc-22) | Resolve a billing or delivery issue | `FN-ISSUES` |
+| [UC-23](#uc-23) | Decide a sensitive financial approval | `FN-APPROVALS` |
+| [UC-24](#uc-24) | Close or reopen an administrative period | `FN-PERIODS` |
+
+## 4. Behavioral specifications
+
 ## UC-01
 
 * **ID / Code:** UC-01
-* **Use Case Name:** ...
-* **Description:** ...
-* **Primary Actor:** ...
-* **Scope:** ...
-* **Level:** [Summary / User Goal / Subfunction]
-* **Related requirements:** FR-.., NFR-..
+* **Use Case Name:** Access the internal application
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Super Administrator, Administrator, or Assigned User
+* **Supporting Actors / Triggers:** Email service for password recovery
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-02; NFR-02, NFR-04. FR mapping pending: `FN-AUTH`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 7-8, 12.
 * **Stakeholders & Interests:**
-  * *Stakeholder 1:* ...
-* **Preconditions:** ...
-* **Postconditions:** ...
-* **Success Guarantee:** ...
-* **Minimal Guarantee:** ...
-* **Trigger:** ...
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** An authorized internal account has been provisioned. Login itself requires no existing session.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** A session is created with the account’s current permissions and assigned-customer scope.
+* **Minimal Guarantee:** No protected customer or financial information is disclosed; no unauthenticated session is granted.
+* **Trigger:** The staff member opens the application and requests access.
 * **Main Success Scenario:**
-1. ...
-2. ...
-3. ...
+1. The staff member enters their corporate email and password.
+2. The system validates the email against the configured, authorized corporate domain and verifies the credentials and active account.
+3. The system creates a session and displays the work area allowed by the account’s permissions.
 
 * **Extensions:**
-2a. ...:
-  2a1. ...
-  2a2. ...
+  * **2a.** Invalid credentials, unauthorized domain, or inactive account: reject access with a generic message; apply the failed-attempt protection policy.
+  * **1a.** Forgotten password: issue a single-use, expiring recovery link through the approved email channel for an eligible account; do not reveal whether an account exists.
+  * **3a.** The user logs out, their session expires through inactivity, or their account is deactivated: invalidate access; protected actions require authentication again.
+
+## UC-02
+
+* **ID / Code:** UC-02
+* **Use Case Name:** Maintain customer and contact records
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator or Assigned User within their authorized scope
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-02, BR-03, BR-05; NFR-01, NFR-02, NFR-03, NFR-04, NFR-05. FR mapping pending: `FN-CUSTOMERS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 2, 4, 7-8, 12, 14-15.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** An authenticated user has the required customer-management permission; existing records must fall within their current assignments or administrative scope.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** The confirmed operation is stored, its history is recorded, and historical issued documents remain intact.
+* **Minimal Guarantee:** Unauthorized records remain undisclosed; rejected changes do not alter committed data; deactivation never erases issued invoices or extinguishes debt.
+* **Trigger:** The user requests customer registration or opens an existing customer.
+* **Main Success Scenario:**
+1. The user searches by person, trading/legal company name, tax identifier, or email, optionally filtering by location and sector; alternatively, they select New customer.
+2. The system displays only authorized matches or a new form. The user enters company, tax, location, sector, and contact information, distinguishing billing recipients from other contacts.
+3. The system validates required fields and formats and warns about possible duplicate tax identifiers.
+4. The user reviews and confirms the data; the system saves the record and records the actor and time.
+5. The system shows the customer’s authorized invoices, documents, and relevant business timeline.
+
+* **Extensions:**
+  * **3a.** Missing data: show field-level errors and preserve valid entries. Data sufficient for a commercial record may still be insufficient for invoice issuance.
+  * **3b.** Possible duplicate: show the existing authorized record for review; do not merge companies automatically. Reactivation of a retained historical customer requires confirmation.
+  * **2a.** Edit or logical deletion: validate permission and confirmation; deactivation retains historical invoices and debt. Warn before removing the only billing contact of an active customer.
+  * **4a.** Concurrent update or lost assignment: recheck authorization and record version before saving; reject the stale or unauthorized write without overwriting another user’s changes.
+  * **5a.** Download or export selected customer data: recheck scope, generate only authorized data, and audit sensitive exports. Temporary generated files follow their own retention policy.
+
+## UC-03
+
+* **ID / Code:** UC-03
+* **Use Case Name:** Import customers from CSV
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator or staff member with explicit import permission
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-01, BR-03, BR-05; NFR-01, NFR-03, NFR-04, NFR-05. FR mapping pending: `FN-CSV`. UR mapping pending Héctor’s finalized section.
+* **Source:** E p. 7.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The authenticated user has import permission and the configured import policy is available.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** Confirmed valid rows are imported and an operation report identifies created, updated, and rejected rows with reasons.
+* **Minimal Guarantee:** No unconfirmed import is applied; failed rows cannot silently corrupt existing customer data.
+* **Trigger:** The user selects a CSV file for customer import.
+* **Main Success Scenario:**
+1. The user uploads the CSV and maps its columns to customer and contact fields.
+2. The system validates rows, required fields, formats, duplicates, and permitted updates and displays a preview before writing customer records.
+3. The user reviews the preview and confirms the valid rows under the approved import policy.
+4. The system writes authorized rows, preserving the distinction between existing and new customers.
+5. The system records the import operation and provides its result summary.
+
+* **Extensions:**
+  * **2a.** Invalid structure or ambiguous mapping: reject processing and identify the problem without importing customers.
+  * **2b.** Invalid rows or duplicate tax identifiers: flag them; the user corrects the source or explicitly selects valid-only import if the agreed policy allows it. Do not silently overwrite or merge.
+  * **4a.** A row fails during import: report its outcome and committed results precisely; retries must re-evaluate duplicates rather than blindly create another copy.
+
+## UC-04
+
+* **ID / Code:** UC-04
+* **Use Case Name:** Manage internal user accounts
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Super Administrator or Administrator with user-management permission
+* **Supporting Actors / Triggers:** Email service
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-02, BR-05; NFR-04, NFR-05. FR mapping pending: `FN-USERS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 7-8, 12.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor is authenticated and permitted to provision or change the requested account and role.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** The authorized account change is recorded and takes effect without losing historical attribution.
+* **Minimal Guarantee:** No user can grant permissions they are not authorized to administer; historical action owners are not deleted.
+* **Trigger:** The actor requests creation, permission changes, or deactivation of an internal account.
+* **Main Success Scenario:**
+1. The actor opens user management and selects an account operation.
+2. The actor enters the corporate email, role, and permitted capabilities, or changes the existing account.
+3. The system validates the domain, uniqueness, actor authority, and proposed permissions.
+4. The actor confirms; the system stores the change and its audit event.
+5. For a newly created account, the system sends the approved activation or initial-access message.
+
+* **Extensions:**
+  * **3a.** Unauthorized role escalation or non-corporate email: reject the change.
+  * **1a.** Deactivate account: revoke active sessions and preserve all historical actions; pending assignments and approvals must be reviewed for reassignment.
+  * **5a.** Initial-access email fails: retain the account’s actual activation state and record a retryable delivery failure.
+
+## UC-05
+
+* **ID / Code:** UC-05
+* **Use Case Name:** Assign and delegate customers
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-02, BR-05; NFR-04, NFR-05. FR mapping pending: `FN-ASSIGNMENTS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E p. 8.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor is an authenticated Administrator; customer and receiving account exist and are eligible.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** Access and pending work reflect the new assignment or time-bounded delegation; historical attribution is unchanged.
+* **Minimal Guarantee:** Staff cannot assign themselves customers; unconfirmed or invalid changes grant no access.
+* **Trigger:** The Administrator requests an assignment, reassignment, unassignment, or temporary substitution.
+* **Main Success Scenario:**
+1. The Administrator selects customers and the receiving staff member.
+2. For delegation, the Administrator enters its start and end dates while retaining the principal assignment.
+3. The system previews access changes and pending work affected by the operation.
+4. The Administrator confirms; the system applies the assignment, records history, and routes pending work to the current responsible staff member.
+5. The system enforces the new scope on subsequent reads, writes, downloads, and exports.
+
+* **Extensions:**
+  * **2a.** Invalid interval or inactive recipient: reject the assignment and explain the error.
+  * **3a.** Bulk reassignment: show the number of affected customers and report successes and failures individually.
+  * **5a.** Delegation expires: remove delegated access at the recorded end time, preserving the principal assignment and historical actions.
+
+## UC-06
+
+* **ID / Code:** UC-06
+* **Use Case Name:** Manage a monthly subscription
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator or Assigned User with subscription permission
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-01, BR-03, BR-05, BR-06; NFR-01, NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-SUBSCRIPTIONS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 2-5, 14.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor is authenticated, authorized for the customer, and has an eligible customer record and configured rates.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** The subscription’s approved terms, dates, and billing state are stored; eligible billing is scheduled without rewriting historical invoices.
+* **Minimal Guarantee:** Unapproved terms do not become billable; old invoices retain their issued amounts; a pause never marks old debt paid.
+* **Trigger:** The actor requests a new subscription, a permitted change, pause, or reactivation.
+* **Main Success Scenario:**
+1. The actor selects the customer, service, start date, agreed rate, and payment terms.
+2. The system validates tax data and previews any initial prorated one-off amount and the first regular monthly billing date.
+3. The actor reviews the calculation and requests any explicit commercial exception.
+4. After required approvals, the actor confirms; the system stores effective dates and applicable terms.
+5. If a prorated initial invoice is required now, the system prepares it for UC-09; normal recurrence is scheduled for the first day of the following month.
+
+* **Extensions:**
+  * **2a.** Missing mandatory tax data: block activation and identify the missing fields.
+  * **3a.** Approved no-proration exception or future start: store it explicitly; do not issue invoices or reminders before the approved start.
+  * **1a.** Pause: require reason and dates; suppress the affected future monthly charges, retain existing debt, and route reactivation review to the responsible staff member.
+  * **4a.** Sensitive price or term change: create UC-23 approval; pending or rejected terms are not used for billing.
+  * **5a.** Issue or delivery failure: preserve subscription and invoice states separately; record the failure without duplicating documents.
+
+## UC-07
+
+* **ID / Code:** UC-07
+* **Use Case Name:** Review the annual revenue band and rate
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator or authorized Assigned User as proposer; authorized approver for activation
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-06; NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-RATE-REVIEW`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 2-3, 11.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor has access to the customer; a subscription and versioned rate table exist.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** An approved rate change has an effective date and a record of the prior and new values; previous invoices remain unchanged.
+* **Minimal Guarantee:** Annual review never silently changes historical invoices or activates an unvalidated rate.
+* **Trigger:** A review becomes due or an authorized staff member starts it.
+* **Main Success Scenario:**
+1. The system lists due annual reviews within the actor’s scope.
+2. The actor enters or retrieves the customer’s verified annual revenue, its source, and verification date.
+3. The system proposes the corresponding band and future rate.
+4. The actor submits the proposal for UC-23 approval; an authorized approver reviews the evidence and effective date.
+5. The system activates the approved rate from that date and retains the review history.
+
+* **Extensions:**
+  * **2a.** Revenue evidence unavailable: keep the review pending and notify the responsible person; do not infer a new rate.
+  * **4a.** Rejected proposal: retain the existing rate and the rejection reason.
+  * **5a.** A past review was incorrect: record the correction and proposed impact; do not automatically issue retroactive charges.
+
+## UC-08
+
+* **ID / Code:** UC-08
+* **Use Case Name:** Prepare a one-off invoice
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator or Assigned User with invoice-creation permission
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-01, BR-03; NFR-01, NFR-02, NFR-04, NFR-05. FR mapping pending: `FN-ONEOFF`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 3-5, 16.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor is authenticated and authorized for the customer and invoice creation.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** A validated draft is saved and ready for required approval or issuance; saving a draft alone does not issue an invoice.
+* **Minimal Guarantee:** No incomplete draft is sent as an issued invoice; no definitive series number is consumed solely by saving a draft.
+* **Trigger:** The actor requests a one-off invoice for a customer.
+* **Main Success Scenario:**
+1. The actor selects the customer and enters service lines, quantities, prices, discounts, taxes, and agreed terms.
+2. The system calculates decimal totals and previews the invoice, identifying missing tax details or unusual amounts.
+3. The actor corrects any errors and confirms the draft.
+4. The system stores the draft and either makes it ready for UC-09 or routes sensitive changes to UC-23.
+
+* **Extensions:**
+  * **2a.** Invalid quantity, price, tax, or missing mandatory data: preserve the draft and show actionable errors; block issuance.
+  * **2b.** Unusually high amount: warn and apply the configured approval policy, rather than silently changing the price.
+  * **3a.** User leaves the form: retain a recoverable draft where supported; no definitive number or customer message is created.
+  * **4a.** An existing issued invoice was selected for editing: refuse draft-style overwrite and offer UC-21 where authorized.
+
+## UC-09
+
+* **ID / Code:** UC-09
+* **Use Case Name:** Issue an invoice
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Authorized invoice issuer or scheduled billing process
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** Subfunction
+* **Related requirements:** BR-01, BR-03, BR-04; NFR-01, NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-ISSUANCE`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 3-5, 8-9, 14.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** A complete, authorized draft or approved subscription-derived invoice exists; applicable approvals and issuance rules are satisfied.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** Exactly one issued invoice has a unique sequential number in its series, immutable issued data, a preserved PDF, and a recorded delivery request.
+* **Minimal Guarantee:** No duplicate invoice number or payment-state change is introduced; any durable issuance is preserved and recoverable, even if document delivery fails.
+* **Trigger:** An authorized user confirms issuance, or an eligible recurring or prorated item is ready.
+* **Main Success Scenario:**
+1. The system rechecks authorization, current invoice version, required tax fields, effective terms, approvals, and period restrictions.
+2. The system computes and verifies the final lines, tax bases, taxes, currency, total, and due date.
+3. The system reserves a unique number in the configured series and stores the issued snapshot consistently.
+4. The system generates and preserves the PDF with corporate identity, issuer/customer tax details, number, dates, lines, taxes, total, and support/payment details.
+5. The system records issuance and queues UC-11 delivery against the same invoice.
+
+* **Extensions:**
+  * **1a.** Missing data, pending approval, conflict, or unauthorized operation: block issuance and explain the reason; no customer message is queued.
+  * **3a.** Concurrent or repeated issuance request: return the already issued invoice or in-progress result; never allocate a second issued invoice for the same operation.
+  * **4a.** PDF generation fails after issuance was recorded: retain the issued snapshot and number, mark document generation failed, and retry for that same invoice.
+  * **5a.** Delivery cannot be queued or later fails: the issued invoice remains issued; record a retryable dispatch error without renumbering.
+
+## UC-10
+
+* **ID / Code:** UC-10
+* **Use Case Name:** Generate monthly recurring invoices
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Time event (first day of the billing month or recovery run)
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** Summary
+* **Related requirements:** BR-01, BR-04, BR-05; NFR-03, NFR-05, NFR-06. FR mapping pending: `FN-MONTHLY`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 4, 9, 14, 17.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** Monthly subscriptions, effective terms, and a billing period exist; the scheduled process is authorized to perform billing.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** Every successfully processed eligible subscription has exactly one invoice for the period; failures and skipped items have explicit recorded outcomes.
+* **Minimal Guarantee:** A failed item cannot duplicate successful invoices or prevent all independent subscriptions from being processed.
+* **Trigger:** The first-day schedule fires, or the system resumes after a missed or failed execution.
+* **Main Success Scenario:**
+1. The process creates or resumes a persistent execution record for the billing period.
+2. The system identifies eligible active subscriptions and checks start, pause, cancellation, rate, discount, and payment-term effective dates.
+3. For each eligible item without an invoice already generated for that subscription and period, the system prepares billing data and executes UC-09.
+4. The system records each item’s outcome and notifies the responsible staff member of actionable exceptions.
+5. The process stores totals for generated, skipped, and failed items and exposes its final status.
+
+* **Extensions:**
+  * **2a.** Paused, not-yet-active, or effectively cancelled subscription: skip generation without deleting previous debt.
+  * **3a.** Duplicate or concurrent run: detect the existing subscription-period result and avoid issuing another invoice.
+  * **3b.** Missing tax data, PDF failure, or other item-level failure: record the failed stage and continue with independent items.
+  * **1a.** Service outage: on recovery identify missed periods/items and resume idempotently; do not require the staff browser to remain open.
+
+## UC-11
+
+* **ID / Code:** UC-11
+* **Use Case Name:** Deliver an issued invoice
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Authorized staff member or invoice-dispatch event
+* **Supporting Actors / Triggers:** Email service; optional simulated WhatsApp service
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** Subfunction
+* **Related requirements:** BR-01, BR-04; NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-DELIVERY`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 5, 12, 15.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** An issued invoice and its preserved PDF exist; recipients and enabled channel configuration are available.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** A dispatch attempt has the correct invoice, recipients, template, channel, and observed provider outcome recorded.
+* **Minimal Guarantee:** Sending failure does not delete, duplicate, or renumber the invoice; recipient and retry history remain traceable.
+* **Trigger:** UC-09 requests delivery, or authorized staff request a failed invoice delivery to be retried.
+* **Main Success Scenario:**
+1. The system loads the invoice’s authorized billing contacts and default email channel.
+2. The system prepares the message and PDF using the appropriate template, language, and support details.
+3. The email service accepts or rejects the dispatch; the system records the attempt, time, recipient, and provider result.
+4. The system updates delivery state using only available evidence and makes failures visible to the responsible staff member.
+
+* **Extensions:**
+  * **1a.** Missing billing contact: keep the invoice issued but undelivered; create an actionable issue rather than discard the invoice.
+  * **2a.** Complementary WhatsApp delivery: use only a valid number with recorded channel consent; the provider may be simulated.
+  * **3a.** Provider failure or bounce: record the failed attempt, notify the responsible staff member, and allow corrected-recipient retry or configured fallback.
+  * **3b.** Repeated dispatch request: avoid duplicate processing of the same attempt; an intentional resend has a separate tracked attempt linked to the original invoice.
+  * **4a.** Provider acceptance without delivery/read evidence: retain the actual observed status; do not claim that the customer read the message.
+
+## UC-12
+
+* **ID / Code:** UC-12
+* **Use Case Name:** Reconcile a payment with an invoice
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Payment provider for inbound events, or authorized staff for query/manual review
+* **Supporting Actors / Triggers:** Simulated Stripe; alternative providers such as Revolut/bank adapters are replaceable sources
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-01, BR-04; NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-PAYMENTS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E p. 6.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The provider connection is configured; inbound events are authenticated or validated as appropriate. Manual review requires current customer-scope permission.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** A uniquely identified payment is allocated correctly and auditable balances and notifications reflect the result, or an unresolved discrepancy remains explicitly pending.
+* **Minimal Guarantee:** No duplicate payment or unsupported paid status is created; unresolved transactions remain available for review.
+* **Trigger:** A simulated Stripe event arrives, a payment query runs, or a staff member opens an unreconciled transaction.
+* **Main Success Scenario:**
+1. The system validates and records the provider transaction’s identity, successful/settled status, amount, currency, date, and available reference.
+2. The system checks whether the event or transaction has already been processed.
+3. The system searches for an eligible invoice using the agreed matching policy, checking reference, amount, and currency rather than amount alone.
+4. A clear full match is allocated once; the invoice becomes paid only when verified allocations settle its outstanding balance.
+5. The system retains the payment-to-invoice evidence, audit history, updated balance, and notification to the assigned staff member.
+
+* **Extensions:**
+  * **1a.** Query/provider unavailable or event invalid: record an integration failure or reject the event; do not invent a payment.
+  * **2a.** Duplicate event or different event about the same recorded transaction: return the previous result without allocating money twice.
+  * **3a.** No reference, multiple plausible matches, or currency mismatch: retain the transaction for manual review; do not automatically mark an invoice paid.
+  * **3b.** Underpayment or overpayment: preserve the received amount and difference for review; underpayment does not settle the invoice and excess is not silently discarded.
+  * **4a.** Manual reconciliation or reversal: an authorized person records the allocation or reversal and reason; preserve original events and recalculate balances without deleting evidence.
+
+## UC-13
+
+* **ID / Code:** UC-13
+* **Use Case Name:** Run invoice reminders and overdue follow-up
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Time event (configured reminder schedule)
+* **Supporting Actors / Triggers:** Email service; optional simulated WhatsApp service
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** Summary
+* **Related requirements:** BR-01, BR-04; NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-REMINDERS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 5-6, 9, 13, 15.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** An issued invoice has an outstanding balance and stored payment terms; channel templates and reminder policy are configured.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** Eligible reminders are dispatched once per scheduled occurrence; overdue status and relevant staff notifications are updated and recorded.
+* **Minimal Guarantee:** No reminder may be based on stale paid status or bypass a valid suspension; failed deliveries are not recorded as successful.
+* **Trigger:** A reminder becomes due under the invoice’s effective schedule.
+* **Main Success Scenario:**
+1. The process selects unpaid invoices and calculates which reminder occurrences are due from their stored issue/due dates and applicable terms.
+2. The system rechecks the current outstanding balance and any explicit follow-up suspension.
+3. For each eligible occurrence, the system prepares the corresponding reminder or overdue message with invoice, amount, due date, support phone, and support email.
+4. The configured email service or permitted complementary WhatsApp channel processes the message and the system records the observed attempt result.
+5. The system records the next follow-up and notifies the assigned employee when an invoice becomes overdue.
+
+* **Extensions:**
+  * **1a.** Customer-specific approved payment terms, such as thirty days: use that due date; do not apply overdue status on default day five.
+  * **2a.** Payment has settled the invoice: suppress the reminder and stop subsequent collection follow-up for that settled balance.
+  * **2b.** Follow-up paused for a dispute: retain unpaid status and the review task; suppress external reminders until the approved pause is reviewed or ends.
+  * **4a.** Provider failure or duplicate job: record a retryable failure or reuse the occurrence outcome; do not issue duplicate reminders for one scheduled occurrence.
+  * **1b.** Day counting or working-day adjustment not yet approved: apply only the documented policy; see DEC-03 in the integration review before final sign-off.
+
+## UC-14
+
+* **ID / Code:** UC-14
+* **Use Case Name:** Review assigned work and internal notifications
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator or Assigned User
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-01, BR-03, BR-05; NFR-02, NFR-03, NFR-04, NFR-05. FR mapping pending: `FN-NOTIFICATIONS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 6-8.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor is authenticated; work items and notifications are restricted to the actor’s authorized scope.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** The actor can locate and act on authorized work, with read and handled states recorded separately.
+* **Minimal Guarantee:** Reading an alert never settles an invoice, resolves an issue, or bypasses customer-level authorization.
+* **Trigger:** The actor opens their work area or receives a relevant internal notification.
+* **Main Success Scenario:**
+1. The system displays scoped payments received, due/overdue invoices, delivery failures, pending reconciliations, approvals, and annual reviews.
+2. The actor filters or opens an item; the system rechecks current permission to the referenced customer or invoice.
+3. The actor marks a notification as read and follows the link to the corresponding operational use case.
+4. When the underlying problem is resolved, the system records its actual resolution; informational items may remain simply read.
+
+* **Extensions:**
+  * **2a.** Assignment changed or access revoked: deny the target data and refresh the work list.
+  * **3a.** The actor only reads an overdue alert: do not mark its debt resolved or paid.
+  * **1a.** Administrator view: permit the global operational inbox; it does not grant other roles access to the global financial dashboard.
+
+## UC-15
+
+* **ID / Code:** UC-15
+* **Use Case Name:** Record a subscription cancellation
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator or authorized Assigned User; authorized external application for request intake
+* **Supporting Actors / Triggers:** External principal application when using the API
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-02, BR-04; NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-CANCELLATION`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 4, 11-12, 14, 17.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The customer and subscription exist. A staff actor has cancellation authority, or an authenticated external application has cancellation-request permission.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** After authorized confirmation, recurrence stops from its effective cancellation date; previously issued debt remains collectible and visible.
+* **Minimal Guarantee:** No cancellation deletes invoices, payment evidence, or outstanding debt. An unapproved request does not directly mutate recurrence.
+* **Trigger:** Staff record a cancellation request or an authorized external application submits one.
+* **Main Success Scenario:**
+1. The actor supplies the customer/subscription identifier, request reason, and proposed effective date.
+2. The system validates scope and records the request; an external request enters the internal workflow rather than directly deleting the subscription.
+3. The system calculates and displays outstanding obligations and the effects on future billing.
+4. An authorized staff member confirms the effective cancellation under the approved policy.
+5. The system stops applicable future monthly generation, retains old invoices and collection follow-up, and records and communicates the outcome.
+
+* **Extensions:**
+  * **3a.** Outstanding invoices exist: display them and continue collection; under the later extended statement, debt does not indefinitely prevent commercial cancellation.
+  * **4a.** The group has not validated the conflict with the earlier checklist/BR-04: keep the requested decision explicit as DEC-01; do not describe the two policies as simultaneously agreed.
+  * **2a.** Unauthorized or unknown identifier: return no protected debt detail and make no billing change.
+  * **5a.** Cancellation overlaps a billing run: apply the effective-date rule consistently and prevent duplicate or inappropriate future issuance.
+
+## UC-16
+
+* **ID / Code:** UC-16
+* **Use Case Name:** Query a customer’s outstanding obligations through the API
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Authorized external application
+* **Supporting Actors / Triggers:** None; the external caller is the initiating actor
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-02, BR-04; NFR-03, NFR-04, NFR-05. FR mapping pending: `FN-DEBT-API`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 4, 11-12.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** An external application is provisioned with API credentials and specific debt-query scope.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** The API returns a documented, authorized debt snapshot without changing customer or invoice state.
+* **Minimal Guarantee:** The query cannot cancel a subscription, erase debt, or bypass staff permissions.
+* **Trigger:** The external application sends a debt-status request for an identified customer.
+* **Main Success Scenario:**
+1. The application submits the customer identifier with its API authentication.
+2. The system verifies the caller, query permission, customer scope, and applicable request limit.
+3. The system calculates outstanding obligations from issued invoices, verified payments, and approved corrective documents, retaining currency distinctions.
+4. The system returns the debt indicator, permitted balance/detail, and snapshot time in the documented response format and records the important call.
+
+* **Extensions:**
+  * **2a.** Missing/invalid authentication or insufficient scope: reject with the documented authentication/authorization response and disclose no protected debt data.
+  * **2b.** Unknown or inaccessible customer: apply the documented non-disclosing error contract.
+  * **3a.** Calculation cannot be completed: return an explicit unavailable/error outcome, never debt-free by default.
+  * **4a.** State changes after the response: later cancellation processing rechecks current obligations; the response is not a permanent guarantee or cancellation authorization.
+
+## UC-17
+
+* **ID / Code:** UC-17
+* **Use Case Name:** Consult the financial dashboard and export reports
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-07; NFR-02, NFR-03, NFR-04, NFR-05. FR mapping pending: `FN-FINANCE`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 7, 11, 14-15.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor is authenticated with the Administrator role and financial-report permission.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** The dashboard or export shows reproducible financial totals for the selected scope, with filters and generation history recorded.
+* **Minimal Guarantee:** Financial totals do not change invoice amounts; unauthorized users cannot retrieve the same data through direct export requests.
+* **Trigger:** The Administrator opens the financial dashboard or requests a report.
+* **Main Success Scenario:**
+1. The Administrator selects a weekly, monthly, quarterly, or annual period and available customer, manager, location/country, sector, invoice status, and invoice-type filters.
+2. The system calculates invoiced, collected, outstanding, overdue, collection-time, and expected recurring-revenue indicators from recorded transactions.
+3. The Administrator opens an indicator’s details to inspect the contributing invoices and allocations.
+4. The Administrator optionally requests CSV or readable PDF export; the system rechecks permission, records filters and generation time, and produces an authorized download.
+
+* **Extensions:**
+  * **1a.** Assigned User, or Super Administrator without a separately granted Administrator role: deny the global financial dashboard under the group’s current role interpretation.
+  * **2a.** Multiple currencies: separate totals unless an approved reporting conversion policy exists; never silently add incomparable currency amounts.
+  * **4a.** Long report: persist a background job and return its status; recheck permission when the result is downloaded.
+  * **4b.** Export fails: retain an explicit failure; no misleading partial report is labelled complete.
+
+## UC-18
+
+* **ID / Code:** UC-18
+* **Use Case Name:** Configure system-wide billing and automation policies
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Super Administrator
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-01, BR-02, BR-05, BR-06; NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-CONFIG`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 2-5, 9-10, 12.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor is authenticated as Super Administrator and can change the relevant configuration.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** A validated configuration version is stored with effective scope/date and audit history; historical invoice snapshots remain intact.
+* **Minimal Guarantee:** Invalid or unconfirmed settings are not activated; integration secrets are not exposed in output or committed as configuration content.
+* **Trigger:** The actor opens global configuration.
+* **Main Success Scenario:**
+1. The actor selects payment periods, reminder intervals, corporate domain, issuer identity, series, rate bands, currencies, taxes, templates, channel settings, or approval thresholds.
+2. The system shows current values and the effects of proposed changes.
+3. The actor changes values and previews affected templates or reminder schedules using test data.
+4. The system validates consistency and the actor confirms the effective change.
+5. The system stores the version, actor, time, and reason and makes the new policy available to eligible future operations.
+
+* **Extensions:**
+  * **3a.** Missing template variable, invalid interval, duplicate numbering policy, or unsafe combination: reject activation and display the cause.
+  * **5a.** Existing issued invoices: retain the terms, amounts, identity snapshot, and original documents that applied when issued.
+  * **1a.** Actor lacks global-configuration permission: reject the change without relying on hidden UI controls.
+
+## UC-19
+
+* **ID / Code:** UC-19
+* **Use Case Name:** Inspect business audit and automation health
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Super Administrator
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-02, BR-05; NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-AUDIT`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 8-9, 12.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor is authenticated as Super Administrator; audit and execution records are available.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** The actor can trace relevant actions and failed stages without modifying the historical evidence.
+* **Minimal Guarantee:** Inspection cannot rewrite audit history, expose credentials, or silently repair financial records.
+* **Trigger:** The actor requests audit history or automation-health information.
+* **Main Success Scenario:**
+1. The actor selects business audit, process executions, or the health view.
+2. The system displays permitted records with responsible user/process, action, target, timestamp, and outcome.
+3. The actor filters by period, process, customer, or outcome and inspects an event.
+4. The system exposes useful failure correlation and last generation, dispatch, integration, and successful backup status without revealing sensitive technical details.
+
+* **Extensions:**
+  * **2a.** Administrator or Assigned User requests protected global audit or backup details: deny under the current role policy; ordinary customer timelines remain separately scoped.
+  * **3a.** The actor attempts to edit or delete past audit evidence: reject the mutation.
+  * **4a.** Execution failed: show the failed item/stage and support correlation; do not misrepresent failure as successful completion.
+
+## UC-20
+
+* **ID / Code:** UC-20
+* **Use Case Name:** Create and restore a backup
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Super Administrator for recovery; scheduled backup event for routine creation
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** Summary
+* **Related requirements:** BR-02, BR-05; NFR-04, NFR-05. FR mapping pending: `FN-BACKUPS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 8-9, 12.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** A backup policy exists; recovery is restricted to an authenticated Super Administrator and an approved recovery target.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** A created backup has a recorded outcome; a successful recovery restores a validated, consistent dataset and documents with measured recovery time.
+* **Minimal Guarantee:** An unsuccessful backup or restore is never labelled valid; recovery does not bypass access rules or intentionally rerun billing as new invoices.
+* **Trigger:** The scheduled backup becomes due, or the Super Administrator requests a recovery drill or recovery operation.
+* **Main Success Scenario:**
+1. The system creates the scheduled data-and-document backup and records its time, scope, and outcome.
+2. For recovery, the Super Administrator selects a valid backup and approved target; the system shows the recovery scope and required confirmation.
+3. The Super Administrator confirms and the system restores the selected backup, restricting conflicting operations as required.
+4. The system verifies invoice/document relationships, permissions, and recoverable financial data and records the recovery duration and result.
+5. Scheduled jobs resume under their idempotency rules after the recovery is validated.
+
+* **Extensions:**
+  * **1a.** Backup failure: record failure and alert the responsible operator; retain the last known valid backup.
+  * **2a.** Non-Super Administrator or invalid backup: deny recovery; do not disclose backup contents.
+  * **4a.** Restore validation fails: do not declare recovery complete or resume normal billing; report the failed recovery stage.
+
+## UC-21
+
+* **ID / Code:** UC-21
+* **Use Case Name:** Correct an issued invoice
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator with corrective-document permission
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-02, BR-04, BR-07; NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-CORRECTIONS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 3-4, 11, 14.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** An issued original invoice exists; the actor has correction authority and any closed-period rule is satisfied.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** An approved corrective document is issued and linked to the original; the resulting balance is explainable without altering the original evidence.
+* **Minimal Guarantee:** No issued invoice is silently overwritten or physically deleted; paid, rectified, voided, and uncollectible are not treated as equivalent.
+* **Trigger:** The Administrator identifies an invoice error or approved financial adjustment.
+* **Main Success Scenario:**
+1. The Administrator opens the original invoice and enters the correction reason and proposed corrected data/amount.
+2. The system previews the original-to-correction relationship and impact on the customer balance.
+3. The system checks required approval and closed-period restrictions; the authorized actor obtains any necessary decision.
+4. The system issues the corrective document under UC-09 with the applicable configured series and preserved original link.
+5. The system updates financial views from both documents and applicable payment allocations and records the action.
+
+* **Extensions:**
+  * **1a.** The original is an unissued draft: use its ordinary draft-correction flow instead of creating an issued corrective document.
+  * **3a.** Approval rejected or period locked without required exception authority: block the correction and preserve the proposal and reason.
+  * **5a.** Refund or uncollectible decision is needed: preserve the separate approved workflow; a corrective document alone must not invent a payment or refund.
+
+## UC-22
+
+* **ID / Code:** UC-22
+* **Use Case Name:** Resolve a billing or delivery issue
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator or authorized Assigned User
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-01, BR-04, BR-05; NFR-02, NFR-04, NFR-05. FR mapping pending: `FN-ISSUES`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 5-6, 10-11, 15.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor has access to the affected customer/invoice and the relevant issue-management permission.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** The issue has an owner, status, resolution history, and any explicit follow-up suspension/review date; financial state changes follow their own authorized cases.
+* **Minimal Guarantee:** Internal comments are not sent to customers automatically; issue closure does not erase debt or payment evidence.
+* **Trigger:** An operational problem is reported or a failed process creates an actionable issue.
+* **Main Success Scenario:**
+1. The actor opens or creates the issue, selecting the customer and optional invoice, type, description, priority, and responsible person.
+2. The system stores the issue and notifies the responsible person.
+3. The actor records internal findings and permitted attachments; sensitive administrative notes remain restricted.
+4. If authorized and justified, the actor pauses external reminders with a reason and review date while retaining unpaid debt.
+5. After the corrective operational action, the actor records the resolution; the system updates the issue and reviews the reminder pause.
+
+* **Extensions:**
+  * **3a.** Attachment is disallowed or too large: reject it according to the configured file policy; do not expose or execute it.
+  * **4a.** User lacks pause permission: reject suspension; opening an issue alone does not suspend reminders.
+  * **5a.** Pause review becomes due before resolution: notify the responsible person and apply the documented resumption policy.
+  * **5b.** Resolving the issue requires reconciliation or rectification: execute UC-12 or UC-21 with their own authorization; do not simply mark the invoice paid.
+
+## UC-23
+
+* **ID / Code:** UC-23
+* **Use Case Name:** Decide a sensitive financial approval
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator or Super Administrator according to the configured threshold
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-04, BR-06; NFR-02, NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-APPROVALS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 3, 11, 14.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** A proposal requiring approval exists with its proposed operation, values, reason, requester, and current version.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** A recorded approval/rejection is applied to the exact proposal version and the requesting workflow can continue or remain blocked accordingly.
+* **Minimal Guarantee:** Approval cannot be reused to authorize a changed proposal or bypass configured separation of duties.
+* **Trigger:** An eligible approver opens a pending request.
+* **Main Success Scenario:**
+1. The system lists requests the actor may decide under the applicable approval threshold and assignment.
+2. The approver reviews the affected customer, proposed price/discount/terms or correction, reason, and financial impact.
+3. The system checks decision authority, any separation-of-duties rule, and whether the proposal is still current.
+4. The approver approves or rejects with a comment; the system stores the actor, time, outcome, and exact values/version decided.
+5. The system notifies the requester and permits the originating workflow to continue only under the recorded decision.
+
+* **Extensions:**
+  * **3a.** Self-approval forbidden for this operation/threshold: reject the decision and route to an eligible different approver.
+  * **3b.** Values changed after submission or another approver already decided: reject the stale decision and request refreshed review.
+  * **1a.** Approver unavailable: an authorized Administrator reassigns the request, preserving reassignment history and threshold authority.
+  * **5a.** Rejected request: do not activate the proposed financial terms; retain the decision and reason.
+
+## UC-24
+
+* **ID / Code:** UC-24
+* **Use Case Name:** Close or reopen an administrative period
+* **Description:** Achieve the operational result stated in the success guarantee while applying the common rules above.
+* **Primary Actor:** Administrator for closing; higher-permission actor for exceptional reopening
+* **Supporting Actors / Triggers:** None
+* **Scope:** Turbine internal invoicing and collections application.
+* **Level:** User Goal
+* **Related requirements:** BR-02, BR-07; NFR-04, NFR-05, NFR-06. FR mapping pending: `FN-PERIODS`. UR mapping pending Héctor’s finalized section.
+* **Source:** E pp. 3, 14.
+* **Stakeholders & Interests:**
+  * *Turbine:* correct operations, explainable balances, and limited manual work.
+  * *Authorized staff:* complete the task within their permissions with actionable failure information.
+  * *Affected customer, when applicable:* correct documents, payments, communications, and protection of their data; no application login is implied.
+* **Preconditions:** The actor is authenticated with the specific close/reopen capability and the target period exists.
+* **Postconditions:** The outcome, including any pending, rejected, or failed state, is recorded as specified in the relevant flow.
+* **Success Guarantee:** The period state and any exceptional reopening are audited and enforced in subsequent financial operations.
+* **Minimal Guarantee:** The period state does not erase history, reclassify debt as paid, or supersede invoice correction and audit rules.
+* **Trigger:** An authorized actor requests closing after review, or exceptional reopening with a reason.
+* **Main Success Scenario:**
+1. The actor selects the month or quarter and reviews its financial records and unresolved exceptions.
+2. The system previews which ordinary financial changes the close will restrict.
+3. The actor confirms closing; the system records the period, actor, time, and reason.
+4. The system rejects later ordinary mutations in that period unless the authorized exceptional procedure is followed.
+
+* **Extensions:**
+  * **1a.** Exceptional reopening: require the higher capability and a reason; record the decision before allowing the narrowly authorized procedure.
+  * **3a.** Unresolved blocking exception or concurrent financial change: reject the close and show the conflict for review.
+  * **4a.** Correction requested: use UC-21 and its period checks; reopening never permits silent rewriting of issued invoice snapshots.
+
+## 5. Integration completion gate
+
+Before final submission, map every `FN-*` capability to the real FR IDs, add the real UR references, align the proposed UC inventory with Adam’s diagram, and resolve DEC-01 through DEC-08 in the integration review. Every use case represented in the submitted diagram must have a matching textual specification, and every mandatory finalized FR must be covered by at least one use case or an explicitly documented supporting rule.
+
+No Scrum meeting, retrospective, implementation result, test result, or peer-evaluation score is asserted by this draft.
