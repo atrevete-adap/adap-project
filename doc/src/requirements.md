@@ -4,22 +4,52 @@
 ## Business Requirements
 > Answering the "What for?" or "Why?" of the business (commercial, financial, or strategic goals).
 
-- BR-01: Delete the manual creation of bills and payment prosecution for liberating the CEO the administrative charge and allowing the team to focus on 
-         the main product and enterprise growth.
-- BR-02: Provide an independent and internal web product from Brain for centralization, automatization and payment follow-up.
-- BR-03: Reduce to the minimum the execution time of any administrative procedure or billing to under one minute, avoiding steep learning curves.
-- BR-04: Guaranteeing the Cash-Flow assuring the bill payment in a standard term of 5 days, preventing clients for unsubscribing with debts.
-- BR-05: Providing the company of an operative basis for scaling clients, preparing the operative for future administrative departments.
-- BR-06: Assuring anual update of the recurrent incomes revising the anual facturation stretch of each client for adjusting prices automatically.
-- BR-07: Proposing finalcial visibility direction of the performance and the accounting statement of the company revenue.
-- BR-08: Minimizing the development and technological infrastructure using free, or low cost solutions according to the budget of a Start-up.
+- BR-01: Operational independence from the commercial product.
+- BR-02: Extreme agility in frequent operations. 
+- BR-03: Business scalability through management by exception.
+- BR-04: Separation of commercial relationship from debt collection.
+- BR-05: Commercial flexibility and annual tiered rate reviews. 
+- BR-06: Financial governance, risk control and separation of duties.
+- BR-07: Auditable financial visibility and target tracking. 
+- BR-08: Accounting integrity, immutable traceability and external accounting firm coordination.
+- BR-09: Data privacy and prohibition of marketing use.
+- BR-10: Executive mobility, technological sustainability and determinism.
 
 ## User Requirements
 > Answering "What does the user want to achieve?" (Customer or actor goals).
 
-- UR-01: ...
-- UR-02: ...
-- UR-03: ...
+- UR-01: International commercial and tax customer registration.
+- UR-02: Multiple contacts per company and channel consent management.
+- UR-03: CSV customer import with validation and preview.
+- UR-04: Duplicate detection, historical reactivation, and controlled merging.
+- UR-05: Subscription management.
+- UR-06: Temporary subscription pause and reactivation.
+- UR-07: Commercial cancellation with outstanding debt retention.
+- UR-08: Customer status tracking and business timeline.
+- UR-09: Quotation creation and invoice conversion.
+- UR-10: One-off invoice creation, concept  catalog, and cost centers 
+- UR-11: Proration preview for mid-month sign-ups.
+- UR-12: Automatic drafts, validation, and anomalous amount alerts.
+- UR-13: Viewing and downloading corporate PDF invoices.
+- UR-14: Corrective invoice (administratives can rectify errors or process refunds).
+- UR-15: Administrative migration of historical invoices.
+- UR-16: Approval workflow and inbox with separation of duties.
+- UR-17: Annual revenue tier review campaign.
+- UR-18: Adminoistrative period closing and controlled reopening.
+- UR-19: Delivery tracking and bounce email handling.
+- UR-20: Billing issue management, comments, and attachments.
+- UR-21: Manual payment reconciliation, partial settlements and reversal.
+- UR-22: Controlled write-off of uncollectible debt.
+- UR-23: Daily work screen and actionable notification.
+- UR-24: Immediate global search, saved views and quick access.
+- UR-25: Controlled bulk actions and background processing.
+- UR-26: Financial dashboard with drill-down and budget targets.
+- UR-27: Report exports, scheduled summaries, and accounting packages.
+- UR-28: Corporate authentication, account lifecycle and session control.
+- UR-29: Portfolio assignment and temporary absence delegation.
+- UR-30: Global system configuration and simulation testing.
+- UR-31: Immutable auditing, system health monitoring privacy, and backups (Superadministrators related).
+
 
 ## System Requirements
 > Technical translation of user and business goals into executable functional capabilities and quality constraints.
