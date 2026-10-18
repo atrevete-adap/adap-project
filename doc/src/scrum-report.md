@@ -34,13 +34,11 @@ Responsibilities were split by artifact: Héctor drafted the Business and User R
 * **Topic:** Requirements analysis and division of tasks.
 * **Results:** The requirements were divided by type and each type was assigned to one person: Héctor will draft the Business and User Requirements, Deniz the Functional Requirements and Víctor the Non-Functional Requirements. Adam is responsible for adding new tasks and preparing the next sprint. Unfinished requirements tasks (#5, #6, #7) and the use case diagram (#8) were carried over to Sprint 2.
 
-**17/10/2026 – 17:00 to 17:15** (Sprint 2 progress check)
+**17/10/2026 – 16:00 to 19:00** (Sprint 2 review and retrospective, online call)
 
-* **Participants:** Deniz, Adam, Héctor, Víctor, Pablo
-* **Topic:** Review of Sprint 2 progress, integration of the requirements with the use case diagram and specifications, and the remaining work for Submission 1.
-* **Results:** The Functional Requirements (#6) and the use case diagram v1 (#8, PR #16) were completed, and the draft of 24 use case specifications with the integration review (PR #15) was merged into `main`. The Business and User Requirements (#5) are under review and the Non-Functional Requirements (#7) are still in progress. Three new tasks were created: #17 to fix the boilerplate, actors and scope of the use case specifications (Pablo), #18 to link the Non-Functional Requirements to the FR identifiers (Deniz), and #19 to document team decisions for the open contradictions C4, C9 and C11 (Deniz). The remaining delivery tasks were assigned: #12 Scrum Report to Deniz, and #11 Export PDFs, #13 Presentation rehearsal and #14 Submission to Adam. Once #17 and #18 are merged, the final FR identifiers will be linked to the use cases to complete the traceability review (#10).
-
-[TODO: add the meeting that closes Sprint 2 (review and retrospective) in the same format]
+* **Participants:** Deniz, Adam, Héctor
+* **Topic:** Review of Sprint 2 progress, integration of the requirements with the use case diagram and specifications, and the remaining work for Submission 1. The team worked on the open tasks during the call.
+* **Results:** The Functional Requirements (#6) and the use case diagram v1 (#8, PR #16) were completed, and the draft of 24 use case specifications with the integration review (PR #15) was merged into `main`. The Business and User Requirements (#5) are under review and the Non-Functional Requirements (#7) are still in progress. Three new tasks were created: #17 to fix the boilerplate, actors and scope of the use case specifications (Pablo), #18 to link the Non-Functional Requirements to the FR identifiers (Deniz), and #19 to document team decisions for the open contradictions C4, C9 and C11 (Deniz). The remaining delivery tasks were assigned: #12 Scrum Report to Deniz, and #11 Export PDFs, #13 Presentation rehearsal and #14 Submission to Adam. Once #17 and #18 are merged, the final FR identifiers will be linked to the use cases to complete the traceability review (#10). The tasks still pending at the end of the call were assigned to the other members, who completed them afterwards (see Sprint 2).
 
 ### Product Backlog
 
@@ -90,11 +88,11 @@ No capture of the board was taken at the Sprint 1 planning meeting, because the 
 ### Sprint 2
 
 * **Start date:** 14/10/2026
-* **End date:** [TODO: date of the next team meeting]
+* **End date:** 17/10/2026
 * **Sprint Goal:** Finish and review the requirements, complete the use case diagram and specifications, verify traceability between them, and prepare the Submission 1 deliverables and presentation.
 * **Planned tasks:** #8 Use case diagram v1 (PlantUML); #9 Use case specifications; #10 Traceability review (requirements ↔ use cases); #11 Export PDFs to doc/; #12 Scrum Report - Submission 1; #13 Presentation rehearsal; #14 Submit .zip + repo URL to Campus Virtual; plus #5, #6 and #7 carried over from Sprint 1. Added during the sprint (17/10/2026): #17, #18 and #19.
 * **Completed tasks:** #5 Business & user requirements (BR, UR); #6 Functional requirements (FR); #7 Non-functional requirements (NFR); #8 Use case diagram v1 (PlantUML), split into four views (PR #16); #9 Use case specifications (PRs #15 and #22); #10 Traceability review (PRs #20 and #21); #17 Use case specifications fixes (PR #22); #18 NFR ↔ FR links; #19 Decisions for contradictions C4, C9 and C11. During the sprint the Functional Requirements were consolidated from 147 to 59 (merging closely related sub-requirements and moving 11 to *Out of Scope*), and the User Requirements without a use case (quotations and historical invoice migration) were removed, leaving 10 BR, 30 UR and 59 FR, all traced to at least one use case. Still open for the submission: #11 Export PDFs, #12 Scrum Report, #13 Presentation rehearsal and #14 Submission.
-* **Meetings held:** 14/10/2026 (11:00 to 11:15, planning) and 17/10/2026 (17:00 to 17:15, progress check) [TODO: + closing meeting]. See Section 2.
+* **Meetings held:** 14/10/2026 (11:00 to 11:15, planning) and 17/10/2026 (16:00 to 19:00, review and retrospective). See Section 2.
 * **Issues encountered:** The use case specifications were drafted before the requirement identifiers (UR/FR) were final and before the use case diagram was complete, so traceability is still provisional. Later in the sprint, renumbering the Business, User and Functional Requirements broke the references from the use cases more than once. The Non-Functional Requirements had no links to specific Functional Requirements, because the FR identifiers were not final when they were written. The client interviews contain contradictory statements (C4, C9, C11) that the team cannot resolve on its own.
 * **Solutions applied:** The draft was submitted as a pull request (#15) together with an integration review listing discrepancies between sources, pending decisions and a provisional traceability matrix, to be updated once the requirements are finalized. The team decided to keep the hierarchical FR format (FR1, FR1.1…), which shows the parent requirement of each sub-requirement, and task #18 was repurposed to link each NFR to its related FRs; and the contradictions were documented in `requirements.md` with a proposed interpretation for each, and task #19 records a justified team decision for each one, as the client allowed. After each renumbering, the use case references were updated from an old → new mapping confirmed by the author of those requirements, in a single change (PRs #20 and #21).
 
@@ -106,13 +104,13 @@ No capture of the board was taken at the Sprint 1 planning meeting, because the 
 
 #### Board Status at Sprint Retrospective
 
-Board at the Sprint 2 progress check (17/10/2026):
+Board at the Sprint 2 review and retrospective (17/10/2026):
 
-![Sprint 2 progress check: Sprint Backlog board](img/sprint2-progress-check-board.png)
+![Sprint 2 retrospective: Sprint Backlog board](img/sprint2-progress-check-board.png)
 
-![Sprint 2 progress check: Product Backlog table](img/sprint2-progress-check-product-backlog.png)
+![Sprint 2 retrospective: Product Backlog table](img/sprint2-progress-check-product-backlog.png)
 
-[TODO: insert board screenshot at the end of Sprint 2]
+[TODO: insert board screenshot after the tasks assigned at the closing meeting were completed]
 
 ## 4. Issues and Risks
 
