@@ -46,6 +46,7 @@ This project models and designs an **independent, internal responsive web applic
   - `doc/src/use-case-diagram.pu` (PlantUML source for the Use Case Diagram)
   - `doc/src/use-case-specification.md` (Cockburn-style Use Case Specifications)
   - `doc/src/scrum-report.md` (Sprint planning, meetings, board snapshots & risk log)
+- `notes/` — Historical coordination and review notes; excluded from the four Submission 1 PDFs.
 - `README.md` — Project overview and documentation index.
 - `.gitignore` — Git ignore rules.
 

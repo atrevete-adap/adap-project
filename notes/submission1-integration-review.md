@@ -1,5 +1,7 @@
 # Submission 1: integration review and handoff
 
+> Historical coordination note, archived outside the Submission 1 deliverables on 2026-10-18 for #17. Statements below describe the October 15 baseline, not the current repository. Use `doc/src/requirements.md` (including C1–C12) and `doc/src/use-case-specification.md` for the current contracts. C4, C9 and C11 supersede the corresponding old cancellation, calendar and marketing questions. Remaining proposals are not client or team approvals. Do not compile this note into the delivery PDFs.
+
 Review date: 2026-10-15. Inspected upstream baseline: [`4b091606e7400725b548a839adcf0f51abf94830`](https://github.com/atrevete-adap/adap-project/tree/4b091606e7400725b548a839adcf0f51abf94830).
 
 This is a coordination and review document, not an additional mandatory deliverable or a record of a meeting. It accompanies Pablo's proposed use-case specification work. No task assignment has been changed on GitHub by this review.
