@@ -14,9 +14,9 @@
 This project models and designs an **independent, internal responsive web application** for Turbine's administrative staff to:
 - Register and manage corporate customers and their contact persons (via manual entry or CSV import) with logical deletion policies.
 - Generate and issue standard corporate **PDF invoices** (both **one-off** and **monthly recurring** subscriptions tiered by customer annual revenue) in under one minute.
-- Automate **payment tracking and reconciliation** by querying external payment platforms (e.g., Stripe / Revolut).
-- Execute automated **payment reminder workflows** (Day 1 issuance, Day 3 & Day 5 reminders, and periodic overdue follow-ups via Email/WhatsApp) and notify assigned internal staff.
-- Enforce **role-based access control** (*Super Administrator*, *Administrator*, and *Reader / Assigned Staff*), quarterly tax modification locks, and cancellation debt checks via an external API.
+- Automate **payment tracking and reconciliation** by querying a payment source and receiving its payment events (Stripe, simulated), with other sources such as Revolut or a bank account addable later.
+- Execute automated **payment reminder workflows** (a reminder on day 3 after issuance, another on the due date, then every 2–3 days while overdue, by email and by WhatsApp when the contact consents) and notify the responsible internal user.
+- Enforce **role-based access control** (*Super Administrator*, *Administrator*, and *Operational User* limited to their assigned customers), protect issued invoices through corrective invoices and administrative period closing, and stop recurring billing on cancellation while collection of previous debt continues (outstanding obligations can be queried through an API).
 
 ---
 
@@ -42,10 +42,12 @@ This project models and designs an **independent, internal responsive web applic
   - `doc/use-case-specification.pdf`
   - `doc/scrum-report.pdf`
 - `doc/src/` — Editable source files:
-  - `doc/src/requirements.md` (Business, User, Functional & Non-Functional Requirements)
+  - `doc/src/requirements.md` (Business, User, Functional & Non-Functional Requirements, plus contradictions and out-of-scope items)
   - `doc/src/use-case-diagram.pu` (PlantUML source for the Use Case Diagram)
   - `doc/src/use-case-specification.md` (Cockburn-style Use Case Specifications)
   - `doc/src/scrum-report.md` (Sprint planning, meetings, board snapshots & risk log)
+  - `doc/src/submission1-integration-review.md` (Working notes: discrepancies between sources and traceability decisions)
+  - `doc/src/img/` (Board screenshots and exported use case diagram views)
 - `README.md` — Project overview and documentation index.
 - `.gitignore` — Git ignore rules.
 
