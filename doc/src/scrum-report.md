@@ -59,8 +59,8 @@ Project board: **ADAP - Atrévete** (GitHub Projects). Milestone for all tasks: 
 | #13 | Presentation rehearsal | Adam | Medium | scrum | Sprint 2 |
 | #14 | Submit .zip + repo URL to Campus Virtual | Adam | High | scrum | Sprint 2 |
 | #17 | Use case specifications: fix boilerplate, single-role actors and deliverable scope | Pablo | High | review, use-case | Sprint 2 |
-| #18 | Requirements: link NFRs to FR IDs | Deniz | [TODO: priority on the board] | requirements | Sprint 2 |
-| #19 | Requirements: document decisions for open contradictions C4, C9, C11 | Deniz | [TODO: priority on the board] | requirements | Sprint 2 |
+| #18 | Requirements: link NFRs to FR IDs | Deniz | High | requirements | Sprint 2 |
+| #19 | Requirements: document decisions for open contradictions C4, C9, C11 | Deniz | High | requirements | Sprint 2 |
 
 ## 3. Sprints Performed
 
@@ -110,7 +110,11 @@ Board at the Sprint 2 review and retrospective (17/10/2026):
 
 ![Sprint 2 retrospective: Product Backlog table](img/sprint2-progress-check-product-backlog.png)
 
-[TODO: insert board screenshot after the tasks assigned at the closing meeting were completed]
+Board after the tasks assigned at the closing meeting were completed (18/10/2026), before the submission tasks:
+
+![End of Sprint 2: Product Backlog table filtered by Sprint 2](img/sprint2-end-sprint2-items.png)
+
+![End of Sprint 2: full Product Backlog table](img/sprint2-end-product-backlog.png)
 
 ## 4. Issues and Risks
 
