@@ -77,7 +77,7 @@
 ### Functional Requirements
 > Answering "What the system does to fulfill user requirements?" (Inputs, outputs, calculations, and technical behavior).
 
-#### FR1. Customer Management
+#### 1. Customer Management
 
 - **FR1.** Customer company registration. The system will allow users to register a customer company with its trading name, legal name, tax identification number, tax address, country, working currency and contact information, without assuming a Spanish format for tax identifiers or addresses. The system will validate emails, tax identifiers (when the country's format is known) and mandatory fields, distinguishing the data required to issue an invoice from data that is only recommended. Before creating a customer, it will warn about likely duplicates (primarily by tax identifier) and will never merge companies automatically.
   - Dependencies / Relationships: FR6.1.
@@ -94,7 +94,7 @@
 - **FR1.6.** Customer status, tags and timeline. The system will represent the customer statuses that affect billing (at minimum: pending activation, active, paused, cancellation requested, inactive, administratively blocked), let authorised users change them after showing the consequences, and allow customers to be tagged (e.g. strategic, partner, collection risk) without tags replacing statuses derived from data. Each customer will have a business timeline with its relevant events (registration, change of responsible person, rate changes, invoices, payments, issues, pauses, cancellation and reactivation).
   - Dependencies / Relationships: FR1.5, FR9.1, FR10.
 
-#### FR2. Invoicing
+#### 2. Invoicing
 
 - **FR2.** Invoice creation. The system will allow users to create an invoice for a customer, choosing whether it is one-off or recurring. Each invoice is made of one or more lines with description, quantity, unit price, optional discount and a tax selected from a configurable list. Lines can reuse concepts from a lightweight catalogue whose changes do not affect existing invoices. An invoice is issued in a single currency that never changes afterwards.
   - Dependencies / Relationships: FR1, FR13.
@@ -115,7 +115,7 @@
 - **FR2.8.** Corrective invoices. Starting from an issued invoice, the system will propose the data to correct, generate the corrective document and keep it linked to the original. This requires administrative permission and, depending on the amount, approval; customer balances take these documents into account.
   - Dependencies / Relationships: FR2.3, FR2.4, FR11.
 
-#### FR3. Payment Tracking and Reminders
+#### 3. Payment Tracking and Reminders
 
 - **FR3.** Payment detection. The system will check whether each invoice has been paid by querying the payment source and by receiving payment events (Stripe simulated for this project). Other sources, such as Revolut or a bank account, can be added without changing the invoice model, and a payment event received more than once is counted only once.
   - Dependencies / Relationships: FR2.
@@ -130,7 +130,7 @@
 - **FR3.5.** Uncollectible debt. Authorised users can mark a debt as uncollectible, with a reason and approval, as a state distinct from paid.
   - Dependencies / Relationships: FR2.3, FR11.
 
-#### FR4. Cancellation
+#### 4. Cancellation
 
 - **FR4.** Cancellation requests. The system will allow a customer's cancellation to be recorded manually or received as a request through the API, creating a task for the responsible user. External systems cannot end a recurrence directly without passing through the system's rules.
   - Dependencies / Relationships: FR1, FR15.
@@ -139,7 +139,7 @@
 - **FR4.2.** Outstanding obligations query (API). The system will provide an API that, given a customer identifier, returns whether the customer has outstanding obligations and the minimum authorised detail.
   - Dependencies / Relationships: FR3, FR15.
 
-#### FR5. Pricing
+#### 5. Pricing
 
 - **FR5.** Annual price review. Once a year (or when configured), the system will list the customers due for review, obtain their annual revenue from a simulated source or manual entry (with source and date), keep those without data as pending and propose the corresponding price range. The change requires human approval, has an effective date and records who approved it and the previous and new prices; the price stays fixed between reviews. Review records can be corrected with traceability, but any retroactive adjustment must be an explicit, approved action.
   - Dependencies / Relationships: FR1, FR2.1, FR5.1, FR11.
@@ -148,7 +148,7 @@
 - **FR5.2.** Commercial exceptions. The system will support time-limited discounts, free periods and extra services with agreed prices. Users managing a customer can request them, an administrator approves them (the super administrator above a configurable threshold), and time-limited discounts stop applying automatically when they end.
   - Dependencies / Relationships: FR10, FR11.
 
-#### FR6. Users and Access
+#### 6. Users and Access
 
 - **FR6.1.** Login and sessions. Internal users log in with their corporate email and password; only verified addresses from the authorised domain are accepted and there is no self-registration. Users can recover their password through links that expire, sessions expire after inactivity, users can log out, and repeated failed attempts trigger basic protection without excessive lockouts.
 - **FR6.2.** Roles and permissions. The system will support three roles: super administrator, administrator and operational user (called "reader" in the first meeting, see C1). Only the super administrator can change the system configuration. Administrators manage customers, contacts, companies, invoices and invoice types, assign customers and resolve approvals within their permissions. Operational users view and modify the operational data of their assigned customers, create invoices if permitted, follow up payments and download documents, but cannot widen their own access, change global rates, create series or see the global financial dashboard. Every request, including direct URLs, downloads, exports and API calls, is checked against these permissions on the server.
@@ -158,7 +158,7 @@
 - **FR6.4.** Customer visibility, reassignment and delegation. An administrator decides which customers each operational user can see. When a customer is reassigned, the new responsible user inherits pending tasks while history keeps who did each earlier action, and a user's customers can be delegated to another user for a date range, expiring automatically.
   - Dependencies / Relationships: FR1.5, FR6.2.
 
-#### FR7. Internal Notifications
+#### 7. Internal Notifications
 
 - **FR7.** Notification events. The system will notify the internal user responsible for a customer when an invoice is paid, of every follow-up sent for an unpaid invoice, and of overdue invoices, bounced emails, disputes opened, pending annual reviews, rejected approvals, mentions and expiring pauses.
   - Dependencies / Relationships: FR1.5, FR3.
@@ -167,7 +167,7 @@
 - **FR7.2.** Configurable alert rules. Administrators can configure parameterised alerts from a closed set of conditions (e.g. invoice overdue more than N days, outstanding balance above X, sending failed N times).
   - Dependencies / Relationships: FR7, FR13.
 
-#### FR8. Reports, Dashboard and Search
+#### 8. Reports, Dashboard and Search
 
 - **FR8.** Invoicing reports. The system will generate weekly, monthly and annual reports on invoicing and collections, filterable by period, customer, internal manager, country, sector, invoice status, type and currency. Heavy reports run in the background, and administrators can schedule weekly or monthly summaries sent only to authorised users.
   - Dependencies / Relationships: FR2, FR3, FR14.
@@ -182,7 +182,7 @@
 - **FR8.5.** Accounting firm package. The system will export a monthly or quarterly package (issued invoices, corrective invoices, collections and PDFs) in a configurable format, recording generation date, period and version.
   - Dependencies / Relationships: FR2, FR3.
 
-#### FR9. Backups, Auditing and Monitoring
+#### 9. Backups, Auditing and Monitoring
 
 - **FR9.** Backups. The system will create automatic backups of data and documents according to a defined policy, and backups must be restorable.
   - Dependencies / Relationships: FR6.2.
@@ -191,7 +191,7 @@
 - **FR9.2.** Automation log and health screen. Each automated process records when it ran, items processed and created, failures and reasons. A health screen shows the last recurring generation, the pending email queue, recent integration errors and the last successful backup. Errors shown to users are understandable and include an issue code to find them in the technical log.
   - Dependencies / Relationships: FR9, FR14.
 
-#### FR10. Subscriptions (Commercial Relationship)
+#### 10. Subscriptions (Commercial Relationship)
 
 - **FR10.** Subscription record. The system will store each customer's commercial relationship separately from its invoices: start date, plan, agreed rate and recurring concepts, internal manager, payment terms and associated documents (month to month, no commitment period). Activating a recurring subscription is blocked while invoicing tax data is missing, explaining what is missing.
   - Dependencies / Relationships: FR1, FR5.
@@ -200,14 +200,14 @@
 - **FR10.2.** Pause and reactivation. A subscription can be paused with reason, start date and optional reactivation date. No monthly invoices are generated during the pause while old invoices stay in collection, and the responsible user is notified when the reactivation date arrives.
   - Dependencies / Relationships: FR10, FR7.
 
-#### FR11. Approvals
+#### 11. Approvals
 
 - **FR11.** Approval workflow. Manual amount changes, extraordinary discounts, unusual due dates, one-off invoices above a threshold, corrective invoices, write-offs and price-range changes require approval before taking effect; invoices generated unchanged from an approved subscription do not. The system states why an item is pending; approvers see an approval inbox, and requesters see the status and the approver's comment.
   - Dependencies / Relationships: FR2, FR5, FR13.
 - **FR11.1.** Separation of duties and substitution. Above a configurable threshold, users cannot approve their own requests. An administrator can reassign a pending approval or designate a substitute approver, and every reassignment is recorded.
   - Dependencies / Relationships: FR11, FR9.1.
 
-#### FR12. Billing Issues, Comments and Attachments
+#### 12. Billing Issues, Comments and Attachments
 
 - **FR12.** Billing issues. Users can open internal issues linked to a customer and optionally an invoice (e.g. incorrect tax ID, disputed amount, email not received, payment not located), with responsible user, status, priority, comments and attachments; the resolution is recorded on closure. An issue that affects collection can pause the related invoice's reminders.
   - Dependencies / Relationships: FR1, FR2, FR3.4.
@@ -216,7 +216,7 @@
 - **FR12.2.** Attachments. Users can attach documents (orders, accepted quotations, receipts, screenshots, accounting documents) with type and description, within format and size limits. Access follows the permissions of the associated customer or invoice, and temporary download links expire.
   - Dependencies / Relationships: FR1, FR2, FR6.2.
 
-#### FR13. Configuration and Templates
+#### 13. Configuration and Templates
 
 - **FR13.** Global configuration. The system will keep configuration separate from operational data: default payment period, reminder timings, allowed email domain, issuer tax data, logo and template, series, currencies, taxes, approval thresholds, notification channels, working calendar (weekends and a small holiday calendar) and automation policies. Changes are validated, audited and never retroactive on issued invoices.
   - Dependencies / Relationships: FR6.2, FR9.1.
@@ -225,7 +225,7 @@
 - **FR13.2.** Period closing. An authorised administrator can mark a month or quarter as closed; financial elements in a closed period cannot be changed except through an exceptional, audited procedure, and reopening requires higher permission and a reason.
   - Dependencies / Relationships: FR2.3, FR9.1.
 
-#### FR14. Automation, Background Tasks and Bulk Operations
+#### 14. Automation, Background Tasks and Bulk Operations
 
 - **FR14.** Background processing. Long operations run in the background with a visible status (pending, processing, completed, completed with errors). If the monthly generation did not run, missing invoices are generated on recovery without duplicates; a failure on one item does not stop the rest; and issuing, sending and reconciliation are protected against double submission.
   - Dependencies / Relationships: FR2.1, FR9.2.
@@ -234,76 +234,10 @@
 - **FR14.2.** Form assistance and safe editing. Frequent forms pre-fill sensible defaults (usual country, currency, due date, rate suggested by revenue range) and show a summary before confirming; long forms save drafts automatically, reversible actions offer undo, and irreversible actions are explained first. If two users edit the same record, the system detects the conflict instead of silently overwriting changes.
   - Dependencies / Relationships: FR1, FR2, FR5.1.
 
-#### FR15. API
+#### 15. API
 
 - **FR15.** External API. The system will expose a documented API to query customers, debt status and invoices and to submit controlled requests (such as cancellation requests), applying the same business rules and permissions as the interface, with separate authentication, rate limits and logging of important calls.
   - Dependencies / Relationships: FR6.2.
-
-#### Contradictions and Interpretations
-
-- **C1. Roles of the second user type**.
-  - *Statements:* First meeting: "reader" who only sees, then "cannot create or edit", then CRUD on assigned items, plus a super administrator. Extended meeting: the client asks not to cling to the name; what matters is the capability.
-  - *Interpretation:* Three roles. The second user type is renamed **operational user** (FR6.2).
-- **C2. Editing issued invoices** *(resolved)*.
-  - *Statements:* First meeting: invoices editable "whenever he wants", but not after the quarter changes. Extended meeting: editable before issuance; after issuance changes must be traced or done via corrective invoice; periods can be closed.
-  - *Interpretation:* FR2.3 (lifecycle and editing), FR2.8 (corrective invoices) and FR13.2 (period closing). The "quarter" idea becomes administrative period closing.
-- **C3. Creating customers.**
-  - *Statements:* Employees create customers, but "No" was recorded for "possibility of creating a customer".
-  - *Interpretation:* The "No" referred to customer self-registration, confirmed by the extended meeting (no self-registration, internal users create records). Customer creation is kept (FR1, FR6.2).
-- **C4. Cancellation with unpaid invoices** *(resolved, team decision)*.
-  - *Statements:* First meeting: "you cannot cancel because this invoice is unpaid", "we will cancel you when you meet the next invoice you have to pay", and an open one-off invoice must be paid before leaving; but also "if you notify your cancellation, no more invoices are issued to you". Extended meeting: debt must not block cancellation forever; recurrence stops and collection continues.
-  - *Interpretation:* The cancellation always proceeds: new recurring invoices stop from the effective date, and collection of all previous invoices, one-off invoices included, continues until they are paid (FR4, FR4.1). Source (extended meeting): "I do not want a debt to block the commercial cancellation forever, but at the same time I do not want the outstanding payment to disappear when the customer is cancelled." *Team decision, to be validated at the next client review.*
-- **C5. Partial payments** *(resolved by client)*.
-  - *Statements:* "No installment payments" vs. "partially reconciled" state.
-  - *Interpretation:* Installments are not a commercial option, but partial or excess payments can happen and are handled as discrepancies (FR3.1).
-- **C6. Editable amount vs. fixed yearly price**.
-  - *Statements:* First meeting: the amount "must be modifiable all the time and editable when you create the invoice", but also the recurring price "is the same throughout the year". Extended meeting: recurring invoices are automatic, and manual amount changes need approval.
-  - *Interpretation:* The amount is editable on drafts (mainly one-off invoices). Recurring prices change only through the annual review or approved commercial exceptions; manual changes to a recurring invoice go through approval (FR2.3, FR5, FR5.2, FR11).
-- **C7. Default payment period vs. agreed terms** *(resolved)*.
-  - *Interpretation:* Customer-agreed terms override the 5-day default (FR3.3).
-- **C8. Backups vs. activity log** *(resolved)*.
-  - *Statements:* The first version mixed backups with "all application activity".
-  - *Interpretation:* The client distinguished auditing (what happened) from backups (recovery): split into FR9 and FR9.1.
-- **C9. Working calendar scope** *(resolved, team decision)*.
-  - *Statements:* Communications falling on weekends/holidays "may" be moved to the next working day.
-  - *Interpretation:* Only communications (reminders and notices) move to the next working day; the legal due date does not move. The rule is configurable by the super administrator, with weekends and a small holiday calendar for Spain (FR3.2, FR13). Source (extended meeting): "we may want to move the communication to the next working day [...] The important thing is that the rule is defined and consistent." *Team decision, to be validated at the next client review.*
-- **C10. Anomaly warning vs. high-amount approval**.
-  - *Statements:* Unusual amounts should warn but not always block; high one-off invoices may require approval.
-  - *Interpretation:* Two separate configurable rules: a non-blocking deviation warning (FR2.5) and an approval threshold (FR11).
-- **C11. Using retained data for marketing** *(resolved by the later statement)*.
-  - *Statements:* First meeting: logical deletion keeps customer data "so that you can, in the future, have a marketing campaign" (the client agreed). Extended meeting: billing data must not be used automatically for commercial campaigns; that is a different purpose.
-  - *Interpretation:* Retained data is kept for legal and historical reasons only (FR1.3) and is never used for marketing in this system (see Out of Scope). Source (extended meeting): "This application must not automatically use billing data for commercial campaigns. That would be another purpose and would have to be handled separately." *Team decision, to be validated at the next client review.*
-- **C12. Login identifier** *(resolved)*.
-  - *Statements:* "Username and password" vs. "email and password" with a verified Turbine email.
-  - *Interpretation:* The username is the corporate email (FR6.1).
-
-#### Out of Scope (stated by the client)
-
-- Verifactu integration and worldwide tax rules (handled by the accounting firm).
-- Installment payments as a commercial option.
-- Mandatory two-factor authentication (design must allow it later).
-- Customer self-registration and a user account for the accounting firm.
-- Sales/CRM features (prospects only if they affect billing).
-- Electronic signature of quotations.
-- Full multi-company support in the first deployment (only issuer data as configuration).
-- Real Stripe, email or WhatsApp providers (simulated).
-- Acting as a payment gateway or generating payment links; the system only checks payments.
-- Payment receipts sent to the customer when an invoice is paid (only the internal notification is required).
-- Simplified invoices: one-off and recurring invoices share the same standard format.
-- Any customer-facing access: no customer portal and no in-app chat (customers contact support externally).
-- Integration with Brain or the CRM (CSV import replaces it; the API leaves the door open).
-- Recurrence frequencies other than monthly (the model should not prevent them).
-- Merging duplicate customer records: the client called it "delicate"; duplicates are only warned about (FR1).
-- Historical invoice import: the client does "not need it as an original basic requirement"; useful only for a future migration.
-- Quotations and their conversion into invoices: described by the client as "an interesting extension".
-- Cost centres or projects for one-off invoices: mentioned by the client as something that "could also appear".
-- Billing and collection targets on the dashboard: a client wish for a later stage, beyond the dashboard in FR8.1.
-- Converting amounts to a base currency for reporting: the client said "That is an extension".
-- Multiple issuing entities with their own series: only one issuer is configured (FR13).
-- Personal data lookup and anonymisation on request: the client said they "will have to study how to anonymize it"; to be defined with a legal retention policy.
-- Marketing use of billing and contact data: prohibited by the client (C11); billing data is used only for administrative communications.
-- Demo or synthetic data: a guideline for the team when preparing demos, not a system function.
-- AI-assisted features: the client said "Artificial intelligence is not necessary; a simple configurable rule" is enough.
 
 ### Non-Functional Requirements
 > Answering "How well?" or "Under what quality standards/restrictions does the system operate?" (Performance, security, usability).
@@ -349,3 +283,72 @@
   - Dependencies / Relationships: Related to configurable pricing, global system configuration, and external API integration. Related functional requirements: FR5.1, FR13, FR15. Related business requirements: BR-01, BR-10.
   - Metric / Acceptance criterion: 100% of the configurable parameters defined in FR13 shall be modifiable without changing the source code. The application shall be deployable in a clean test environment using documented instructions and shall successfully perform its core customer and invoice operations without requiring Brain.
   - Verification method: Configuration testing to verify that system parameters can be modified without source code changes. Deployment testing in a clean environment following the technical documentation, followed by integration tests confirming that customer and invoice operations function independently of Brain.
+
+## Additional Information
+> Interpretation of contradictory client statements and items the client explicitly placed out of scope.
+
+### Contradictions and Interpretations
+
+- **C1. Roles of the second user type**.
+  - *Statements:* First meeting: "reader" who only sees, then "cannot create or edit", then CRUD on assigned items, plus a super administrator. Extended meeting: the client asks not to cling to the name; what matters is the capability.
+  - *Interpretation:* Three roles. The second user type is renamed **operational user** (FR6.2).
+- **C2. Editing issued invoices** *(resolved)*.
+  - *Statements:* First meeting: invoices editable "whenever he wants", but not after the quarter changes. Extended meeting: editable before issuance; after issuance changes must be traced or done via corrective invoice; periods can be closed.
+  - *Interpretation:* FR2.3 (lifecycle and editing), FR2.8 (corrective invoices) and FR13.2 (period closing). The "quarter" idea becomes administrative period closing.
+- **C3. Creating customers.**
+  - *Statements:* Employees create customers, but "No" was recorded for "possibility of creating a customer".
+  - *Interpretation:* The "No" referred to customer self-registration, confirmed by the extended meeting (no self-registration, internal users create records). Customer creation is kept (FR1, FR6.2).
+- **C4. Cancellation with unpaid invoices** *(resolved, team decision)*.
+  - *Statements:* First meeting: "you cannot cancel because this invoice is unpaid", "we will cancel you when you meet the next invoice you have to pay", and an open one-off invoice must be paid before leaving; but also "if you notify your cancellation, no more invoices are issued to you". Extended meeting: debt must not block cancellation forever; recurrence stops and collection continues.
+  - *Interpretation:* The cancellation always proceeds: new recurring invoices stop from the effective date, and collection of all previous invoices, one-off invoices included, continues until they are paid (FR4, FR4.1). Source (extended meeting): "I do not want a debt to block the commercial cancellation forever, but at the same time I do not want the outstanding payment to disappear when the customer is cancelled." *Team decision, to be validated at the next client review.*
+- **C5. Partial payments** *(resolved by client)*.
+  - *Statements:* "No installment payments" vs. "partially reconciled" state.
+  - *Interpretation:* Installments are not a commercial option, but partial or excess payments can happen and are handled as discrepancies (FR3.1).
+- **C6. Editable amount vs. fixed yearly price**.
+  - *Statements:* First meeting: the amount "must be modifiable all the time and editable when you create the invoice", but also the recurring price "is the same throughout the year". Extended meeting: recurring invoices are automatic, and manual amount changes need approval.
+  - *Interpretation:* The amount is editable on drafts (mainly one-off invoices). Recurring prices change only through the annual review or approved commercial exceptions; manual changes to a recurring invoice go through approval (FR2.3, FR5, FR5.2, FR11).
+- **C7. Default payment period vs. agreed terms** *(resolved)*.
+  - *Interpretation:* Customer-agreed terms override the 5-day default (FR3.3).
+- **C8. Backups vs. activity log** *(resolved)*.
+  - *Statements:* The first version mixed backups with "all application activity".
+  - *Interpretation:* The client distinguished auditing (what happened) from backups (recovery): split into FR9 and FR9.1.
+- **C9. Working calendar scope** *(resolved, team decision)*.
+  - *Statements:* Communications falling on weekends/holidays "may" be moved to the next working day.
+  - *Interpretation:* Only communications (reminders and notices) move to the next working day; the legal due date does not move. The rule is configurable by the super administrator, with weekends and a small holiday calendar for Spain (FR3.2, FR13). Source (extended meeting): "we may want to move the communication to the next working day [...] The important thing is that the rule is defined and consistent." *Team decision, to be validated at the next client review.*
+- **C10. Anomaly warning vs. high-amount approval**.
+  - *Statements:* Unusual amounts should warn but not always block; high one-off invoices may require approval.
+  - *Interpretation:* Two separate configurable rules: a non-blocking deviation warning (FR2.5) and an approval threshold (FR11).
+- **C11. Using retained data for marketing** *(resolved by the later statement)*.
+  - *Statements:* First meeting: logical deletion keeps customer data "so that you can, in the future, have a marketing campaign" (the client agreed). Extended meeting: billing data must not be used automatically for commercial campaigns; that is a different purpose.
+  - *Interpretation:* Retained data is kept for legal and historical reasons only (FR1.3) and is never used for marketing in this system (see Out of Scope). Source (extended meeting): "This application must not automatically use billing data for commercial campaigns. That would be another purpose and would have to be handled separately." *Team decision, to be validated at the next client review.*
+- **C12. Login identifier** *(resolved)*.
+  - *Statements:* "Username and password" vs. "email and password" with a verified Turbine email.
+  - *Interpretation:* The username is the corporate email (FR6.1).
+
+### Out of Scope (stated by the client)
+
+- Verifactu integration and worldwide tax rules (handled by the accounting firm).
+- Installment payments as a commercial option.
+- Mandatory two-factor authentication (design must allow it later).
+- Customer self-registration and a user account for the accounting firm.
+- Sales/CRM features (prospects only if they affect billing).
+- Electronic signature of quotations.
+- Full multi-company support in the first deployment (only issuer data as configuration).
+- Real Stripe, email or WhatsApp providers (simulated).
+- Acting as a payment gateway or generating payment links; the system only checks payments.
+- Payment receipts sent to the customer when an invoice is paid (only the internal notification is required).
+- Simplified invoices: one-off and recurring invoices share the same standard format.
+- Any customer-facing access: no customer portal and no in-app chat (customers contact support externally).
+- Integration with Brain or the CRM (CSV import replaces it; the API leaves the door open).
+- Recurrence frequencies other than monthly (the model should not prevent them).
+- Merging duplicate customer records: the client called it "delicate"; duplicates are only warned about (FR1).
+- Historical invoice import: the client does "not need it as an original basic requirement"; useful only for a future migration.
+- Quotations and their conversion into invoices: described by the client as "an interesting extension".
+- Cost centres or projects for one-off invoices: mentioned by the client as something that "could also appear".
+- Billing and collection targets on the dashboard: a client wish for a later stage, beyond the dashboard in FR8.1.
+- Converting amounts to a base currency for reporting: the client said "That is an extension".
+- Multiple issuing entities with their own series: only one issuer is configured (FR13).
+- Personal data lookup and anonymisation on request: the client said they "will have to study how to anonymize it"; to be defined with a legal retention policy.
+- Marketing use of billing and contact data: prohibited by the client (C11); billing data is used only for administrative communications.
+- Demo or synthetic data: a guideline for the team when preparing demos, not a system function.
+- AI-assisted features: the client said "Artificial intelligence is not necessary; a simple configurable rule" is enough.
