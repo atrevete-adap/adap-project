@@ -57,12 +57,12 @@ Project board: **ADAP - Atrévete** (GitHub Projects). Milestone for all tasks: 
 | #9 | Use case specifications | Pablo | High | use-case | Sprint 2 |
 | #10 | Traceability review (requirements ↔ use cases) | Pablo | Medium | review | Sprint 2 |
 | #11 | Export PDFs to doc/ | Adam | Medium | review | Sprint 2 |
-| #12 | Scrum Report - Submission 1 | Deniz | Medium | scrum | Sprint 2 |
+| #12 | Scrum Report - Submission 1 | Deniz, Adam | Medium | scrum | Sprint 2 |
 | #13 | Presentation rehearsal | Adam | Medium | scrum | Sprint 2 |
 | #14 | Submit .zip + repo URL to Campus Virtual | Adam | High | scrum | Sprint 2 |
 | #17 | Use case specifications: fix boilerplate, single-role actors and deliverable scope | Pablo | High | review, use-case | Sprint 2 |
-| #18 | Requirements: link NFRs to FR IDs | Deniz | [TODO] | requirements | [TODO] |
-| #19 | Requirements: document decisions for open contradictions C4, C9, C11 | Deniz | [TODO] | requirements | [TODO] |
+| #18 | Requirements: link NFRs to FR IDs | Deniz | [TODO: priority on the board] | requirements | Sprint 2 |
+| #19 | Requirements: document decisions for open contradictions C4, C9, C11 | Deniz | [TODO: priority on the board] | requirements | Sprint 2 |
 
 ## 3. Sprints Performed
 
@@ -93,10 +93,10 @@ No capture of the board was taken at the Sprint 1 planning meeting, because the 
 * **End date:** [TODO: date of the next team meeting]
 * **Sprint Goal:** Finish and review the requirements, complete the use case diagram and specifications, verify traceability between them, and prepare the Submission 1 deliverables and presentation.
 * **Planned tasks:** #8 Use case diagram v1 (PlantUML); #9 Use case specifications; #10 Traceability review (requirements ↔ use cases); #11 Export PDFs to doc/; #12 Scrum Report - Submission 1; #13 Presentation rehearsal; #14 Submit .zip + repo URL to Campus Virtual; plus #5, #6 and #7 carried over from Sprint 1. Added during the sprint (17/10/2026): #17, #18 and #19.
-* **Completed tasks:** #6 Functional requirements (FR); #8 Use case diagram v1 (PlantUML), merged in PR #16. In addition, the draft of 24 use case specifications and the integration review (#9, #10) were merged into `main` in PR #15. [TODO: update at the end of the sprint. Current status on 17/10/2026: #5 in Review; #7 In Progress; #9, #10, #11, #12, #13, #14, #17, #18 and #19 Todo]
+* **Completed tasks:** #5 Business & user requirements (BR, UR); #6 Functional requirements (FR); #7 Non-functional requirements (NFR); #8 Use case diagram v1 (PlantUML), split into four views (PR #16); #9 Use case specifications (PRs #15 and #22); #10 Traceability review (PRs #20 and #21); #17 Use case specifications fixes (PR #22); #18 NFR ↔ FR links; #19 Decisions for contradictions C4, C9 and C11. During the sprint the Functional Requirements were consolidated from 147 to 59 (merging closely related sub-requirements and moving 11 to *Out of Scope*), and the User Requirements without a use case (quotations and historical invoice migration) were removed, leaving 10 BR, 30 UR and 59 FR, all traced to at least one use case. Still open for the submission: #11 Export PDFs, #12 Scrum Report, #13 Presentation rehearsal and #14 Submission.
 * **Meetings held:** 14/10/2026 (11:00 to 11:15, planning) and 17/10/2026 (17:00 to 17:15, progress check) [TODO: + closing meeting]. See Section 2.
-* **Issues encountered:** The use case specifications were drafted before the requirement identifiers (UR/FR) were final and before the use case diagram was complete, so traceability is still provisional. The Non-Functional Requirements had no links to specific Functional Requirements, because the FR identifiers were not final when they were written. The client interviews contain contradictory statements (C4, C9, C11) that the team cannot resolve on its own.
-* **Solutions applied:** The draft was submitted as a pull request (#15) together with an integration review listing discrepancies between sources, pending decisions and a provisional traceability matrix, to be updated once the requirements are finalized. The team decided to keep the hierarchical FR format (FR1, FR1.1…), which shows the parent requirement of each sub-requirement, and task #18 was repurposed to link each NFR to its related FRs; and the contradictions were documented in `requirements.md` with a proposed interpretation for each, and task #19 records a justified team decision for each one, as the client allowed.
+* **Issues encountered:** The use case specifications were drafted before the requirement identifiers (UR/FR) were final and before the use case diagram was complete, so traceability is still provisional. Later in the sprint, renumbering the Business, User and Functional Requirements broke the references from the use cases more than once. The Non-Functional Requirements had no links to specific Functional Requirements, because the FR identifiers were not final when they were written. The client interviews contain contradictory statements (C4, C9, C11) that the team cannot resolve on its own.
+* **Solutions applied:** The draft was submitted as a pull request (#15) together with an integration review listing discrepancies between sources, pending decisions and a provisional traceability matrix, to be updated once the requirements are finalized. The team decided to keep the hierarchical FR format (FR1, FR1.1…), which shows the parent requirement of each sub-requirement, and task #18 was repurposed to link each NFR to its related FRs; and the contradictions were documented in `requirements.md` with a proposed interpretation for each, and task #19 records a justified team decision for each one, as the client allowed. After each renumbering, the use case references were updated from an old → new mapping confirmed by the author of those requirements, in a single change (PRs #20 and #21).
 
 #### Board Status at Sprint Planning
 
@@ -121,7 +121,7 @@ Board at the Sprint 2 progress check (17/10/2026):
 * **Mild delay in analyzing the requirements**, which delayed the completion of the UML use case diagram.
   * **Impact:** #5, #6, #7 and #8 could not be finished in Sprint 1.
   * **Solution:** Requirements tasks were set to high priority and carried over to Sprint 2.
-  * **Status:** Mitigated: #6 and #8 were completed in Sprint 2; #5 is in review and #7 in progress. [TODO: change to "Resolved" once #5 and #7 are done]
+  * **Status:** Resolved: #5, #6, #7 and #8 were completed in Sprint 2.
 * **Difficulty coordinating schedules for team meetings outside class hours.**
   * **Impact:** Few opportunities for synchronous work outside class.
   * **Solution:** Meetings and joint work were concentrated in the lab sessions, where the whole team works together in person.
@@ -131,29 +131,33 @@ Board at the Sprint 2 progress check (17/10/2026):
 
 * **Use case specifications drafted in parallel with unfinished requirements.**
   * **Impact:** The traceability between requirements and use cases is provisional, and the specifications may not match the final requirement IDs or the use case diagram.
-  * **Solution:** Pablo's integration review (PR #15) records the discrepancies and pending decisions; IDs and traceability will be updated once #5, #6, #7 and #8 are closed.
-  * **Status:** Pending. [TODO: update before submission]
+  * **Solution:** Pablo's integration review (PR #15) recorded the discrepancies and pending decisions. Once the requirements were final, every use case was traced to the current BR, UR, FR and NFR IDs (PRs #20 and #21), and the specifications were completed (PR #22).
+  * **Status:** Resolved.
 * **Pull request #15 has no reviewer assigned.**
   * **Impact:** The use case specifications cannot be merged into `main` until they are reviewed.
   * **Solution:** The Scrum Master reviewed the pull request and merged it into `main` on 17/10/2026; the follow-up fixes were moved to task #17.
   * **Status:** Resolved.
 * **Requirement identifier format and missing NFR ↔ FR links.**
   * **Impact:** The Functional Requirements use hierarchical IDs (FR1, FR1.1…) while the template placeholders used FR-01, and the NFRs still read "Functional requirement IDs pending confirmation", so traceability between NFRs and FRs was incomplete.
-  * **Solution:** The team kept the hierarchical format because it shows the parent of each sub-requirement. Task #18 was repurposed to link each NFR to its related FRs.
-  * **Status:** Pending.
+  * **Solution:** The team kept the hierarchical format because it shows the parent of each sub-requirement. Task #18 was repurposed to link each NFR to its related FRs, and it was completed.
+  * **Status:** Resolved.
 * **Contradictory client statements between the two interviews.**
   * **Impact:** Requirements related to cancellation with outstanding debt (C4), the working calendar (C9) and the marketing use of retained data (C11) are based on the team's interpretation and may change.
   * **Solution:** The client is not reachable outside the reviews, and in the extended meeting he asked the team to record the uncertainty and propose an interpretation, accepting decisions that are documented, justified and consistent with his stated needs. Task #19 recorded a team decision for C4, C9 and C11 in `requirements.md`, each backed by a quote from the extended meeting and marked to be validated at the next client review.
   * **Status:** Mitigated.
+* **Requirement IDs renumbered after the use cases referenced them.**
+  * **Impact:** Renumbering the BR, consolidating the FR (147 → 59) and inserting or removing UR left use case references pointing to wrong or missing requirements.
+  * **Solution:** Each renumbering was mapped old → new and confirmed by the author of those requirements, then applied to all use case references in one change and checked so that every cited ID exists and every requirement is covered (PRs #20 and #21).
+  * **Status:** Resolved.
 
 ## 5. Final Assessment
 
 ### Review and Retrospective
 
-* **What was achieved:** The version control repository and the project board were set up, team roles were defined, the requirements were drafted (with the Functional Requirements completed), the use case diagram v1 was completed, and a first version of 24 use case specifications with an integration review was produced and merged. [TODO: confirm once Sprint 2 ends]
+* **What was achieved:** The version control repository and the project board were set up, team roles were defined, the requirements were drafted (with the Functional Requirements completed), the use case diagram v1 was completed, and 24 use case specifications were completed and traced to the final requirements (10 BR, 30 UR, 59 FR and the NFR), with every requirement covered by at least one use case.
 * **Problems encountered:** A delay in the initial requirements analysis, and having to work on the use cases in parallel with requirements that were not yet final.
 * **What worked well:** The fast GitHub setup, a clear division of tasks by artifact, working together in the lab, and using pull requests linked to board tasks.
-* **What should be improved:** Faster initial organization, earlier drafting of requirements, assigning every task on the board at sprint planning, and reviewing pull requests promptly. [TODO: add any Sprint 2 lessons]
+* **What should be improved:** Faster initial organization, earlier drafting of requirements, assigning every task on the board at sprint planning, and reviewing pull requests promptly. In Sprint 2 the team also learned to fix requirement IDs before other artifacts reference them, and to publish an equivalence table whenever an ID changes.
 
 ### Actions for Next Step
 
