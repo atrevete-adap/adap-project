@@ -1,10 +1,10 @@
 # Use Case Specifications
 
-> Submission 1: 18 behavioural contracts consolidated on 2026-10-20 against `main` at `2d9d12f74eb489f61b13395f7cf803dc7d730f80`. The six absorbed cases remain as explicit flows; no functional requirement is removed.
+> Submission 1: 18 behavioural contracts consolidated on 2026-10-20 from the original 59-FR baseline at `2d9d12f`. Reconciled with the requirement decomposition on `main` at `046ecb943b4a44673fb99490c187a289d9b64965`. The six absorbed cases remain as explicit flows; no functional requirement is removed.
 
 ## 1. Scope, actors and shared rules
 
-Turbine is an independent internal invoicing and collections application. Customers and the accounting firm receive documents or support externally; neither has an application account. Payment and communication providers may be simulated. `E p. n` denotes the supplied 18-page extended client transcript. The current [requirements](requirements.md), including C1–C12 and Out of Scope, define the baseline; client-review caveats remain in force.
+Turbine is an independent internal invoicing and collections application. Customers and the accounting firm receive documents or support externally; neither has an application account. Payment and communication providers may be simulated. `E p. n` denotes the supplied 18-page extended client transcript. The current [requirements](requirements.md), including the remaining C1-C4, C6 and C11 interpretations, detailed FR rules and Out of Scope, define the baseline; client-review caveats remain in force.
 
 | Actor | Capability |
 | --- | --- |
@@ -19,7 +19,7 @@ Turbine is an independent internal invoicing and collections application. Custom
 - Authentication and current role/customer scope are rechecked on every protected request, direct download, bulk item and API operation. An inherited actor association never bypasses an operation's capability or approval threshold. UC-17 requires financial-report permission even for a technical Super Administrator account; the unresolved account-policy choice is not silently decided here.
 - Issued snapshots, numbers and original PDFs are preserved. Corrections, cash movements and collection state have distinct evidence; logical deactivation or cancellation never marks a debt paid.
 - Automated issuance, transaction allocation and reminder occurrences are idempotent. Recovery resumes the failed stage without repeating successful financial work; item failures have explicit outcomes.
-- Customer-agreed terms override the default five days. C9 moves communications only, not the legal due date; C4 separates cancellation from old debt; C11 excludes marketing reuse. Document and approve proration, rounding and day-count conventions before activation rather than inventing client decisions.
+- Customer-agreed terms override the default five days. FR3.2.6 (formerly C9) moves communications only, not the legal due date; C4 separates cancellation from old debt; C11 excludes marketing reuse. Document and approve proration, rounding and day-count conventions before activation rather than inventing client decisions.
 - Existing NFR targets remain acceptance conditions, not measured results. Retention, backup/recovery and immutable audit checks follow NFR-05; no universal legal retention period is asserted here.
 - Shared details such as saved views, comments, scoped attachments, background status and per-item bulk results follow their mapped FR. They are not separate use cases merely because they require a screen.
 
@@ -39,22 +39,22 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 | ID | Goal | Functional requirements |
 | --- | --- | --- |
 | [UC-01](#uc-01) | Access the internal application | FR6.1, FR6.2 |
-| [UC-02](#uc-02) | Maintain customers and import records | FR1, FR1.1, FR1.2, FR1.3, FR1.6, FR1.4 |
+| [UC-02](#uc-02) | Maintain customers and import records | FR1, FR1.1, FR1.2, FR1.3, FR1.6, FR1.4, FR1.7, FR1.8 |
 | [UC-04](#uc-04) | Administer staff access and customer assignments | FR6.2, FR6.3, FR1.5, FR6.4, FR14.1 |
-| [UC-06](#uc-06) | Manage subscriptions and annual rate reviews | FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1 |
-| [UC-08](#uc-08) | Prepare, issue and deliver an invoice | FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1 |
-| [UC-10](#uc-10) | Generate monthly recurring invoices | FR2.1, FR9.2, FR14 |
-| [UC-12](#uc-12) | Reconcile payments with invoices | FR3, FR3.1 |
+| [UC-06](#uc-06) | Manage subscriptions and annual rate reviews | FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR5.6, FR10.3 |
+| [UC-08](#uc-08) | Prepare, issue and deliver an invoice | FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.5 |
+| [UC-10](#uc-10) | Generate monthly recurring invoices | FR2.1, FR9.2, FR14, FR11.2, FR14.3, FR14.4 |
+| [UC-12](#uc-12) | Reconcile payments with invoices | FR3, FR3.1, FR3.6, FR3.7, FR14.5 |
 | [UC-13](#uc-13) | Run reminders and overdue follow-up | FR3.2, FR3.3, FR3.4, FR13 |
 | [UC-14](#uc-14) | Review daily work and notifications | FR7, FR7.1, FR7.2, FR8.2, FR8.3 |
-| [UC-15](#uc-15) | Record subscription cancellation | FR4, FR4.1, FR15 |
-| [UC-16](#uc-16) | Query outstanding obligations through the API | FR4.2, FR15 |
-| [UC-17](#uc-17) | Consult financial dashboard and reports | FR8, FR8.1, FR8.3, FR8.4, FR8.5 |
-| [UC-18](#uc-18) | Configure billing and automation policies | FR5.1, FR6.2, FR13, FR13.1 |
+| [UC-15](#uc-15) | Record subscription cancellation | FR4, FR4.1, FR15, FR4.3, FR4.4, FR15.1, FR15.2 |
+| [UC-16](#uc-16) | Query outstanding obligations through the API | FR4.2, FR15, FR15.1, FR15.2 |
+| [UC-17](#uc-17) | Consult financial dashboard and reports | FR8, FR8.1, FR8.3, FR8.4, FR8.5, FR8.6, FR8.7, FR8.8 |
+| [UC-18](#uc-18) | Configure billing and automation policies | FR5.1, FR6.2, FR13, FR13.1, FR13.3 |
 | [UC-20](#uc-20) | Supervise audit, backups and recovery | FR9.1, FR9.2, FR9 |
 | [UC-21](#uc-21) | Correct an issued invoice | FR2.3, FR2.8 |
-| [UC-22](#uc-22) | Resolve a billing or delivery issue | FR3.4, FR12, FR12.1, FR12.2 |
-| [UC-23](#uc-23) | Decide a sensitive financial approval | FR3.5, FR11, FR11.1 |
+| [UC-22](#uc-22) | Resolve a billing or delivery issue | FR3.4, FR12, FR12.1, FR12.2, FR12.3 |
+| [UC-23](#uc-23) | Decide a sensitive financial approval | FR3.5, FR11, FR11.1, FR11.3 |
 | [UC-24](#uc-24) | Close or reopen an administrative period | FR13.2 |
 
 ## 3. Behavioural contracts
@@ -97,7 +97,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-06; UR: UR-01, UR-02, UR-04, UR-08, UR-03, UR-24; FR: FR1, FR1.1, FR1.2, FR1.3, FR1.6, FR1.4; NFR-01, NFR-02, NFR-03, NFR-04, NFR-05.
+* **Related requirements:** BR-01, BR-06; UR: UR-01, UR-02, UR-04, UR-08, UR-03, UR-24; FR: FR1, FR1.1, FR1.2, FR1.3, FR1.6, FR1.4, FR1.7, FR1.8; NFR-01, NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 2, 4, 7-8, 12, 14-15.; E p. 7.
 * **Stakeholders & Interests:**
   * *Assigned staff:* keep their customer portfolio accurate.
@@ -165,7 +165,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-05, UR-06, UR-10, UR-15; FR: FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1; NFR-01, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-05, UR-06, UR-10, UR-15; FR: FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR5.6, FR10.3; NFR-01, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 2-5, 14.; E pp. 2-3, 11.
 * **Stakeholders & Interests:**
   * *Assigned staff:* set up the service and follow up review tasks.
@@ -201,7 +201,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** Communication Service
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04, BR-06; UR: UR-09, UR-11, UR-12, UR-17; FR: FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1; NFR-01, NFR-02, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-04, BR-06; UR: UR-09, UR-11, UR-12, UR-17; FR: FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.5; NFR-01, NFR-02, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3-5, 16.; E pp. 3-5, 8-9, 14.; E pp. 5, 12, 15.
 * **Stakeholders & Interests:**
   * *Customer and billing recipients:* receive a correct invoice through an eligible channel.
@@ -237,7 +237,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-02, BR-03, BR-06; UR: UR-11, UR-24; FR: FR2.1, FR9.2, FR14; NFR-03, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-03, BR-06; UR: UR-11, UR-24; FR: FR2.1, FR9.2, FR14, FR11.2, FR14.3, FR14.4; NFR-03, NFR-05, NFR-06.
 * **Source:** E pp. 4, 9, 14, 17.
 * **Stakeholders & Interests:**
   * *Turbine:* complete scheduled billing after failures.
@@ -270,7 +270,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** Payment Provider
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04, BR-05, BR-06; UR: UR-20; FR: FR3, FR3.1; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-04, BR-05, BR-06; UR: UR-20; FR: FR3, FR3.1, FR3.6, FR3.7, FR14.5; NFR-04, NFR-05, NFR-06.
 * **Source:** E p. 6.
 * **Stakeholders & Interests:**
   * *Assigned staff:* resolve uncertain matches.
@@ -321,7 +321,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 4. Communication Service processes the attempt; the system records its observed result, next occurrence and any overdue alert.
 
 * **Extensions:**
-  * **1a.** Weekend/holiday: move only communication to the next working day under C9; retain the legal due date. Use the documented counting/collision policy.
+  * **1a.** Weekend/holiday: move only communication to the next working day under FR3.2.6; retain the legal due date. Use the documented counting/collision policy.
   * **2a.** Settled balance or valid dispute pause: suppress dispatch; keep unpaid debt and review task where applicable.
   * **4a.** Provider failure or duplicate job: record a retryable failure or reuse the occurrence result; do not send the same occurrence twice.
   * **1b.** Customer-specific terms, e.g. thirty days: do not declare overdue on default day five; overdue spacing is the configured two/three-day policy.
@@ -368,7 +368,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02; UR: UR-07; FR: FR4, FR4.1, FR15; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02; UR: UR-07; FR: FR4, FR4.1, FR15, FR4.3, FR4.4, FR15.1, FR15.2; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 4, 11-12, 14, 17.
 * **Stakeholders & Interests:**
   * *Customer:* end the commercial relationship without debt disappearing.
@@ -402,7 +402,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-02; UR: UR-07; FR: FR4.2, FR15; NFR-03, NFR-04, NFR-05, NFR-07.
+* **Related requirements:** BR-01, BR-02; UR: UR-07; FR: FR4.2, FR15, FR15.1, FR15.2; NFR-03, NFR-04, NFR-05, NFR-07.
 * **Source:** E pp. 4, 11-12.
 * **Stakeholders & Interests:**
   * *External Application:* distinguish valid debt results from errors.
@@ -435,7 +435,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** Communication Service (scheduled internal summaries)
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-05, BR-06; UR: UR-25, UR-26; FR: FR8, FR8.1, FR8.3, FR8.4, FR8.5; NFR-02, NFR-03, NFR-04, NFR-05.
+* **Related requirements:** BR-05, BR-06; UR: UR-25, UR-26; FR: FR8, FR8.1, FR8.3, FR8.4, FR8.5, FR8.6, FR8.7, FR8.8; NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 7, 11, 14-15.
 * **Stakeholders & Interests:**
   * *Administrator:* trace totals to invoices and allocations.
@@ -467,7 +467,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-03, BR-04; UR: UR-29; FR: FR5.1, FR6.2, FR13, FR13.1; NFR-04, NFR-05, NFR-06, NFR-07.
+* **Related requirements:** BR-01, BR-03, BR-04; UR: UR-29; FR: FR5.1, FR6.2, FR13, FR13.1, FR13.3; NFR-04, NFR-05, NFR-06, NFR-07.
 * **Source:** E pp. 2-5, 9-10, 12.
 * **Stakeholders & Interests:**
   * *Super Administrator:* control global policy changes.
@@ -564,7 +564,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-04, BR-06; UR: UR-19; FR: FR3.4, FR12, FR12.1, FR12.2; NFR-02, NFR-04, NFR-05.
+* **Related requirements:** BR-02, BR-04, BR-06; UR: UR-19; FR: FR3.4, FR12, FR12.1, FR12.2, FR12.3; NFR-02, NFR-04, NFR-05.
 * **Source:** E pp. 5-6, 10-11, 15.
 * **Stakeholders & Interests:**
   * *Assigned staff:* coordinate the issue owner and corrective action.
@@ -597,7 +597,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-03, BR-04, BR-06; UR: UR-14, UR-21; FR: FR3.5, FR11, FR11.1; NFR-02, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-03, BR-04, BR-06; UR: UR-14, UR-21; FR: FR3.5, FR11, FR11.1, FR11.3; NFR-02, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3, 11, 14.
 * **Stakeholders & Interests:**
   * *Requester:* receive a decision on the submitted values.
@@ -654,6 +654,6 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 
 The four views of [use-case-diagram.pu](use-case-diagram.pu) show exactly these 18 IDs. UC-10 and UC-21 include UC-08; their caller supplies the appropriate approved recurring or corrective proposal. UC-15 includes UC-16's debt calculation. UC-08 extends UC-06 only when an initial prorated invoice is due. UC-23 extends UC-06, UC-08 or UC-21 only when the applicable rate, commercial or correction decision requires approval. UC-22 extends UC-08 or UC-12 for delivery or reconciliation problems; it does not run after every successful invoice/payment.
 
-The grouped cases retain their distinct branch permissions and outcomes; grouping is a presentation change, not a grant of new capabilities. All 59 current FR are mapped. BR links use the six current BR, without renumbering requirements. Broader UR goals for controlled merging, cost centres, budget targets or refunds do not override the existing scope exclusions or create unsupported cash flows.
+The grouped cases retain their distinct branch permissions and outcomes; grouping is a presentation change, not a grant of new capabilities. All 59 original FR remain covered; the current 85 parent requirements and all 112 explicitly defined descendant rules (197 FR IDs) are covered. Each listed parent FR includes its defined sub-requirements; the coordination note records the complete parent mapping. The diagram's historical C9 label refers to FR3.2.6, which now defines the working-calendar rule directly. BR links use the six current BR, without renumbering requirements. Broader UR goals for controlled merging, cost centres, budget targets or refunds do not override the existing scope exclusions or create unsupported cash flows.
 
 Compile only the four named Submission 1 deliverables. Historical review/consolidation notes remain in `notes/`; they are not additional PDFs. These contracts define expected behaviour and make no claim of implementation or executed application tests.
