@@ -1,4 +1,4 @@
-' Turbine: 18 use cases (UC-01..UC-18), in four views of the same system.
+' TurbineH: 18 use cases (UC-01..UC-18), in four views of the same system.
 ' 18 use cases, renumbered UC-01..UC-18 from the 24-case draft (see use-case-specification.md, section 2).
 ' Absorbed original cases: UC-03, UC-05, UC-07, UC-09, UC-11, UC-19. No functional scope removed.
 ' Repeated ellipses are the same case; see the Markdown contracts for branches.
@@ -36,7 +36,7 @@ actor "Super Administrator" as SuperAdmin
 actor "Time" as Time <<timer>>
 actor "Communication Service\n(Email / WhatsApp, simulated)" as CommSrv <<system>>
 
-rectangle "Turbine Invoicing & Collections System" {
+rectangle "TurbineH Invoicing & Collections System" {
   usecase "UC-01 Access the internal\napplication" as UC01
   usecase "UC-03 Administer staff access\nand customer assignments" as UC03
   usecase "UC-12 Consult financial\ndashboard and reports" as UC12
@@ -106,7 +106,7 @@ actor "Administrator" as Admin
 actor "Time" as Time <<timer>>
 actor "External Application\n(Brain / API client)" as ExtApp
 
-rectangle "Turbine Invoicing & Collections System" {
+rectangle "TurbineH Invoicing & Collections System" {
   usecase "UC-02 Maintain customers\nand import records" as UC02
   usecase "UC-04 Manage subscriptions\nand annual rate reviews" as UC04
   usecase "UC-10 Record subscription\ncancellation" as UC10
@@ -174,7 +174,7 @@ actor "Administrator" as Admin
 actor "Time" as Time <<timer>>
 actor "Communication Service\n(Email / WhatsApp, simulated)" as CommSrv <<system>>
 
-rectangle "Turbine Invoicing & Collections System" {
+rectangle "TurbineH Invoicing & Collections System" {
   usecase "UC-05 Prepare, issue and\ndeliver an invoice" as UC05
   usecase "UC-06 Generate monthly\nrecurring invoices" as UC06
   usecase "UC-15 Correct an\nissued invoice" as UC15
@@ -238,7 +238,7 @@ actor "Time" as Time <<timer>>
 actor "Payment Provider\n(Stripe / Revolut, simulated)" as PayProv <<system>>
 actor "Communication Service\n(Email / WhatsApp, simulated)" as CommSrv <<system>>
 
-rectangle "Turbine Invoicing & Collections System" {
+rectangle "TurbineH Invoicing & Collections System" {
   usecase "UC-05 Prepare, issue and\ndeliver an invoice" as UC05
   usecase "UC-07 Reconcile payments\nwith invoices" as UC07
   usecase "UC-08 Run reminders and\noverdue follow-up" as UC08

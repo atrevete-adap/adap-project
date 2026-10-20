@@ -4,7 +4,7 @@
 
 ## 1. Scope, actors and shared rules
 
-Turbine is an independent internal invoicing and collections application. Customers and the accounting firm receive documents or support externally; neither has an application account. Payment and communication providers may be simulated. `E p. n` denotes the supplied 18-page extended client transcript. The current [requirements](requirements.md), including the remaining C1-C4, C6 and C11 interpretations, detailed FR rules and Out of Scope, define the baseline; client-review caveats remain in force.
+TurbineH is an independent internal invoicing and collections application. Customers and the accounting firm receive documents or support externally; neither has an application account. Payment and communication providers may be simulated. `E p. n` denotes the supplied 18-page extended client transcript. The current [requirements](requirements.md), including the remaining C1-C4, C6 and C11 interpretations, detailed FR rules and Out of Scope, define the baseline; client-review caveats remain in force.
 
 | Actor | Capability |
 | --- | --- |
@@ -13,7 +13,7 @@ Turbine is an independent internal invoicing and collections application. Custom
 | Super Administrator | Specialises Administrator; global configuration, protected audit and recovery. A specific capability check still applies to every action. |
 | Time | Authorised timer automation for monthly billing, annual-review tasks, reminders, payment queries and backups. |
 | External Application | Separately authenticated/scoped API caller; debt queries and cancellation intake confer no interactive customer access. |
-| Payment Provider | Supporting service providing verified transaction evidence; Turbine does not operate a payment gateway. |
+| Payment Provider | Supporting service providing verified transaction evidence; TurbineH does not operate a payment gateway. |
 | Communication Service | Supporting service for email and consented complementary WhatsApp. |
 
 - Authentication and current role/customer scope are rechecked on every protected request, direct download, bulk item and API operation. An inherited actor association never bypasses an operation's capability or approval threshold. UC-12 requires financial-report permission even for a technical Super Administrator account; the unresolved account-policy choice is not silently decided here.
@@ -87,13 +87,13 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Authenticate an internal staff member and open the work area permitted by their corporate account.
 * **Primary Actor:** Operational User
 * **Supporting Actors:** Communication Service (password recovery)
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-01, BR-04; UR: UR-12; FR: FR6.1, FR6.2; NFR-02, NFR-04.
 * **Source:** E pp. 7-8, 12.
 * **Stakeholders & Interests:**
   * *Internal staff:* obtain access to their work.
-  * *Turbine:* restrict access to active corporate accounts.
+  * *TurbineH:* restrict access to active corporate accounts.
 * **Preconditions:** An internal account has been provisioned; login itself requires no existing session.
 * **Postconditions:** Successful login creates a session with current permissions; rejection creates none. Logout, expiry or deactivation invalidates access.
 * **Success Guarantee:** The authenticated user reaches the work area allowed by their role and customer scope.
@@ -116,7 +116,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Maintain customer companies and contacts, including validated CSV onboarding through an administrator-only alternative.
 * **Primary Actor:** Operational User
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-01, BR-06; UR: UR-01, UR-10; FR: FR1, FR1.1, FR1.2, FR1.3, FR1.6, FR1.4, FR1.7, FR1.8; NFR-01, NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 2, 4, 7-8, 12, 14-15.; E p. 7.
@@ -150,14 +150,14 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Primary Actor:** Administrator
 * **Other Initiating Contexts:** Super Administrator administers privileged accounts; each account/assignment branch retains its own authority check.
 * **Supporting Actors:** Communication Service (account activation)
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-04; UR: UR-10, UR-12; FR: FR6.2, FR6.3, FR1.5, FR6.4, FR14.1; NFR-04, NFR-05.
 * **Source:** E pp. 7-8, 12.; E p. 8.
 * **Stakeholders & Interests:**
   * *Administrator:* allocate work and arrange temporary cover.
   * *Internal staff:* receive only authorised accounts and portfolios.
-  * *Turbine:* retain responsibility for past actions when staff leave.
+  * *TurbineH:* retain responsibility for past actions when staff leave.
 * **Preconditions:** The actor is authenticated with the capability for the selected operation. Account/role administration requires Super Administrator or explicitly delegated Administrator authority under FR6.3; assignment requires Administrator authority.
 * **Postconditions:** Confirmed account or assignment changes are audited and enforced. Deactivation ends sessions; reassignment transfers pending work without rewriting historical ownership.
 * **Success Guarantee:** The selected account, portfolio assignment or dated delegation is saved with its effective access scope.
@@ -184,7 +184,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Primary Actor:** Operational User
 * **Other Initiating Contexts:** Administrator performs annual-rate decisions; Time creates due-review tasks but cannot approve rates.
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-02, BR-03, BR-04; UR: UR-02, UR-03, UR-08; FR: FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR5.6, FR10.3; NFR-01, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 2-5, 14.; E pp. 2-3, 11.
@@ -220,14 +220,14 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Primary Actor:** Operational User
 * **Other Initiating Contexts:** UC-04, UC-06 and UC-15 supply authorised proposals; included callers execute the same validation, issuance and dispatch contract without demanding a new staff session.
 * **Supporting Actors:** Communication Service
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-04, BR-06; UR: UR-03, UR-04; FR: FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.5; NFR-01, NFR-02, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3-5, 16.; E pp. 3-5, 8-9, 14.; E pp. 5, 12, 15.
 * **Stakeholders & Interests:**
   * *Customer and billing recipients:* receive a correct invoice through an eligible channel.
   * *Assigned staff:* prepare invoices and resolve delivery failures.
-  * *Turbine finance staff:* preserve numbering, issued amounts and dispatch evidence.
+  * *TurbineH finance staff:* preserve numbering, issued amounts and dispatch evidence.
 * **Preconditions:** Direct initiation requires authentication, invoice-creation/issuance authority and customer scope. Included calls from UC-04, UC-06 or UC-15 supply an authorised subscription or correction proposal. Applicable series, taxes and templates are configured.
 * **Postconditions:** A draft remains unissued until confirmation. Successful issuance stores one number, snapshot and original PDF; each dispatch records recipients, channel, template version and observed outcome.
 * **Success Guarantee:** One valid proposal becomes an issued invoice with preserved PDF and a recorded delivery attempt or recoverable dispatch request.
@@ -256,12 +256,12 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Process eligible monthly subscriptions and recover interrupted billing runs without repeating a subscription-period charge.
 * **Primary Actor:** Time
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** Summary
 * **Related requirements:** BR-02, BR-03, BR-06; UR: UR-03, UR-10; FR: FR2.1, FR9.2, FR14, FR11.2, FR14.3, FR14.4; NFR-03, NFR-05, NFR-06.
 * **Source:** E pp. 4, 9, 14, 17.
 * **Stakeholders & Interests:**
-  * *Turbine:* complete scheduled billing after failures.
+  * *TurbineH:* complete scheduled billing after failures.
   * *Customer:* avoid duplicate or ineligible charges.
   * *Assigned staff:* receive actionable item failures.
 * **Preconditions:** An authorised billing schedule, subscriptions and effective terms exist.
@@ -289,14 +289,14 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Primary Actor:** Operational User
 * **Other Initiating Contexts:** Time starts authorised queries; validated Payment Provider notifications supply transaction evidence.
 * **Supporting Actors:** Payment Provider
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-04, BR-05, BR-06; UR: UR-06; FR: FR3, FR3.1, FR3.6, FR3.7, FR14.5; NFR-04, NFR-05, NFR-06.
 * **Source:** E p. 6.
 * **Stakeholders & Interests:**
   * *Assigned staff:* resolve uncertain matches.
   * *Customer:* have funds allocated correctly.
-  * *Turbine finance staff:* explain balances from provider evidence.
+  * *TurbineH finance staff:* explain balances from provider evidence.
 * **Preconditions:** The provider connection is configured. Manual actions require reconciliation authority and customer scope; scheduled queries use authorised integration context and inbound notifications are validated.
 * **Postconditions:** Verified transactions are allocated once, balances and internal alerts reflect the result, and unmatched/partial/excess amounts remain available for review.
 * **Success Guarantee:** A clear match is reconciled or a discrepancy is explicitly retained; paid status requires verified allocations settling the balance.
@@ -322,14 +322,14 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Send eligible invoice reminders using stored terms and current balances, suspending follow-up when authorised.
 * **Primary Actor:** Time
 * **Supporting Actors:** Communication Service
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** Summary
 * **Related requirements:** BR-02, BR-04; UR: UR-05; FR: FR3.2, FR3.3, FR3.4, FR13; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 5-6, 9, 13, 15.
 * **Stakeholders & Interests:**
   * *Assigned staff:* know when invoices become overdue.
   * *Billing contacts:* receive relevant reminders and support details.
-  * *Turbine:* follow up debt consistently.
+  * *TurbineH:* follow up debt consistently.
 * **Preconditions:** An issued invoice has an outstanding balance and stored terms; templates, channels and schedule are configured.
 * **Postconditions:** Dispatch results and next occurrences are stored; overdue changes notify the responsible staff. Settled or validly suspended balances receive no ineligible reminder.
 * **Success Guarantee:** Each eligible occurrence produces a tracked attempt without duplicate dispatch.
@@ -354,7 +354,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Find scoped tasks and notifications, search operational records and open the workflow needed to act.
 * **Primary Actor:** Operational User
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-02, BR-04; UR: UR-10; FR: FR7, FR7.1, FR7.2, FR8.2, FR8.3; NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 6-8.
@@ -387,7 +387,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Primary Actor:** Administrator
 * **Other Initiating Contexts:** External Application can submit intake only; Administrator confirms cancellation.
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-02; UR: UR-02; FR: FR4, FR4.1, FR15, FR4.3, FR4.4, FR15.1, FR15.2; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 4, 11-12, 14, 17.
@@ -421,13 +421,13 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Primary Actor:** External Application
 * **Other Initiating Contexts:** UC-10 invokes debt calculation using its authorised internal context, without external API credentials.
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-01, BR-02; UR: UR-02; FR: FR4.2, FR15, FR15.1, FR15.2; NFR-03, NFR-04, NFR-05, NFR-07.
 * **Source:** E pp. 4, 11-12.
 * **Stakeholders & Interests:**
   * *External Application:* distinguish valid debt results from errors.
-  * *Turbine:* limit disclosure to scoped callers.
+  * *TurbineH:* limit disclosure to scoped callers.
   * *Customer:* have obligations calculated from financial evidence.
 * **Preconditions:** External calls require provisioned API credentials and debt-query scope; the UC-10 internal include uses its already-authorised workflow/customer context.
 * **Postconditions:** A successful response provides permitted debt details, currency and snapshot time; rejected/unavailable queries leave all business state unchanged.
@@ -454,13 +454,13 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Primary Actor:** Administrator
 * **Other Initiating Contexts:** Time can execute a previously authorised report schedule for authorised recipients.
 * **Supporting Actors:** Communication Service (scheduled internal summaries)
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-05, BR-06; UR: UR-09, UR-11; FR: FR8, FR8.1, FR8.3, FR8.4, FR8.5, FR8.6, FR8.7, FR8.8; NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 7, 11, 14-15.
 * **Stakeholders & Interests:**
   * *Administrator:* trace totals to invoices and allocations.
-  * *Turbine management:* review financial performance.
+  * *TurbineH management:* review financial performance.
   * *Accounting firm:* receive versioned accounting packages without an application account.
 * **Preconditions:** The actor is authenticated with Administrator authority and explicit financial-report permission.
 * **Postconditions:** Indicators/exports retain filters and generation time; accounting packages retain period/version. Downloads enforce scope and currency distinctions.
@@ -486,7 +486,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Validate and version global rates, numbering, billing, communication and approval settings for future operations.
 * **Primary Actor:** Super Administrator
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-01, BR-03, BR-04; UR: UR-13; FR: FR5.1, FR6.2, FR13, FR13.1, FR13.3; NFR-04, NFR-05, NFR-06, NFR-07.
 * **Source:** E pp. 2-5, 9-10, 12.
@@ -519,13 +519,13 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Primary Actor:** Super Administrator
 * **Other Initiating Contexts:** Time creates scheduled backups only; restoration always requires Super Administrator confirmation.
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** Summary
 * **Related requirements:** BR-01, BR-04, BR-06; UR: UR-14; FR: FR9.1, FR9.2, FR9; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 8-9, 12.
 * **Stakeholders & Interests:**
   * *Super Administrator:* diagnose failures and recover a validated state.
-  * *Turbine:* retain intact financial history and usable backups.
+  * *TurbineH:* retain intact financial history and usable backups.
   * *Customer:* retain documents and scoped access after recovery.
 * **Preconditions:** The actor has Super Administrator audit/recovery authority. Time may create only the configured scheduled backup; restore additionally requires a valid backup, approved target and explicit human confirmation.
 * **Postconditions:** Audit consultation changes no historical evidence. Backup attempts have recorded scope/outcome; restoration releases operations only after data/document/permission checks pass.
@@ -552,7 +552,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Issue an approved corrective document linked to the preserved original invoice and explain the resulting balance.
 * **Primary Actor:** Administrator
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-04, BR-06; UR: UR-03; FR: FR2.3, FR2.8; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3-4, 11, 14.
@@ -583,7 +583,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Track a customer issue to resolution, including internal evidence and a separately authorised follow-up suspension.
 * **Primary Actor:** Operational User
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-02, BR-04, BR-06; UR: UR-05; FR: FR3.4, FR12, FR12.1, FR12.2, FR12.3; NFR-02, NFR-04, NFR-05.
 * **Source:** E pp. 5-6, 10-11, 15.
@@ -616,7 +616,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Approve or reject the exact financial proposal under authority thresholds, substitution and separation-of-duties rules.
 * **Primary Actor:** Administrator
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-03, BR-04, BR-06; UR: UR-06, UR-07; FR: FR3.5, FR11, FR11.1, FR11.3; NFR-02, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3, 11, 14.
@@ -648,14 +648,14 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Description:** Close a reviewed month/quarter or exceptionally reopen it with higher authority and an audited reason.
 * **Primary Actor:** Administrator
 * **Supporting Actors:** None
-* **Scope:** Turbine internal invoicing and collections application.
+* **Scope:** TurbineH internal invoicing and collections application.
 * **Level:** User Goal
 * **Related requirements:** BR-04, BR-06; UR: UR-09; FR: FR13.2; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3, 14.
 * **Stakeholders & Interests:**
   * *Administrator:* control post-review changes.
   * *Accounting firm:* receive a stable accounting period.
-  * *Turbine finance staff:* retain traceable corrections and period history.
+  * *TurbineH finance staff:* retain traceable corrections and period history.
 * **Preconditions:** The actor has period-closing authority and the period exists; reopening additionally requires higher capability and a reason.
 * **Postconditions:** The confirmed period state and close/reopen event are stored and enforced on later operations; rejected requests leave the former state.
 * **Success Guarantee:** The authorised state transition is audited and subsequent financial checks enforce it.

@@ -1,4 +1,4 @@
-# Turbine — Internal Invoicing & Payment Tracking System
+# TurbineH — Internal Invoicing & Payment Tracking System
 
 > **Course:** Application Analysis and Design (Grado en Ingeniería Informática, Plan 2023)  
 > **Institution:** E.T.S. de Ingeniería Informática — Universidad de Málaga (UMA)  
@@ -9,9 +9,9 @@
 ---
 
 ## 1. Project Overview (Case Study)
-**Turbine** is an early-stage Artificial Intelligence startup developing the *Brain Operative System*, an intelligence orchestration platform for enterprises. Currently, Turbine manages its B2B customer subscriptions, one-off services, invoice generation, and payment collection manually.
+**TurbineH** is an early-stage Artificial Intelligence startup developing the *Brain Operative System*, an intelligence orchestration platform for enterprises. Currently, TurbineH manages its B2B customer subscriptions, one-off services, invoice generation, and payment collection manually.
 
-This project models and designs an **independent, internal responsive web application** for Turbine's administrative staff to:
+This project models and designs an **independent, internal responsive web application** for TurbineH's administrative staff to:
 - Register and manage corporate customers and their contact persons (via manual entry or CSV import) with logical deletion policies.
 - Generate and issue standard corporate **PDF invoices** (both **one-off** and **monthly recurring** subscriptions tiered by customer annual revenue) in under one minute.
 - Automate **payment tracking and reconciliation** by querying a payment source and receiving its payment events (Stripe, simulated), with other sources such as Revolut or a bank account addable later.

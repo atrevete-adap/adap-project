@@ -5,7 +5,7 @@
 > Answering the "What for?" or "Why?" of the business (commercial, financial, or strategic goals).
 
 - BR-01: Operational independence from the commercial product.
-  - Provide Turbine with an internal administrative tool completely separate from its commercial product (Brain), ensuring that product and           administration are not mixed and that the administrative application continues to function even if Brain changes or disappears.
+  - Provide TurbineH with an internal administrative tool completely separate from its commercial product (Brain), ensuring that product and           administration are not mixed and that the administrative application continues to function even if Brain changes or disappears.
 - BR-02: Separation of commercial relationship from debt collection.
   - Formally represent the commercial agreement or subscription on a month-to-month basis without inventing non-existent commitment periods. When a customer requests cancellation, the generation of new recurring invoices must stop on the effective date without blocking commercial termination, while keeping the collection workflow active for any prior outstanding debt.
 - BR-03: Commercial flexibility and annual tiered rate reviews.
@@ -113,7 +113,7 @@
   - Dependencies / Relationships: FR1, FR2, FR13.
   - **FR2.5.1.** Issuance is blocked if mandatory tax data is missing, stating exactly what is missing.
   - **FR2.5.2.** The system warns, without necessarily blocking, when an amount deviates strongly from the customer's usual pattern, according to a simple configurable rule.
-- **FR2.6.** Invoice PDF generation and storage. The system will generate each issued invoice as a PDF in a single standard format with Turbine's corporate identity (logo, tax data, series and number, dates, lines, taxable bases, taxes, total, payment terms and support contact details) and store it linked to its customer.
+- **FR2.6.** Invoice PDF generation and storage. The system will generate each issued invoice as a PDF in a single standard format with TurbineH's corporate identity (logo, tax data, series and number, dates, lines, taxable bases, taxes, total, payment terms and support contact details) and store it linked to its customer.
   - Dependencies / Relationships: FR2, FR13.
   - **FR2.6.1.** The same PDF is used wherever the invoice is shown or sent.
   - **FR2.6.2.** The original PDF is preserved, so later template changes do not alter historical invoices.
@@ -152,7 +152,7 @@
   - **FR3.2.2.** After the due date, a reminder is sent every 2–3 days until payment is detected or a person intervenes.
   - **FR3.2.3.** Reminder timings are configurable by the super administrator.
   - **FR3.2.4.** The flow is per invoice: it stops when that invoice is paid, and the customer is never cancelled or penalised automatically.
-  - **FR3.2.5.** Every reminder includes Turbine's support email and telephone number.
+  - **FR3.2.5.** Every reminder includes TurbineH's support email and telephone number.
   - **FR3.2.6.** A reminder falling on a weekend or configured holiday is moved to the next working day; the legal due date of the invoice does not move.
 - **FR3.3.** Due date calculation. The system will calculate each invoice's due date with a default payment period of 5 days.
   - Dependencies / Relationships: FR2, FR6.2, FR10.
@@ -416,7 +416,7 @@
   - Verification method: Integration tests simulating duplicate payment notifications, repeated invoice generation, concurrent record modifications, and failures during automated processes. Database consistency checks and inspection of automation execution logs will verify the results.
 
 - NFR-07: Maintainability and Deployment Reproducibility
-  - Description: The system shall be maintainable and deployable independently of Turbine's Brain product, allowing configuration changes and future system modifications without affecting core administrative operations.
+  - Description: The system shall be maintainable and deployable independently of TurbineH's Brain product, allowing configuration changes and future system modifications without affecting core administrative operations.
   - Dependencies / Relationships: Related to configurable pricing, global system configuration, and external API integration. Related functional requirements: FR5.1, FR13, FR15. Related business requirements: BR-01, BR-03.
   - Metric / Acceptance criterion: 100% of the configurable parameters defined in FR13 shall be modifiable without changing the source code. The application shall be deployable in a clean test environment using documented instructions and shall successfully perform its core customer and invoice operations without requiring Brain.
   - Verification method: Configuration testing to verify that system parameters can be modified without source code changes. Deployment testing in a clean environment following the technical documentation, followed by integration tests confirming that customer and invoice operations function independently of Brain.
