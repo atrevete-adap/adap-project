@@ -1,6 +1,6 @@
 # Use Case Specifications
 
-> Submission 1: 18 behavioural contracts consolidated on 2026-10-20 from the original 59-FR baseline at `2d9d12f`. Reconciled with the requirement decomposition on `main` at `046ecb943b4a44673fb99490c187a289d9b64965`. The six absorbed cases remain as explicit flows; no functional requirement is removed.
+> Submission 1: 18 behavioural contracts consolidated on 2026-10-20 from the original 59-FR baseline at `2d9d12f`. Reconciled with the requirement decomposition on `main` at `046ecb943b4a44673fb99490c187a289d9b64965` and with the 14 consolidated user requirements (UR-01 to UR-14) introduced on `main` at `7ef6452`. The six absorbed cases remain as explicit flows; no functional requirement is removed.
 
 ## 1. Scope, actors and shared rules
 
@@ -68,7 +68,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** Communication Service (password recovery)
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-04; UR: UR-27; FR: FR6.1, FR6.2; NFR-02, NFR-04.
+* **Related requirements:** BR-01, BR-04; UR: UR-12; FR: FR6.1, FR6.2; NFR-02, NFR-04.
 * **Source:** E pp. 7-8, 12.
 * **Stakeholders & Interests:**
   * *Internal staff:* obtain access to their work.
@@ -97,7 +97,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-06; UR: UR-01, UR-02, UR-04, UR-08, UR-03, UR-24; FR: FR1, FR1.1, FR1.2, FR1.3, FR1.6, FR1.4, FR1.7, FR1.8; NFR-01, NFR-02, NFR-03, NFR-04, NFR-05.
+* **Related requirements:** BR-01, BR-06; UR: UR-01, UR-10; FR: FR1, FR1.1, FR1.2, FR1.3, FR1.6, FR1.4, FR1.7, FR1.8; NFR-01, NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 2, 4, 7-8, 12, 14-15.; E p. 7.
 * **Stakeholders & Interests:**
   * *Assigned staff:* keep their customer portfolio accurate.
@@ -131,7 +131,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** Communication Service (account activation)
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04; UR: UR-27, UR-24, UR-28; FR: FR6.2, FR6.3, FR1.5, FR6.4, FR14.1; NFR-04, NFR-05.
+* **Related requirements:** BR-04; UR: UR-10, UR-12; FR: FR6.2, FR6.3, FR1.5, FR6.4, FR14.1; NFR-04, NFR-05.
 * **Source:** E pp. 7-8, 12.; E p. 8.
 * **Stakeholders & Interests:**
   * *Administrator:* allocate work and arrange temporary cover.
@@ -165,7 +165,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-05, UR-06, UR-10, UR-15; FR: FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR5.6, FR10.3; NFR-01, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-02, UR-03, UR-08; FR: FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR5.6, FR10.3; NFR-01, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 2-5, 14.; E pp. 2-3, 11.
 * **Stakeholders & Interests:**
   * *Assigned staff:* set up the service and follow up review tasks.
@@ -201,7 +201,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** Communication Service
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04, BR-06; UR: UR-09, UR-11, UR-12, UR-17; FR: FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.5; NFR-01, NFR-02, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-04, BR-06; UR: UR-03, UR-04; FR: FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.5; NFR-01, NFR-02, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3-5, 16.; E pp. 3-5, 8-9, 14.; E pp. 5, 12, 15.
 * **Stakeholders & Interests:**
   * *Customer and billing recipients:* receive a correct invoice through an eligible channel.
@@ -237,7 +237,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-02, BR-03, BR-06; UR: UR-11, UR-24; FR: FR2.1, FR9.2, FR14, FR11.2, FR14.3, FR14.4; NFR-03, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-03, BR-06; UR: UR-03, UR-10; FR: FR2.1, FR9.2, FR14, FR11.2, FR14.3, FR14.4; NFR-03, NFR-05, NFR-06.
 * **Source:** E pp. 4, 9, 14, 17.
 * **Stakeholders & Interests:**
   * *Turbine:* complete scheduled billing after failures.
@@ -270,7 +270,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** Payment Provider
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04, BR-05, BR-06; UR: UR-20; FR: FR3, FR3.1, FR3.6, FR3.7, FR14.5; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-04, BR-05, BR-06; UR: UR-06; FR: FR3, FR3.1, FR3.6, FR3.7, FR14.5; NFR-04, NFR-05, NFR-06.
 * **Source:** E p. 6.
 * **Stakeholders & Interests:**
   * *Assigned staff:* resolve uncertain matches.
@@ -303,7 +303,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** Communication Service
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-02, BR-04; UR: UR-18; FR: FR3.2, FR3.3, FR3.4, FR13; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-04; UR: UR-05; FR: FR3.2, FR3.3, FR3.4, FR13; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 5-6, 9, 13, 15.
 * **Stakeholders & Interests:**
   * *Assigned staff:* know when invoices become overdue.
@@ -335,7 +335,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-04; UR: UR-22, UR-23; FR: FR7, FR7.1, FR7.2, FR8.2, FR8.3; NFR-02, NFR-03, NFR-04, NFR-05.
+* **Related requirements:** BR-02, BR-04; UR: UR-10; FR: FR7, FR7.1, FR7.2, FR8.2, FR8.3; NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 6-8.
 * **Stakeholders & Interests:**
   * *Assigned staff:* prioritise actionable work.
@@ -368,7 +368,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02; UR: UR-07; FR: FR4, FR4.1, FR15, FR4.3, FR4.4, FR15.1, FR15.2; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02; UR: UR-02; FR: FR4, FR4.1, FR15, FR4.3, FR4.4, FR15.1, FR15.2; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 4, 11-12, 14, 17.
 * **Stakeholders & Interests:**
   * *Customer:* end the commercial relationship without debt disappearing.
@@ -402,7 +402,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-02; UR: UR-07; FR: FR4.2, FR15, FR15.1, FR15.2; NFR-03, NFR-04, NFR-05, NFR-07.
+* **Related requirements:** BR-01, BR-02; UR: UR-02; FR: FR4.2, FR15, FR15.1, FR15.2; NFR-03, NFR-04, NFR-05, NFR-07.
 * **Source:** E pp. 4, 11-12.
 * **Stakeholders & Interests:**
   * *External Application:* distinguish valid debt results from errors.
@@ -435,7 +435,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** Communication Service (scheduled internal summaries)
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-05, BR-06; UR: UR-25, UR-26; FR: FR8, FR8.1, FR8.3, FR8.4, FR8.5, FR8.6, FR8.7, FR8.8; NFR-02, NFR-03, NFR-04, NFR-05.
+* **Related requirements:** BR-05, BR-06; UR: UR-09, UR-11; FR: FR8, FR8.1, FR8.3, FR8.4, FR8.5, FR8.6, FR8.7, FR8.8; NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 7, 11, 14-15.
 * **Stakeholders & Interests:**
   * *Administrator:* trace totals to invoices and allocations.
@@ -454,7 +454,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 
 * **Extensions:**
   * **1a.** Insufficient financial permission: deny the dashboard, including a technical Super Administrator account without that capability.
-  * **2a.** Multiple currencies: separate totals unless a conversion policy is approved. Budget targets remain deferred under the current Out of Scope list despite broader BR-05/UR-25 wording.
+  * **2a.** Multiple currencies: separate totals unless a conversion policy is approved. Budget targets remain deferred under the current Out of Scope list despite broader BR-05/UR-11 wording.
   * **4a.** Failed/long report: preserve job/result status and configurable export retention; do not present a partial file as complete.
   * **1b.** Scheduled summary: an authorised Administrator configures weekly/monthly generation for authorised recipients only.
 
@@ -467,7 +467,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-03, BR-04; UR: UR-29; FR: FR5.1, FR6.2, FR13, FR13.1, FR13.3; NFR-04, NFR-05, NFR-06, NFR-07.
+* **Related requirements:** BR-01, BR-03, BR-04; UR: UR-13; FR: FR5.1, FR6.2, FR13, FR13.1, FR13.3; NFR-04, NFR-05, NFR-06, NFR-07.
 * **Source:** E pp. 2-5, 9-10, 12.
 * **Stakeholders & Interests:**
   * *Super Administrator:* control global policy changes.
@@ -500,7 +500,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-01, BR-04, BR-06; UR: UR-30; FR: FR9.1, FR9.2, FR9; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-01, BR-04, BR-06; UR: UR-14; FR: FR9.1, FR9.2, FR9; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 8-9, 12.
 * **Stakeholders & Interests:**
   * *Super Administrator:* diagnose failures and recover a validated state.
@@ -533,7 +533,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04, BR-06; UR: UR-13; FR: FR2.3, FR2.8; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-04, BR-06; UR: UR-03; FR: FR2.3, FR2.8; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3-4, 11, 14.
 * **Stakeholders & Interests:**
   * *Administrator:* correct errors with authority and a reason.
@@ -564,7 +564,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-04, BR-06; UR: UR-19; FR: FR3.4, FR12, FR12.1, FR12.2, FR12.3; NFR-02, NFR-04, NFR-05.
+* **Related requirements:** BR-02, BR-04, BR-06; UR: UR-05; FR: FR3.4, FR12, FR12.1, FR12.2, FR12.3; NFR-02, NFR-04, NFR-05.
 * **Source:** E pp. 5-6, 10-11, 15.
 * **Stakeholders & Interests:**
   * *Assigned staff:* coordinate the issue owner and corrective action.
@@ -597,7 +597,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-03, BR-04, BR-06; UR: UR-14, UR-21; FR: FR3.5, FR11, FR11.1, FR11.3; NFR-02, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-03, BR-04, BR-06; UR: UR-06, UR-07; FR: FR3.5, FR11, FR11.1, FR11.3; NFR-02, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3, 11, 14.
 * **Stakeholders & Interests:**
   * *Requester:* receive a decision on the submitted values.
@@ -629,7 +629,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04, BR-06; UR: UR-16; FR: FR13.2; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-04, BR-06; UR: UR-09; FR: FR13.2; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3, 14.
 * **Stakeholders & Interests:**
   * *Administrator:* control post-review changes.

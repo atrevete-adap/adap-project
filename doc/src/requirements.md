@@ -12,7 +12,7 @@
   - Support the company's hybrid revenue model consisting of monthly subscriptions (based on configurable tiers tied to customer annual revenue) and one-off services. Drive annual revenue review campaigns with human validation to update future rates without modifying historical invoices.
 - BR-04: Financial governance, risk control and separation of duties.
   - Protect revenue through hierarchical approval workflows and separation of duties before applying extraordinary discounts, manual modifications to amounts or due dates, high-amount one-off invoices, corrective invoices, or uncollectible debt write-offs.
-- BR-05: Auditable financial visibility and target tracking.
+- BR-05: Auditable financial visibility.
   - Provide management with a financial dashboard showing weekly, monthly, quarterly, and annual metrics, recurring revenue forecasts, and progress against configured targets or budgets, requiring every metric to be 100% explainable and reconcilable with the underlying invoices.
 - BR-06: Ensure accounting legality and seamless cordination with the external accounting firm.
   - The business operates in Spain, needing that the billing of the enterprise comply with the fiscal periods of the Spanish tax agency and the requirements of the external countability advisors, avoiding mismatches or improper alterations of revenue.
@@ -20,48 +20,27 @@
 ## User Requirements
 > Answering "What does the user want to achieve?" (Customer or actor goals).
 
-#### A. Customer, Contact, and Commercial Agreement Management
-- UR-01: International commercial and tax customer registration.
-- UR-02: Multiple contacts per company and channel consent management.
-- UR-03: CSV customer import with validation and preview.
-- UR-04: Duplicate detection, historical reactivation, and controlled merging.
-- UR-05: Subscription management.
-- UR-06: Temporary subscription pause and reactivation.
-- UR-07: Commercial cancellation with outstanding debt retention.
-- UR-08: Customer status tracking and business timeline.
+#### A. Customer Relationship and Subscription Management
+- UR-01: Registration, import and maintenance of clients and contacts
+- UR-02: Subscription lifecycle management. 
 
-#### B. Quotations, Invoicing, and Document Lifecycle
-- UR-09: One-off invoice creation, concept catalog, and cost centers. 
-- UR-10: Proration preview for mid-month sign-ups.
-- UR-11: Automatic drafts, validation, and anomalous amount alerts.
-- UR-12: Viewing and downloading corporate PDF invoices.
-- UR-13: Corrective invoice (administratives can rectify errors or process refunds).
+#### B. Invoicing, Communications, and Collections
+- UR-03: One-off, recurring, and corrective invoicing.
+- UR-04: Multi-channel delivery and bounce handling.
+- UR-05: Automated payment follow-up and billing issue management.
+- UR-06: Payment reconciliation and uncollectible debt write-off.
 
-#### C. Approvals, Annual Rate Reviews, and Accounting Closings
-- UR-14: Approval workflow and inbox with separation of duties.
-- UR-15: Annual revenue tier review campaign.
-- UR-16: Administrative period closing and controlled reopening.
+#### C. Financial Governance, Rate Reviews, and Accounting
+- UR-07: Hierarchical approvals with separation of duties.
+- UR-08: Annual revenue tier review campaigns.
+- UR-09: Period closing and external accounting packages.
 
-#### D. Deliveries, Payment Reminders, Reconciliation, and Billing Issues
-- UR-17: Delivery tracking and bounce email handling.
-- UR-18: Automated payment reminders and overdue follow-up schedule.
-- UR-19: Billing issue management, comments, and attachments.
-- UR-20: Manual payment reconciliation, partial settlements and reversal.
-- UR-21: Controlled write-off of uncollectible debt.
-
-#### E. Daily Operations, Search, Financial Dashboard, and Reporting
-- UR-22: Daily work screen and actionable notification.
-- UR-23: Immediate global search, saved views and quick access.
-- UR-24: Controlled bulk actions and background processing.
-- UR-25: Financial dashboard with drill-down and budget targets.
-- UR-26: Report exports, scheduled summaries, and accounting packages.
-
-#### F. Users, Global Configuration, Auditing, and Monitoring
-- UR-27: Corporate authentication, account lifecycle and session control.
-- UR-28: Portfolio assignment and temporary absence delegation.
-- UR-29: Global system configuration and simulation testing.
-- UR-30: Immutable auditing, system health monitoring privacy, and backups (Superadministrators related).
-
+#### D. Daily Operations, Analytics, and System Administration
+- UR-10: Daily operational workspace, global search, and bulk actions.
+- UR-11: Financial dashboard and customizable reporting.
+- UR-12: User access control, portfolio assignment, and delegation.
+- UR-13: Global business configuration and template simulation.
+- UR-14: Immutable auditing, automation health monitoring, and backups.
 
 ## System Requirements
 > Technical translation of user and business goals into executable functional capabilities and quality constraints.
@@ -438,7 +417,7 @@
 
 - NFR-07: Maintainability and Deployment Reproducibility
   - Description: The system shall be maintainable and deployable independently of Turbine's Brain product, allowing configuration changes and future system modifications without affecting core administrative operations.
-  - Dependencies / Relationships: Related to configurable pricing, global system configuration, and external API integration. Related functional requirements: FR5.1, FR13, FR15. Related business requirements: BR-01, BR-10.
+  - Dependencies / Relationships: Related to configurable pricing, global system configuration, and external API integration. Related functional requirements: FR5.1, FR13, FR15. Related business requirements: BR-01, BR-03.
   - Metric / Acceptance criterion: 100% of the configurable parameters defined in FR13 shall be modifiable without changing the source code. The application shall be deployable in a clean test environment using documented instructions and shall successfully perform its core customer and invoice operations without requiring Brain.
   - Verification method: Configuration testing to verify that system parameters can be modified without source code changes. Deployment testing in a clean environment following the technical documentation, followed by integration tests confirming that customer and invoice operations function independently of Brain.
 
@@ -484,7 +463,7 @@
 - Any customer-facing access: no customer portal and no in-app chat (customers contact support externally).
 - Integration with Brain or the CRM (CSV import replaces it; the API leaves the door open).
 - Recurrence frequencies other than monthly (the model should not prevent them).
-- Merging duplicate customer records: the client called it "delicate"; duplicates are only warned about (FR1).
+- Merging duplicate customer records: the client called it "delicate"; duplicates are only warned about (FR1.8).
 - Historical invoice import: the client does "not need it as an original basic requirement"; useful only for a future migration.
 - Quotations and their conversion into invoices: described by the client as "an interesting extension".
 - Cost centres or projects for one-off invoices: mentioned by the client as something that "could also appear".
