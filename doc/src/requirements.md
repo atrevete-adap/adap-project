@@ -12,7 +12,7 @@
   - Support the company's hybrid revenue model consisting of monthly subscriptions (based on configurable tiers tied to customer annual revenue) and one-off services. Drive annual revenue review campaigns with human validation to update future rates without modifying historical invoices.
 - BR-04: Financial governance, risk control and separation of duties.
   - Protect revenue through hierarchical approval workflows and separation of duties before applying extraordinary discounts, manual modifications to amounts or due dates, high-amount one-off invoices, corrective invoices, or uncollectible debt write-offs.
-- BR-05: Auditable financial visibility and target tracking.
+- BR-05: Auditable financial visibility.
   - Provide management with a financial dashboard showing weekly, monthly, quarterly, and annual metrics, recurring revenue forecasts, and progress against configured targets or budgets, requiring every metric to be 100% explainable and reconcilable with the underlying invoices.
 - BR-06: Ensure accounting legality and seamless cordination with the external accounting firm.
   - The business operates in Spain, needing that the billing of the enterprise comply with the fiscal periods of the Spanish tax agency and the requirements of the external countability advisors, avoiding mismatches or improper alterations of revenue.
@@ -21,18 +21,18 @@
 > Answering "What does the user want to achieve?" (Customer or actor goals).
 
 #### A. Customer Relationship and Subscription Management
-- UR-01: Login, import and maintenance of clients and contacts
+- UR-01: Registration, import and maintenance of clients and contacts
 - UR-02: Subscription lifecycle management. 
 
 #### B. Invoicing, Communications, and Collections
-- UR-03: One-Off, recurring, and corrective invoicing.
+- UR-03: One-off, recurring, and corrective invoicing.
 - UR-04: Multi-channel delivery and bounce handling.
 - UR-05: Automated payment follow-up and billing issue management.
 - UR-06: Payment reconciliation and uncollectible debt write-off.
 
 #### C. Financial Governance, Rate Reviews, and Accounting
 - UR-07: Hierarchical approvals with separation of duties.
-- UR-08: Annual revenue tire review campaigns.
+- UR-08: Annual revenue tier review campaigns.
 - UR-09: Period closing and external accounting packages.
 
 #### D. Daily Operations, Analytics, and System Administration
@@ -417,7 +417,7 @@
 
 - NFR-07: Maintainability and Deployment Reproducibility
   - Description: The system shall be maintainable and deployable independently of Turbine's Brain product, allowing configuration changes and future system modifications without affecting core administrative operations.
-  - Dependencies / Relationships: Related to configurable pricing, global system configuration, and external API integration. Related functional requirements: FR5.1, FR13, FR15. Related business requirements: BR-01, BR-10.
+  - Dependencies / Relationships: Related to configurable pricing, global system configuration, and external API integration. Related functional requirements: FR5.1, FR13, FR15. Related business requirements: BR-01, BR-03.
   - Metric / Acceptance criterion: 100% of the configurable parameters defined in FR13 shall be modifiable without changing the source code. The application shall be deployable in a clean test environment using documented instructions and shall successfully perform its core customer and invoice operations without requiring Brain.
   - Verification method: Configuration testing to verify that system parameters can be modified without source code changes. Deployment testing in a clean environment following the technical documentation, followed by integration tests confirming that customer and invoice operations function independently of Brain.
 
@@ -463,7 +463,7 @@
 - Any customer-facing access: no customer portal and no in-app chat (customers contact support externally).
 - Integration with Brain or the CRM (CSV import replaces it; the API leaves the door open).
 - Recurrence frequencies other than monthly (the model should not prevent them).
-- Merging duplicate customer records: the client called it "delicate"; duplicates are only warned about (FR1).
+- Merging duplicate customer records: the client called it "delicate"; duplicates are only warned about (FR1.8).
 - Historical invoice import: the client does "not need it as an original basic requirement"; useful only for a future migration.
 - Quotations and their conversion into invoices: described by the client as "an interesting extension".
 - Cost centres or projects for one-off invoices: mentioned by the client as something that "could also appear".

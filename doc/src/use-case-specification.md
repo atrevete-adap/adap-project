@@ -71,7 +71,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** Communication Service (password recovery email)
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01; UR: UR-27; FR: FR6.1, FR6.2; NFR-02, NFR-04.
+* **Related requirements:** BR-01; UR: UR-12; FR: FR6.1, FR6.2; NFR-02, NFR-04.
 * **Source:** E pp. 7-8, 12.
 * **Stakeholders & Interests:**
   * *Internal staff:* access their work without exposing another employee’s customer data.
@@ -100,7 +100,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-02, BR-03; UR: UR-01, UR-02, UR-04, UR-08; FR: FR1, FR1.1, FR1.2, FR1.3, FR1.6; NFR-01, NFR-02, NFR-03, NFR-04, NFR-05.
+* **Related requirements:** BR-01, BR-02, BR-03; UR: UR-01; FR: FR1, FR1.1, FR1.2, FR1.3, FR1.6; NFR-01, NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 2, 4, 7-8, 12, 14-15.
 * **Stakeholders & Interests:**
   * *Assigned staff:* find and maintain accurate records for their own customers.
@@ -166,7 +166,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** Communication Service (account activation email)
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-03; UR: UR-27; FR: FR6.2, FR6.3; NFR-04, NFR-05.
+* **Related requirements:** BR-01, BR-03; UR: UR-10, UR-12; FR: FR6.2, FR6.3; NFR-04, NFR-05.
 * **Source:** E pp. 7-8, 12.
 * **Stakeholders & Interests:**
   * *Super Administrator:* control who can enter the internal application and administer roles.
@@ -230,7 +230,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-03, BR-05; UR: UR-05, UR-06, UR-10; FR: FR2.2, FR5.2, FR10, FR10.1, FR10.2; NFR-01, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-03, BR-05; UR: UR-02, UR-08; FR: FR2.2, FR5.2, FR10, FR10.1, FR10.2; NFR-01, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 2-5, 14.
 * **Stakeholders & Interests:**
   * *Assigned staff:* set up recurring service and explain the initial and monthly charges.
@@ -297,7 +297,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02; UR: UR-09, UR-11; FR: FR2, FR2.3, FR2.5, FR14.2; NFR-01, NFR-02, NFR-04, NFR-05.
+* **Related requirements:** BR-02; UR: UR-03, UR-04; FR: FR2, FR2.3, FR2.5, FR14.2; NFR-01, NFR-02, NFR-04, NFR-05.
 * **Source:** E pp. 3-5, 16.
 * **Stakeholders & Interests:**
   * *Assigned staff:* prepare a correct invoice with useful validation feedback.
@@ -363,7 +363,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-11, UR-24; FR: FR2.1, FR9.2, FR14; NFR-03, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-03, UR-10; FR: FR2.1, FR9.2, FR14; NFR-03, NFR-05, NFR-06.
 * **Source:** E pp. 4, 9, 14, 17.
 * **Stakeholders & Interests:**
   * *Turbine:* complete recurring billing even after downtime without duplicate charges.
@@ -431,7 +431,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** Payment Provider (simulated Stripe; optional Revolut adapter)
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-04; UR: UR-20; FR: FR3, FR3.1; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-04; UR: UR-06; FR: FR3, FR3.1; NFR-04, NFR-05, NFR-06.
 * **Source:** E p. 6.
 * **Stakeholders & Interests:**
   * *Assigned staff:* resolve mismatches and know when an invoice has been settled.
@@ -465,7 +465,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** Communication Service (email; complementary WhatsApp when consented)
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-02, BR-04; UR: UR-18; FR: FR3.2, FR3.3, FR3.4, FR13; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-04; UR: UR-05; FR: FR3.2, FR3.3, FR3.4, FR13; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 5-6, 9, 13, 15.
 * **Stakeholders & Interests:**
   * *Assigned staff:* be notified of overdue invoices and intervene in disputes.
@@ -499,7 +499,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-03; UR: UR-22, UR-23; FR: FR7, FR7.1, FR7.2, FR8.2, FR8.3; NFR-02, NFR-03, NFR-04, NFR-05.
+* **Related requirements:** BR-02, BR-03; UR: UR-10; FR: FR7, FR7.1, FR7.2, FR8.2, FR8.3; NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 6-8.
 * **Stakeholders & Interests:**
   * *Assigned staff:* prioritise payments, overdue invoices and unresolved operational work.
@@ -531,7 +531,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-04; UR: UR-07; FR: FR4, FR4.1, FR15; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-01, BR-04; UR: UR-02; FR: FR4, FR4.1, FR15; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 4, 11-12, 14, 17.
 * **Stakeholders & Interests:**
   * *Customer:* stop future subscription charges while retaining an accurate account of existing debt.
@@ -565,7 +565,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-04; UR: UR-07; FR: FR4.2, FR15; NFR-03, NFR-04, NFR-05.
+* **Related requirements:** BR-01, BR-04; UR: UR-02; FR: FR4.2, FR15; NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 4, 11-12.
 * **Stakeholders & Interests:**
   * *External Application:* obtain a reliable debt response and distinguish errors from debt-free results.
@@ -597,7 +597,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-07, BR-08; UR: UR-25, UR-26; FR: FR8, FR8.1, FR8.3, FR8.4, FR8.5; NFR-02, NFR-03, NFR-04, NFR-05.
+* **Related requirements:** BR-07, BR-08; UR: UR-09, UR-11; FR: FR8, FR8.1, FR8.3, FR8.4, FR8.5; NFR-02, NFR-03, NFR-04, NFR-05.
 * **Source:** E pp. 7, 11, 14-15.
 * **Stakeholders & Interests:**
   * *Administrator:* compare invoiced, collected and outstanding amounts and inspect their evidence.
@@ -629,7 +629,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-02, BR-03, BR-05; UR: UR-29; FR: FR5.1, FR6.2, FR13, FR13.1; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-01, BR-02, BR-03, BR-05; UR: UR-13; FR: FR5.1, FR6.2, FR13, FR13.1; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 2-5, 9-10, 12.
 * **Stakeholders & Interests:**
   * *Super Administrator:* change global rules with a visible and auditable effect.
@@ -693,7 +693,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-01, BR-03; UR: UR-30; FR: FR9; NFR-04, NFR-05.
+* **Related requirements:** BR-01, BR-03; UR: UR-14; FR: FR9; NFR-04, NFR-05.
 * **Source:** E pp. 8-9, 12.
 * **Stakeholders & Interests:**
   * *Super Administrator:* recover a known consistent state and measure the restoration outcome.
@@ -725,7 +725,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-04, BR-07, BR-08; UR: UR-13; FR: FR2.3, FR2.8; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-01, BR-04, BR-07, BR-08; UR: UR-03; FR: FR2.3, FR2.8; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3-4, 11, 14.
 * **Stakeholders & Interests:**
   * *Administrator:* correct a billing error with a documented reason and required approval.
@@ -757,7 +757,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-19; FR: FR3.4, FR12, FR12.1, FR12.2; NFR-02, NFR-04, NFR-05.
+* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-05; FR: FR3.4, FR12, FR12.1, FR12.2; NFR-02, NFR-04, NFR-05.
 * **Source:** E pp. 5-6, 10-11, 15.
 * **Stakeholders & Interests:**
   * *Assigned staff:* coordinate corrective actions and see who owns the unresolved issue.
@@ -790,7 +790,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04, BR-05, BR-06; UR: UR-14, UR-21; FR: FR3.5, FR11, FR11.1; NFR-02, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-04, BR-05, BR-06; UR: UR-06, UR-07; FR: FR3.5, FR11, FR11.1; NFR-02, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3, 11, 14.
 * **Stakeholders & Interests:**
   * *Financial requester:* receive a clear decision on the submitted operation.
@@ -824,7 +824,7 @@ Each **Primary Actor** names one diagram role. An **Alternative Initiator**, whe
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-01, BR-07, BR-08; UR: UR-16; FR: FR13.2; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-01, BR-07, BR-08; UR: UR-09; FR: FR13.2; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3, 14.
 * **Stakeholders & Interests:**
   * *Administrator:* prevent ordinary changes after period review and control exceptional reopening.
