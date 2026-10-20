@@ -44,7 +44,7 @@ This project models and designs an **independent, internal responsive web applic
 - `doc/src/` — Editable source files:
   - `doc/src/requirements.md` (Business, User, Functional & Non-Functional Requirements, plus contradictions and out-of-scope items)
   - `doc/src/use-case-diagram.pu` (PlantUML source for the Use Case Diagram)
-  - `doc/src/use-case-specification.md` (Cockburn-style Use Case Specifications)
+  - `doc/src/use-case-specification.md` (18 Cockburn-style contracts; grouped from 24, with stable IDs and full FR coverage)
   - `doc/src/scrum-report.md` (Sprint planning, meetings, board snapshots & risk log)
   - `doc/src/img/` (Board screenshots and exported use case diagram views)
 - `notes/` — Historical coordination and review notes; excluded from the four Submission 1 PDFs.
