@@ -6,10 +6,6 @@
 
 - BR-01: Operational independence from the commercial product.
   - Provide Turbine with an internal administrative tool completely separate from its commercial product (Brain), ensuring that product and           administration are not mixed and that the administrative application continues to function even if Brain changes or disappears.
-- BR-02: Extreme agility in frequent operations. 
-  - Ensure that routine administrative tasks are completed in less than one minute and with minimal clicks, avoiding both the limitations of a manual notebook and the bloat of a monstrous ERP with dozens of menus.
-- BR-03: Business scalability through management by exception.
-  - Scale administrative operations from ten customers up to thousands of customers, hundreds of thousands of historical invoices, and dozens or hundreds of internal users. Bulk processes must run continuously without stopping due to individual failures, identifying exceptions and routing them directly to the person responsible for resolving them.
 - BR-04: Separation of commercial relationship from debt collection.
   - Formally represent the commercial agreement or subscription on a month-to-month basis without inventing non-existent commitment periods. When a customer requests cancellation, the generation of new recurring invoices must stop on the effective date without blocking commercial termination, while keeping the collection workflow active for any prior outstanding debt.
 - BR-05: Commercial flexibility and annual tiered rate reviews.
@@ -18,12 +14,8 @@
   - Protect revenue through hierarchical approval workflows and separation of duties before applying extraordinary discounts, manual modifications to amounts or due dates, high-amount one-off invoices, corrective invoices, or uncollectible debt write-offs.
 - BR-07: Auditable financial visibility and target tracking.
   - Provide management with a financial dashboard showing weekly, monthly, quarterly, and annual metrics, recurring revenue forecasts, and progress against configured targets or budgets, requiring every metric to be 100% explainable and reconcilable with the underlying invoices.
-- BR-08: Accounting integrity, immutable traceability and external accounting firm coordination.
-  - Prevent silent editing or deletion of issued invoices through corrective invoices, administrative period closing, an immutable audit trail, restorable backups, and the export of periodic accounting packages for the external accounting firm.
-- BR-09: Data privacy and prohibition of marketing use.
-  - Enforce data minimization, legal retention, and personal data anonymization without invalidating historical accounting invoices, strictly prohibiting the automatic use of billing data for commercial or marketing campaigns.
-- BR-10: Executive mobility, technological sustainability and determinism.
-  - Enable mobile operation across devices (desktop, tablet, and mobile) during business trips using accessible or open-source technology, maintaining a deterministic architecture that does not rely on AI token consumption for core financial and business rules.
+- BR-08: Ensure accounting legality and seamless cordination with the external accounting firm.
+  - The business operates in Spain, needing that the billing of the enterprise comply with the fiscal periods of the Spanish tax agency and the requirements of the external countability advisors, avoiding mismatches or improper alterations of revenue.
 
 ## User Requirements
 > Answering "What does the user want to achieve?" (Customer or actor goals).
