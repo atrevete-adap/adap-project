@@ -16,7 +16,7 @@ Turbine is an independent internal invoicing and collections application. Custom
 | Payment Provider | Supporting service providing verified transaction evidence; Turbine does not operate a payment gateway. |
 | Communication Service | Supporting service for email and consented complementary WhatsApp. |
 
-- Authentication and current role/customer scope are rechecked on every protected request, direct download, bulk item and API operation. An inherited actor association never bypasses an operation's capability or approval threshold. UC-17 requires financial-report permission even for a technical Super Administrator account; the unresolved account-policy choice is not silently decided here.
+- Authentication and current role/customer scope are rechecked on every protected request, direct download, bulk item and API operation. An inherited actor association never bypasses an operation's capability or approval threshold. UC-12 requires financial-report permission even for a technical Super Administrator account; the unresolved account-policy choice is not silently decided here.
 - Issued snapshots, numbers and original PDFs are preserved. Corrections, cash movements and collection state have distinct evidence; logical deactivation or cancellation never marks a debt paid.
 - Automated issuance, transaction allocation and reminder occurrences are idempotent. Recovery resumes the failed stage without repeating successful financial work; item failures have explicit outcomes.
 - Customer-agreed terms override the default five days. FR3.2.6 (formerly C9) moves communications only, not the legal due date; C4 separates cancellation from old debt; C11 excludes marketing reuse. Document and approve proration, rounding and day-count conventions before activation rather than inventing client decisions.
@@ -25,37 +25,58 @@ Turbine is an independent internal invoicing and collections application. Custom
 
 ## 2. Consolidation and inventory
 
-IDs already used by the group are retained, leaving deliberate gaps. There are 18 cases, not 24; absorbed IDs must not appear as separate ellipses in the diagram.
+The original 24 cases were consolidated into 18 and renumbered consecutively as UC-01 to UC-18. The first table lists the six original cases absorbed into another contract; absorbed cases do not appear as separate ellipses in the diagram. The second table maps each current ID to its original ID.
 
-| Absorbed ID | Remaining contract | Behaviour retained |
+| Original ID (absorbed) | Current contract | Behaviour retained |
 | --- | --- | --- |
-| UC-03 | UC-02 | CSV preview, validation, confirmation and row results. |
-| UC-05 | UC-04 | Assignment, reassignment, expiring delegation and access routing. |
-| UC-07 | UC-06 | Annual review evidence, proposed band, human approval and effective rate. |
-| UC-09 | UC-08 | Validation, numbering, immutable issuance and PDF recovery. |
-| UC-11 | UC-08 | Delivery, observed status, consent, retries and bounce handling. |
-| UC-19 | UC-20 | Immutable audit inspection and automation health, alongside backup/recovery. |
+| Original UC-03 | UC-02 | CSV preview, validation, confirmation and row results. |
+| Original UC-05 | UC-03 | Assignment, reassignment, expiring delegation and access routing. |
+| Original UC-07 | UC-04 | Annual review evidence, proposed band, human approval and effective rate. |
+| Original UC-09 | UC-05 | Validation, numbering, immutable issuance and PDF recovery. |
+| Original UC-11 | UC-05 | Delivery, observed status, consent, retries and bounce handling. |
+| Original UC-19 | UC-14 | Immutable audit inspection and automation health, alongside backup/recovery. |
+
+| Current ID | Original ID |
+| --- | --- |
+| UC-01 | UC-01 |
+| UC-02 | UC-02 |
+| UC-03 | UC-04 |
+| UC-04 | UC-06 |
+| UC-05 | UC-08 |
+| UC-06 | UC-10 |
+| UC-07 | UC-12 |
+| UC-08 | UC-13 |
+| UC-09 | UC-14 |
+| UC-10 | UC-15 |
+| UC-11 | UC-16 |
+| UC-12 | UC-17 |
+| UC-13 | UC-18 |
+| UC-14 | UC-20 |
+| UC-15 | UC-21 |
+| UC-16 | UC-22 |
+| UC-17 | UC-23 |
+| UC-18 | UC-24 |
 
 | ID | Goal | Functional requirements |
 | --- | --- | --- |
 | [UC-01](#uc-01) | Access the internal application | FR6.1, FR6.2 |
 | [UC-02](#uc-02) | Maintain customers and import records | FR1, FR1.1, FR1.2, FR1.3, FR1.6, FR1.4, FR1.7, FR1.8 |
-| [UC-04](#uc-04) | Administer staff access and customer assignments | FR6.2, FR6.3, FR1.5, FR6.4, FR14.1 |
-| [UC-06](#uc-06) | Manage subscriptions and annual rate reviews | FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR5.6, FR10.3 |
-| [UC-08](#uc-08) | Prepare, issue and deliver an invoice | FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.5 |
-| [UC-10](#uc-10) | Generate monthly recurring invoices | FR2.1, FR9.2, FR14, FR11.2, FR14.3, FR14.4 |
-| [UC-12](#uc-12) | Reconcile payments with invoices | FR3, FR3.1, FR3.6, FR3.7, FR14.5 |
-| [UC-13](#uc-13) | Run reminders and overdue follow-up | FR3.2, FR3.3, FR3.4, FR13 |
-| [UC-14](#uc-14) | Review daily work and notifications | FR7, FR7.1, FR7.2, FR8.2, FR8.3 |
-| [UC-15](#uc-15) | Record subscription cancellation | FR4, FR4.1, FR15, FR4.3, FR4.4, FR15.1, FR15.2 |
-| [UC-16](#uc-16) | Query outstanding obligations through the API | FR4.2, FR15, FR15.1, FR15.2 |
-| [UC-17](#uc-17) | Consult financial dashboard and reports | FR8, FR8.1, FR8.3, FR8.4, FR8.5, FR8.6, FR8.7, FR8.8 |
-| [UC-18](#uc-18) | Configure billing and automation policies | FR5.1, FR6.2, FR13, FR13.1, FR13.3 |
-| [UC-20](#uc-20) | Supervise audit, backups and recovery | FR9.1, FR9.2, FR9 |
-| [UC-21](#uc-21) | Correct an issued invoice | FR2.3, FR2.8 |
-| [UC-22](#uc-22) | Resolve a billing or delivery issue | FR3.4, FR12, FR12.1, FR12.2, FR12.3 |
-| [UC-23](#uc-23) | Decide a sensitive financial approval | FR3.5, FR11, FR11.1, FR11.3 |
-| [UC-24](#uc-24) | Close or reopen an administrative period | FR13.2 |
+| [UC-03](#uc-03) | Administer staff access and customer assignments | FR6.2, FR6.3, FR1.5, FR6.4, FR14.1 |
+| [UC-04](#uc-04) | Manage subscriptions and annual rate reviews | FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR5.6, FR10.3 |
+| [UC-05](#uc-05) | Prepare, issue and deliver an invoice | FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.5 |
+| [UC-06](#uc-06) | Generate monthly recurring invoices | FR2.1, FR9.2, FR14, FR11.2, FR14.3, FR14.4 |
+| [UC-07](#uc-07) | Reconcile payments with invoices | FR3, FR3.1, FR3.6, FR3.7, FR14.5 |
+| [UC-08](#uc-08) | Run reminders and overdue follow-up | FR3.2, FR3.3, FR3.4, FR13 |
+| [UC-09](#uc-09) | Review daily work and notifications | FR7, FR7.1, FR7.2, FR8.2, FR8.3 |
+| [UC-10](#uc-10) | Record subscription cancellation | FR4, FR4.1, FR15, FR4.3, FR4.4, FR15.1, FR15.2 |
+| [UC-11](#uc-11) | Query outstanding obligations through the API | FR4.2, FR15, FR15.1, FR15.2 |
+| [UC-12](#uc-12) | Consult financial dashboard and reports | FR8, FR8.1, FR8.3, FR8.4, FR8.5, FR8.6, FR8.7, FR8.8 |
+| [UC-13](#uc-13) | Configure billing and automation policies | FR5.1, FR6.2, FR13, FR13.1, FR13.3 |
+| [UC-14](#uc-14) | Supervise audit, backups and recovery | FR9.1, FR9.2, FR9 |
+| [UC-15](#uc-15) | Correct an issued invoice | FR2.3, FR2.8 |
+| [UC-16](#uc-16) | Resolve a billing or delivery issue | FR3.4, FR12, FR12.1, FR12.2, FR12.3 |
+| [UC-17](#uc-17) | Decide a sensitive financial approval | FR3.5, FR11, FR11.1, FR11.3 |
+| [UC-18](#uc-18) | Close or reopen an administrative period | FR13.2 |
 
 ## 3. Behavioural contracts
 
@@ -121,9 +142,9 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **3b.** Concurrent change or lost assignment: reject the stale/unauthorised write without overwriting committed data.
   * **4a.** View, download or bulk export/update: recheck every item’s scope, preview sensitive operations, confirm and report per-item outcomes; sensitive exports are audited.
 
-## UC-04
+## UC-03
 
-* **ID / Code:** UC-04
+* **ID / Code:** UC-03
 * **Use Case Name:** Administer staff access and customer assignments
 * **Description:** Administer internal accounts and customer portfolios with separate capabilities for account changes, assignment and temporary delegation.
 * **Primary Actor:** Administrator
@@ -155,9 +176,9 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **4a.** Bulk reassignment: confirm the affected count, recheck each customer and report successes/failures individually.
   * **4b.** Delegation expires: remove temporary access automatically, retain the principal assignment and preserve all prior actions.
 
-## UC-06
+## UC-04
 
-* **ID / Code:** UC-06
+* **ID / Code:** UC-04
 * **Use Case Name:** Manage subscriptions and annual rate reviews
 * **Description:** Maintain monthly subscription terms and effective dates, including pauses, initial proration and an administrator-led annual rate review.
 * **Primary Actor:** Operational User
@@ -179,25 +200,25 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Main Success Scenario:**
 1. The user selects the customer, service, start date, rate, recurring concepts and agreed payment terms.
 2. The system validates tax data and previews the documented proration calculation and first regular billing date.
-3. The user reviews the proposal; required commercial exceptions go to UC-23 before activation.
+3. The user reviews the proposal; required commercial exceptions go to UC-17 before activation.
 4. After authorised confirmation, the system stores effective terms and schedules monthly billing.
-5. For an eligible mid-month start, the system invokes UC-08 with the approved initial prorated proposal; normal recurrence begins on the following first day.
+5. For an eligible mid-month start, the system invokes UC-05 with the approved initial prorated proposal; normal recurrence begins on the following first day.
 
 * **Extensions:**
   * **2a.** Future start or approved no-proration option: record it explicitly; create no premature invoice or reminder. A first-day start must not generate an overlapping extra proration invoice.
   * **1a.** Pause/reactivate: record reason and dates; suppress the affected future monthly invoices, retain old debt and notify the responsible person when review/reactivation is due.
-  * **3a.** Discount, free period or extra service: UC-23 decides the exact proposal under configured thresholds; apply approved effective dates and expire time-limited discounts automatically.
-  * **1b.** Annual review: Time lists due reviews. An authorised Administrator records annual revenue, source and date; the system proposes the band. Obtain the required UC-23 decision, retain old/new values and activate only from the approved date.
+  * **3a.** Discount, free period or extra service: UC-17 decides the exact proposal under configured thresholds; apply approved effective dates and expire time-limited discounts automatically.
+  * **1b.** Annual review: Time lists due reviews. An authorised Administrator records annual revenue, source and date; the system proposes the band. Obtain the required UC-17 decision, retain old/new values and activate only from the approved date.
   * **1c.** Annual evidence missing or proposal rejected: retain the pending review or rejection and existing rate; corrections remain traced, with no automatic retroactive charge.
   * **5a.** Issuance or delivery fails: preserve the subscription and invoice stages separately and retry without duplicating the charge.
 
-## UC-08
+## UC-05
 
-* **ID / Code:** UC-08
+* **ID / Code:** UC-05
 * **Use Case Name:** Prepare, issue and deliver an invoice
 * **Description:** Validate an invoice proposal, issue its unique numbered PDF and request delivery, keeping draft, issuance and communication states distinct.
 * **Primary Actor:** Operational User
-* **Other Initiating Contexts:** UC-06, UC-10 and UC-21 supply authorised proposals; included callers execute the same validation, issuance and dispatch contract without demanding a new staff session.
+* **Other Initiating Contexts:** UC-04, UC-06 and UC-15 supply authorised proposals; included callers execute the same validation, issuance and dispatch contract without demanding a new staff session.
 * **Supporting Actors:** Communication Service
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
@@ -207,7 +228,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * *Customer and billing recipients:* receive a correct invoice through an eligible channel.
   * *Assigned staff:* prepare invoices and resolve delivery failures.
   * *Turbine finance staff:* preserve numbering, issued amounts and dispatch evidence.
-* **Preconditions:** Direct initiation requires authentication, invoice-creation/issuance authority and customer scope. Included calls from UC-06, UC-10 or UC-21 supply an authorised subscription or correction proposal. Applicable series, taxes and templates are configured.
+* **Preconditions:** Direct initiation requires authentication, invoice-creation/issuance authority and customer scope. Included calls from UC-04, UC-06 or UC-15 supply an authorised subscription or correction proposal. Applicable series, taxes and templates are configured.
 * **Postconditions:** A draft remains unissued until confirmation. Successful issuance stores one number, snapshot and original PDF; each dispatch records recipients, channel, template version and observed outcome.
 * **Success Guarantee:** One valid proposal becomes an issued invoice with preserved PDF and a recorded delivery attempt or recoverable dispatch request.
 * **Minimal Guarantee:** Drafts consume no definitive number. A failure after durable issuance retains the same identity; retries never duplicate the invoice or invent delivery/read evidence.
@@ -215,22 +236,22 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Main Success Scenario:**
 1. The user enters customer, lines, quantities, prices, discounts, taxes and terms, using available defaults/catalogue; an included workflow supplies its approved proposal instead.
 2. The system validates mandatory tax data, decimal totals, currency, current version, approvals and period rules, and presents the preview or verifies the approved automated proposal.
-3. The authorised user confirms issuance; an automated caller proceeds only under the approved subscription/correction authority. Sensitive changes invoke UC-23.
+3. The authorised user confirms issuance; an automated caller proceeds only under the approved subscription/correction authority. Sensitive changes invoke UC-17.
 4. The system allocates one sequential series number, stores immutable issued data and generates/preserves the corporate PDF with tax, total, dates and support/payment details.
 5. The system requests delivery through Communication Service to eligible billing recipients and records the attempt/result; staff can view or download the same preserved PDF.
 
 * **Extensions:**
   * **2a.** Missing/invalid data or unusual amount: show errors or the configured warning. Block invalid issuance; preserve a recoverable draft with conflict detection. Catalogue/template changes never rewrite issued invoices.
-  * **3a.** Pending/rejected approval or locked period: retain the proposal without issuing or sending it; financial changes to an issued original use UC-21.
+  * **3a.** Pending/rejected approval or locked period: retain the proposal without issuing or sending it; financial changes to an issued original use UC-15.
   * **4a.** Repeated/concurrent request: return the recorded invoice/in-progress result; never allocate a second invoice for the same operation.
   * **4b.** PDF generation fails after issuance: retain the number and snapshot and retry that document; do not label it generated.
   * **5a.** Delivery-only retry: use the existing PDF/number and recheck scope and corrected recipients; record an intentional resend as another attempt. A queued attempt is not a delivery/read confirmation.
-  * **5b.** Missing contact, bounce or provider failure: keep the invoice issued, record the failed/undelivered state, notify its responsible staff and allow UC-22 follow-up.
+  * **5b.** Missing contact, bounce or provider failure: keep the invoice issued, record the failed/undelivered state, notify its responsible staff and allow UC-16 follow-up.
   * **5c.** Email is the default. Complementary WhatsApp requires a valid number and consent; use the contact’s language and versioned template. Providers may be simulated.
 
-## UC-10
+## UC-06
 
-* **ID / Code:** UC-10
+* **ID / Code:** UC-06
 * **Use Case Name:** Generate monthly recurring invoices
 * **Description:** Process eligible monthly subscriptions and recover interrupted billing runs without repeating a subscription-period charge.
 * **Primary Actor:** Time
@@ -251,7 +272,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Main Success Scenario:**
 1. The system creates or resumes the billing-period execution record.
 2. It selects subscriptions eligible under start, pause, cancellation, rate and discount effective dates.
-3. For each unprocessed subscription-period, it invokes UC-08 with the approved proposal and automated authority.
+3. For each unprocessed subscription-period, it invokes UC-05 with the approved proposal and automated authority.
 4. It records item outcomes, notifies staff of actionable failures and stores run totals/status.
 
 * **Extensions:**
@@ -260,9 +281,9 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **3b.** Item-level validation/PDF/delivery failure: record the failed stage, continue independent items and resume only the missing work.
   * **1a.** Outage: find missed periods/items on recovery; execution does not depend on an open staff browser.
 
-## UC-12
+## UC-07
 
-* **ID / Code:** UC-12
+* **ID / Code:** UC-07
 * **Use Case Name:** Reconcile payments with invoices
 * **Description:** Match verified provider transactions to invoices and preserve discrepancies or authorised reversals as auditable evidence.
 * **Primary Actor:** Operational User
@@ -290,13 +311,13 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Extensions:**
   * **1a.** Provider unavailable or invalid event: record/reject the failure without marking any invoice paid.
   * **2a.** Duplicate event or another event for the same transaction: return the prior result without allocating again.
-  * **3a.** Missing reference, ambiguous candidate or currency mismatch: keep pending for authorised manual review; UC-22 can track the issue.
+  * **3a.** Missing reference, ambiguous candidate or currency mismatch: keep pending for authorised manual review; UC-16 can track the issue.
   * **3b.** Under/overpayment: retain the received amount and difference; an underpayment does not settle the invoice and excess is not discarded.
   * **4a.** Manual allocation/reversal: recheck scope, require a reason and preserve original evidence while recalculating balances.
 
-## UC-13
+## UC-08
 
-* **ID / Code:** UC-13
+* **ID / Code:** UC-08
 * **Use Case Name:** Run reminders and overdue follow-up
 * **Description:** Send eligible invoice reminders using stored terms and current balances, suspending follow-up when authorised.
 * **Primary Actor:** Time
@@ -326,9 +347,9 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **4a.** Provider failure or duplicate job: record a retryable failure or reuse the occurrence result; do not send the same occurrence twice.
   * **1b.** Customer-specific terms, e.g. thirty days: do not declare overdue on default day five; overdue spacing is the configured two/three-day policy.
 
-## UC-14
+## UC-09
 
-* **ID / Code:** UC-14
+* **ID / Code:** UC-09
 * **Use Case Name:** Review daily work and notifications
 * **Description:** Find scoped tasks and notifications, search operational records and open the workflow needed to act.
 * **Primary Actor:** Operational User
@@ -358,9 +379,9 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **1a.** Administrator global operational view: enforce its permission; an Operational User receives no global financial dashboard.
   * **1b.** Notification preferences: retain in-app events; permit configured daily summary versus immediate non-critical email. Notify the responsible user of payments, due/overdue status, follow-ups, issues, reactivation and review tasks under FR7–FR7.2.
 
-## UC-15
+## UC-10
 
-* **ID / Code:** UC-15
+* **ID / Code:** UC-10
 * **Use Case Name:** Record subscription cancellation
 * **Description:** Confirm the effective cancellation date, stop future recurrence and keep existing obligations in collection.
 * **Primary Actor:** Administrator
@@ -382,7 +403,7 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Trigger:** An Administrator records a cancellation or External Application submits intake.
 * **Main Success Scenario:**
 1. The actor supplies customer/subscription, reason and effective date; the system validates scope and records the request.
-2. The system invokes UC-16 in the authorised internal context and shows current obligations and billing effects.
+2. The system invokes UC-11 in the authorised internal context and shows current obligations and billing effects.
 3. An authorised Administrator confirms the effective date.
 4. The system stops applicable recurrence, retains old invoices/collection tasks and records the outcome.
 
@@ -392,13 +413,13 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **1a.** Unknown/unauthorised identifier: expose no protected debt data and change no billing state.
   * **4a.** Overlapping billing run: enforce the effective date consistently and avoid inappropriate future issuance; the C4 next-client-review caveat remains.
 
-## UC-16
+## UC-11
 
-* **ID / Code:** UC-16
+* **ID / Code:** UC-11
 * **Use Case Name:** Query outstanding obligations through the API
 * **Description:** Return an authorised, time-stamped customer debt snapshot without mutating billing or cancellation state.
 * **Primary Actor:** External Application
-* **Other Initiating Contexts:** UC-15 invokes debt calculation using its authorised internal context, without external API credentials.
+* **Other Initiating Contexts:** UC-10 invokes debt calculation using its authorised internal context, without external API credentials.
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
@@ -408,13 +429,13 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * *External Application:* distinguish valid debt results from errors.
   * *Turbine:* limit disclosure to scoped callers.
   * *Customer:* have obligations calculated from financial evidence.
-* **Preconditions:** External calls require provisioned API credentials and debt-query scope; the UC-15 internal include uses its already-authorised workflow/customer context.
+* **Preconditions:** External calls require provisioned API credentials and debt-query scope; the UC-10 internal include uses its already-authorised workflow/customer context.
 * **Postconditions:** A successful response provides permitted debt details, currency and snapshot time; rejected/unavailable queries leave all business state unchanged.
 * **Success Guarantee:** The caller receives a documented, scoped debt snapshot.
 * **Minimal Guarantee:** An error is never reported as debt-free, and a query cannot cancel recurrence.
-* **Trigger:** An External Application requests debt status or UC-15 invokes its internal calculation.
+* **Trigger:** An External Application requests debt status or UC-10 invokes its internal calculation.
 * **Main Success Scenario:**
-1. The caller supplies the customer identifier and API credentials, or UC-15 supplies authorised internal context.
+1. The caller supplies the customer identifier and API credentials, or UC-10 supplies authorised internal context.
 2. The system verifies scope and applicable limits without exposing inaccessible records.
 3. It calculates obligations from issued invoices, verified payments and corrective documents, keeping currencies distinct.
 4. It returns permitted indicators/details and snapshot time and records the important call.
@@ -423,11 +444,11 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **2a.** Invalid credentials, insufficient scope or inaccessible customer: return the documented non-disclosing error.
   * **3a.** Calculation unavailable: return an explicit error, never a zero-debt substitute.
   * **4a.** Later state change: cancellation rechecks current data; a snapshot is not permanent cancellation authority.
-  * **1a.** Other FR15 customer/invoice queries or controlled intake: apply their documented field/scope contract and the same interface rules; only UC-15 confirms cancellation.
+  * **1a.** Other FR15 customer/invoice queries or controlled intake: apply their documented field/scope contract and the same interface rules; only UC-10 confirms cancellation.
 
-## UC-17
+## UC-12
 
-* **ID / Code:** UC-17
+* **ID / Code:** UC-12
 * **Use Case Name:** Consult financial dashboard and reports
 * **Description:** Inspect explainable financial indicators, export authorised reports and prepare accounting packages.
 * **Primary Actor:** Administrator
@@ -458,9 +479,9 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **4a.** Failed/long report: preserve job/result status and configurable export retention; do not present a partial file as complete.
   * **1b.** Scheduled summary: an authorised Administrator configures weekly/monthly generation for authorised recipients only.
 
-## UC-18
+## UC-13
 
-* **ID / Code:** UC-18
+* **ID / Code:** UC-13
 * **Use Case Name:** Configure billing and automation policies
 * **Description:** Validate and version global rates, numbering, billing, communication and approval settings for future operations.
 * **Primary Actor:** Super Administrator
@@ -490,9 +511,9 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **1a.** Insufficient configuration permission: reject the action on the server.
   * **2a.** A rule such as proration, date counting or rounding lacks an approved convention: document and obtain that policy before activation; do not invent a client decision.
 
-## UC-20
+## UC-14
 
-* **ID / Code:** UC-20
+* **ID / Code:** UC-14
 * **Use Case Name:** Supervise audit, backups and recovery
 * **Description:** Inspect integrity evidence and automation health, and create or restore backups through explicit operation-specific branches.
 * **Primary Actor:** Super Administrator
@@ -524,9 +545,9 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **1d.** Restore validation fails: leave recovery incomplete, identify the failed stage and keep normal billing blocked.
   * **3a.** An automated item failed: show that item and stage without misrepresenting the whole process as successful.
 
-## UC-21
+## UC-15
 
-* **ID / Code:** UC-21
+* **ID / Code:** UC-15
 * **Use Case Name:** Correct an issued invoice
 * **Description:** Issue an approved corrective document linked to the preserved original invoice and explain the resulting balance.
 * **Primary Actor:** Administrator
@@ -547,17 +568,17 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Main Success Scenario:**
 1. The Administrator enters the reason and proposed corrected data/amount.
 2. The system previews the relationship and balance impact.
-3. It checks period rules and any UC-23 approval for the exact proposal.
-4. The system invokes UC-08 with the approved corrective proposal, appropriate series and original link, then records the updated financial view.
+3. It checks period rules and any UC-17 approval for the exact proposal.
+4. The system invokes UC-05 with the approved corrective proposal, appropriate series and original link, then records the updated financial view.
 
 * **Extensions:**
-  * **1a.** Unissued draft: use UC-08 draft editing instead of a corrective document.
+  * **1a.** Unissued draft: use UC-05 draft editing instead of a corrective document.
   * **3a.** Rejected approval or locked period without exception authority: retain the blocked proposal and reason.
-  * **4a.** Issuance/delivery failure follows UC-08 recovery rules. Any cash refund is a separate authorised workflow, not created by the corrective document.
+  * **4a.** Issuance/delivery failure follows UC-05 recovery rules. Any cash refund is a separate authorised workflow, not created by the corrective document.
 
-## UC-22
+## UC-16
 
-* **ID / Code:** UC-22
+* **ID / Code:** UC-16
 * **Use Case Name:** Resolve a billing or delivery issue
 * **Description:** Track a customer issue to resolution, including internal evidence and a separately authorised follow-up suspension.
 * **Primary Actor:** Operational User
@@ -586,11 +607,11 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **3a.** Disallowed/oversize attachment or expired download link: reject; access follows the linked customer/invoice scope.
   * **4a.** No pause permission: deny suspension; opening an issue alone does not stop follow-up.
   * **5a.** Pause review due before resolution: notify the owner and apply the documented resumption policy.
-  * **5b.** Financial action needed: use UC-12 reconciliation or UC-21 correction with their own authority; do not mark an invoice paid merely to close the issue.
+  * **5b.** Financial action needed: use UC-07 reconciliation or UC-15 correction with their own authority; do not mark an invoice paid merely to close the issue.
 
-## UC-23
+## UC-17
 
-* **ID / Code:** UC-23
+* **ID / Code:** UC-17
 * **Use Case Name:** Decide a sensitive financial approval
 * **Description:** Approve or reject the exact financial proposal under authority thresholds, substitution and separation-of-duties rules.
 * **Primary Actor:** Administrator
@@ -620,9 +641,9 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
   * **4a.** Rejection: retain the prior terms and block the proposed financial action.
   * **4b.** Approved uncollectible debt: record a reasoned, audited uncollectible state distinct from paid; preserve financial evidence and the applicable collection decision.
 
-## UC-24
+## UC-18
 
-* **ID / Code:** UC-24
+* **ID / Code:** UC-18
 * **Use Case Name:** Close or reopen an administrative period
 * **Description:** Close a reviewed month/quarter or exceptionally reopen it with higher authority and an audited reason.
 * **Primary Actor:** Administrator
@@ -648,11 +669,11 @@ IDs already used by the group are retained, leaving deliberate gaps. There are 1
 * **Extensions:**
   * **1a.** Reopen: require higher capability and a reason before changing the state; retain the earlier closure event.
   * **2a.** Blocking exception or concurrent financial mutation: reject and show the conflict.
-  * **3a.** Invoice correction remains subject to UC-21; reopening is not permission to overwrite an original.
+  * **3a.** Invoice correction remains subject to UC-15; reopening is not permission to overwrite an original.
 
 ## 4. Relationships and coverage
 
-The four views of [use-case-diagram.pu](use-case-diagram.pu) show exactly these 18 IDs. UC-10 and UC-21 include UC-08; their caller supplies the appropriate approved recurring or corrective proposal. UC-15 includes UC-16's debt calculation. UC-08 extends UC-06 only when an initial prorated invoice is due. UC-23 extends UC-06, UC-08 or UC-21 only when the applicable rate, commercial or correction decision requires approval. UC-22 extends UC-08 or UC-12 for delivery or reconciliation problems; it does not run after every successful invoice/payment.
+The four views of [use-case-diagram.pu](use-case-diagram.pu) show exactly these 18 IDs. UC-06 and UC-15 include UC-05; their caller supplies the appropriate approved recurring or corrective proposal. UC-10 includes UC-11's debt calculation. UC-05 extends UC-04 only when an initial prorated invoice is due. UC-17 extends UC-04, UC-05 or UC-15 only when the applicable rate, commercial or correction decision requires approval. UC-16 extends UC-05 or UC-07 for delivery or reconciliation problems; it does not run after every successful invoice/payment.
 
 The grouped cases retain their distinct branch permissions and outcomes; grouping is a presentation change, not a grant of new capabilities. All 59 original FR remain covered; the current 85 parent requirements and all 112 explicitly defined descendant rules (197 FR IDs) are covered. Each listed parent FR includes its defined sub-requirements; the coordination note records the complete parent mapping. The diagram's historical C9 label refers to FR3.2.6, which now defines the working-calendar rule directly. BR links use the six current BR, without renumbering requirements. Broader UR goals for controlled merging, cost centres, budget targets or refunds do not override the existing scope exclusions or create unsupported cash flows.
 
