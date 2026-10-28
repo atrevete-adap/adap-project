@@ -21,26 +21,40 @@
 > Answering "What does the user want to achieve?" (Customer or actor goals).
 
 #### A. Customer Relationship and Subscription Management
-- UR-01: Registration, import and maintenance of clients and contacts
-- UR-02: Subscription lifecycle management. 
+- UR-01: As an Administrator or Operational User, I want to register, import, update, and logically deactivate customer companies and their contact persons so that billing and communication records remain accurate while preserving historical data.
+  - Traceability: FR1, FR1.1, FR1.2, FR1.3, FR1.4, FR1.5, FR1.6, FR1.7, FR1.8.
+- UR-02: As an Administrator, I want to manage month-to-month customer subscriptions—including future start dates, pauses, reactivations, and cancellations—so that recurring billing accurately reflects the active commercial agreement.
+  - Traceability: FR4, FR4.1, FR4.2, FR4.3, FR4.4, FR10, FR10.1, FR10.2, FR10.3.
 
 #### B. Invoicing, Communications, and Collections
-- UR-03: One-off, recurring, and corrective invoicing.
-- UR-04: Multi-channel delivery and bounce handling.
-- UR-05: Automated payment follow-up and billing issue management.
-- UR-06: Payment reconciliation and uncollectible debt write-off.
+- UR-03: As an Administrator or permitted Operational User, I want to create, preview, validate, and issue one-off, automatic monthly recurring, and corrective invoices with standardized PDF generation so that customers are billed accurately and legally.
+  - Traceability: FR2, FR2.1, FR2.2, FR2.3, FR2.4, FR2.5, FR2.6, FR2.8, FR2.9, FR2.10, FR2.11.
+- UR-04: As an Operational User, I want the system to automatically deliver issued invoices via email or consented WhatsApp and notify me of delivery failures so that I can correct contact details and resend documents without altering invoice numbering.
+  - Traceability: FR2.7, FR7.
+- UR-05: As an Operational User, I want the system to send automated payment reminders for unpaid invoices and allow me to log billing issues or pause follow-ups during disputes so that collections are managed without harassing customers with active incidents.
+  - Traceability: FR3.2, FR3.3, FR3.4, FR12, FR12.1, FR12.2, FR12.3.
+- UR-06: As an Administrator, I want to automatically or manually reconcile incoming payment events with issued invoices and request approval to write off uncollectible debts so that customer balances reflect real cash collection.
+  - Traceability: FR3, FR3.1, FR3.5, FR3.6, FR3.7.
 
 #### C. Financial Governance, Rate Reviews, and Accounting
-- UR-07: Hierarchical approvals with separation of duties.
-- UR-08: Annual revenue tier review campaigns.
-- UR-09: Period closing and external accounting packages.
+- UR-07: As an Administrator or Super Administrator, I want to review and approve or reject sensitive financial actions (extraordinary discounts, manual amount edits, corrective invoices, and write-offs) under separation-of-duties rules so that company revenue is protected from unauthorized alterations.
+  - Traceability: FR11, FR11.1, FR11.2, FR11.3.
+- UR-08: As an Administrator, I want to prepare and approve annual customer rate reviews based on updated customer revenue tiers and manage temporary commercial exceptions so that subscription pricing scales with customer growth.
+  - Traceability: FR5, FR5.1, FR5.2, FR5.3, FR5.4, FR5.5, FR5.6.
+- UR-09: As an Administrator, I want to close monthly or quarterly accounting periods and export structured accounting packages (CSV/PDF) so that the external accounting firm can file taxes without retroactive data changes.
+  - Traceability: FR8.4, FR8.5, FR13.2.
 
 #### D. Daily Operations, Analytics, and System Administration
-- UR-10: Daily operational workspace, global search, and bulk actions.
-- UR-11: Financial dashboard and customizable reporting.
-- UR-12: User access control, portfolio assignment, and delegation.
-- UR-13: Global business configuration and template simulation.
-- UR-14: Immutable auditing, automation health monitoring, and backups.
+- UR-10: As an Operational User or Administrator, I want a daily workspace showing pending tasks and alerts, alongside filtered search and safe bulk actions, so that I can prioritize and execute daily billing operations efficiently.
+  - Traceability: FR7.1, FR7.2, FR8.2, FR8.3, FR14, FR14.1, FR14.2, FR14.5.
+- UR-11: As an Administrator, I want to consult a drill-down financial dashboard and generate filtered or scheduled billing reports so that I can monitor collections, debt, and revenue forecasts.
+  - Traceability: FR8, FR8.1, FR8.6, FR8.7, FR8.8.
+- UR-12: As a Super Administrator or Administrator, I want to manage user accounts, role-based permissions, customer portfolio assignments, temporary delegations, and authenticated API access so that users and external systems only access authorized records.
+  - Traceability: FR6.1, FR6.2, FR6.3, FR6.4, FR15, FR15.1, FR15.2.
+- UR-13: As a Super Administrator, I want to configure global billing parameters (series, taxes, payment terms, calendars) and multi-language communication templates so that the system adapts to business rules without code modifications.
+  - Traceability: FR13, FR13.1, FR13.3.
+- UR-14: As a Super Administrator, I want to inspect immutable audit logs, monitor background job health, and rely on automated restorable backups so that system integrity and operational traceability are guaranteed.
+  - Traceability: FR9, FR9.1, FR9.2, FR14.3, FR14.4.
 
 ## System Requirements
 > Technical translation of user and business goals into executable functional capabilities and quality constraints.
