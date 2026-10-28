@@ -48,7 +48,7 @@
 ### Functional Requirements
 > Answering "What the system does to fulfill user requirements?" (Inputs, outputs, calculations, and technical behavior).
 >
-> Sub-requirements (FRx.y.z) state the individual rules of their parent requirement and share its dependencies.
+> Sub-requirements (FRx.y.z) detail a function of their parent requirement and share its dependencies.
 
 #### 1. Customer Management
 
@@ -78,7 +78,7 @@
 - **FR1.6.** Customer status, tags and timeline. The system will show the commercial situation of each customer.
   - Dependencies / Relationships: FR1.5, FR9.1, FR10.
   - **FR1.6.1.** The system represents the customer statuses that affect billing (at minimum: pending activation, active, paused, cancellation requested, inactive, administratively blocked), and authorised users can change them after the consequences are shown.
-  - **FR1.6.2.** Customers can be tagged (e.g. strategic, partner, collection risk); tags never replace statuses derived from data, such as "unpaid".
+  - **FR1.6.2.** Users can tag customers (e.g. strategic, partner, collection risk).
   - **FR1.6.3.** Each customer has a business timeline with its relevant events: registration, change of responsible person, rate changes, invoices, payments, issues, pauses, cancellation and reactivation.
 - **FR1.7.** Registration validation. The system will validate emails, tax identifiers (when the country's format is known) and mandatory fields, distinguishing the data required to issue an invoice from data that is only recommended.
   - Dependencies / Relationships: FR1.
@@ -89,34 +89,26 @@
 
 - **FR2.** Invoice creation. The system will allow users to create an invoice for a customer, choosing whether it is one-off or recurring.
   - Dependencies / Relationships: FR1, FR13.
-- **FR2.1.** Automatic recurring invoices. On the first day of every month, the system will automatically generate an invoice for each active subscription from the concepts configured in it.
+- **FR2.1.** Automatic recurring invoices. On the first day of every month, the system will automatically generate an invoice for each active subscription from the concepts configured in it. Paused, not-yet-active and cancelled subscriptions do not generate invoices.
   - Dependencies / Relationships: FR2, FR10, FR14.
-  - **FR2.1.1.** A generated invoice needs no manual approval as long as it matches the approved subscription.
-  - **FR2.1.2.** Paused, not-yet-active and cancelled subscriptions do not generate invoices.
-  - **FR2.1.3.** Monthly is the only recurrence frequency, and the amount stays the same until an annual review or an approved exception changes it.
-- **FR2.2.** Prorated first invoice. When a recurring customer starts during the month, the system will invoice the remaining days of that month, and normal monthly invoicing will start on the following first day.
+- **FR2.2.** Prorated first invoice. When a recurring customer starts during the month, the system will invoice the remaining days of that month, and normal monthly invoicing will start on the following first day. The proration is shown before the registration is confirmed.
   - Dependencies / Relationships: FR2.1, FR10.1.
-  - **FR2.2.1.** The proration is shown before the registration is confirmed.
-  - **FR2.2.2.** The proration follows a single documented rule.
 - **FR2.3.** Invoice lifecycle and editing. The system will model the invoice lifecycle (e.g. draft, pending approval, issued, sent, overdue, paid, with discrepancy, disputed, uncollectible, rectified).
   - Dependencies / Relationships: FR2, FR2.8, FR9.1, FR11.
-  - **FR2.3.1.** States derived from data, such as overdue or paid, are never set by hand.
+  - **FR2.3.1.** The system sets the overdue and paid states automatically from due dates and payments.
   - **FR2.3.2.** Drafts, including their amount, can be freely corrected or deleted.
   - **FR2.3.3.** A manual change to the amount of a recurring invoice requires approval.
   - **FR2.3.4.** Issued invoices can never be deleted or silently modified: relevant changes are traced, and changes that are not legally allowed go through a corrective invoice.
 - **FR2.4.** Series and numbering. Invoices will have a series and a unique, sequential number within it, configured by the super administrator.
   - Dependencies / Relationships: FR2.3, FR6.2.
   - **FR2.4.1.** Numbers are assigned only at issuance, never to drafts.
-  - **FR2.4.2.** Numbers remain unique when several invoices are issued at the same time.
-  - **FR2.4.3.** Retrying a failed sending does not consume a new number.
+  - **FR2.4.2.** Retrying a failed sending does not consume a new number.
 - **FR2.5.** Preview and issuance validation. Before issuance, the system will show a preview of the invoice.
   - Dependencies / Relationships: FR1, FR2, FR13.
   - **FR2.5.1.** Issuance is blocked if mandatory tax data is missing, stating exactly what is missing.
-  - **FR2.5.2.** The system warns, without necessarily blocking, when an amount deviates strongly from the customer's usual pattern, according to a simple configurable rule.
-- **FR2.6.** Invoice PDF generation and storage. The system will generate each issued invoice as a PDF in a single standard format with Turbine's corporate identity (logo, tax data, series and number, dates, lines, taxable bases, taxes, total, payment terms and support contact details) and store it linked to its customer.
+  - **FR2.5.2.** The system warns, without blocking, when an amount differs by more than 50% (configurable) from the average of the customer's last 6 invoices of the same type.
+- **FR2.6.** Invoice PDF generation and storage. The system will generate each issued invoice as a PDF in a single standard format with Turbine's corporate identity (logo, tax data, series and number, dates, lines, taxable bases, taxes, total, payment terms and support contact details) and store it linked to its customer. The original PDF is preserved, so later template changes do not alter historical invoices.
   - Dependencies / Relationships: FR2, FR13.
-  - **FR2.6.1.** The same PDF is used wherever the invoice is shown or sent.
-  - **FR2.6.2.** The original PDF is preserved, so later template changes do not alter historical invoices.
 - **FR2.7.** Invoice sending and delivery tracking. When an invoice is issued, the system will send it to the customer's billing contact.
   - Dependencies / Relationships: FR1.1, FR2.6, FR7, FR13.1.
   - **FR2.7.1.** Invoices are sent by email, and by WhatsApp only when the contact has consented and has a valid number (both providers may be simulated).
@@ -130,7 +122,7 @@
   - **FR2.8.2.** Customer balances take corrective documents into account.
 - **FR2.9.** Invoice lines. Each invoice is made of one or more lines with description, quantity, unit price, optional discount and a tax selected from a configurable list.
   - Dependencies / Relationships: FR2, FR13.
-- **FR2.10.** Concept catalogue. Invoice lines can reuse concepts from a lightweight catalogue, and changes to the catalogue do not affect existing invoices.
+- **FR2.10.** Concept catalogue. Invoice lines can reuse concepts from a catalogue where each concept has a name, default price and default tax; changes to the catalogue do not affect existing invoices.
   - Dependencies / Relationships: FR2.9.
 - **FR2.11.** Invoice currency. An invoice is issued in a single currency that never changes afterwards.
   - Dependencies / Relationships: FR2.
@@ -141,7 +133,7 @@
   - Dependencies / Relationships: FR2.
 - **FR3.1.** Payment reconciliation. The system will match received transactions (amount, date, currency, description, reference) to invoices.
   - Dependencies / Relationships: FR3, FR9.1.
-  - **FR3.1.1.** Clear matches are reconciled automatically according to policy; doubtful or unreferenced ones stay pending manual reconciliation.
+  - **FR3.1.1.** A transaction is reconciled automatically only when its reference matches exactly one open invoice with the same amount and currency; all other transactions stay pending manual reconciliation.
   - **FR3.1.2.** The system never silently picks one of several invoices with the same amount.
   - **FR3.1.3.** A received amount lower or higher than the invoice total is recorded as a discrepancy.
   - **FR3.1.4.** A reconciliation can be reversed with a reason.
@@ -150,14 +142,11 @@
   - Dependencies / Relationships: FR2.7, FR3, FR3.3, FR13.
   - **FR3.2.1.** A reminder is sent on day 3 after issuance and another on the due date.
   - **FR3.2.2.** After the due date, a reminder is sent every 2–3 days until payment is detected or a person intervenes.
-  - **FR3.2.3.** Reminder timings are configurable by the super administrator.
-  - **FR3.2.4.** The flow is per invoice: it stops when that invoice is paid, and the customer is never cancelled or penalised automatically.
-  - **FR3.2.5.** Every reminder includes Turbine's support email and telephone number.
-  - **FR3.2.6.** A reminder falling on a weekend or configured holiday is moved to the next working day; the legal due date of the invoice does not move.
-- **FR3.3.** Due date calculation. The system will calculate each invoice's due date with a default payment period of 5 days.
+  - **FR3.2.3.** The reminders of an invoice stop when that invoice is paid.
+  - **FR3.2.4.** Every reminder includes Turbine's support email and telephone number.
+  - **FR3.2.5.** A reminder falling on a weekend or configured holiday is moved to the next working day; the legal due date of the invoice does not move.
+- **FR3.3.** Due date calculation. The system will calculate each invoice's due date with a default payment period of 5 days. Payment terms agreed with a customer take precedence over the default.
   - Dependencies / Relationships: FR2, FR6.2, FR10.
-  - **FR3.3.1.** Only the super administrator can change the default payment period.
-  - **FR3.3.2.** Payment terms agreed with a customer take precedence over the default.
 - **FR3.4.** Disputes and paused follow-up. The responsible user can pause the collection follow-up of an invoice.
   - Dependencies / Relationships: FR3.2, FR7.
   - **FR3.4.1.** An invoice can be marked as disputed or follow-up paused, with a reason and a review date.
@@ -165,10 +154,6 @@
   - **FR3.4.3.** The responsible user is notified when the review date arrives.
 - **FR3.5.** Uncollectible debt. Authorised users can mark a debt as uncollectible, with a reason and approval, as a state distinct from paid.
   - Dependencies / Relationships: FR2.3, FR11.
-- **FR3.6.** Additional payment sources. Other payment sources, such as Revolut or a bank account, can be added without changing the invoice model.
-  - Dependencies / Relationships: FR3.
-- **FR3.7.** Duplicate payment events. A payment event received more than once is counted only once.
-  - Dependencies / Relationships: FR3.
 
 #### 4. Cancellation
 
@@ -178,21 +163,17 @@
   - Dependencies / Relationships: FR2.1, FR3.2, FR4.
   - **FR4.1.1.** From the effective date, no new invoices are generated for the customer.
   - **FR4.1.2.** Outstanding debt, including unpaid one-off invoices, does not block the cancellation; collection of all previous invoices continues until they are paid (see C4).
-  - **FR4.1.3.** Data that must be kept for accounting is never deleted automatically.
 - **FR4.2.** Outstanding obligations query (API). The system will provide an API that, given a customer identifier, returns whether the customer has outstanding obligations and the minimum authorised detail.
   - Dependencies / Relationships: FR3, FR15.
 - **FR4.3.** Cancellation task. A cancellation request creates a task for the customer's responsible user.
   - Dependencies / Relationships: FR4, FR7.
-- **FR4.4.** Controlled external requests. External systems cannot end a recurrence directly without passing through the system's rules.
-  - Dependencies / Relationships: FR4, FR15.
 
 #### 5. Pricing
 
 - **FR5.** Annual price review. Once a year (or when configured), the system will review the price range of each recurring customer according to its annual revenue.
   - Dependencies / Relationships: FR1, FR2.1, FR5.1, FR11.
-- **FR5.1.** Rate table. Revenue ranges and their prices will be stored as configuration editable by the super administrator.
+- **FR5.1.** Rate table. Revenue ranges and their prices will be stored as configuration editable by the super administrator. Changes to the rate table apply to new reviews only and never alter issued invoices.
   - Dependencies / Relationships: FR6.2.
-  - **FR5.1.1.** Changes to the rate table apply to new reviews only and never alter issued invoices.
 - **FR5.2.** Commercial exceptions. The system will support time-limited discounts, free periods and extra services with agreed prices.
   - Dependencies / Relationships: FR10, FR11.
   - **FR5.2.1.** Users managing a customer can request an exception; an administrator approves it, and the super administrator above a configurable threshold.
@@ -201,9 +182,7 @@
   - Dependencies / Relationships: FR5.
 - **FR5.4.** Review approval. The system will propose the corresponding price range; the change requires human approval, has an effective date, and records who approved it and the previous and new prices.
   - Dependencies / Relationships: FR5, FR11.
-- **FR5.5.** Fixed price between reviews. A recurring customer's price stays the same between annual reviews.
-  - Dependencies / Relationships: FR5.
-- **FR5.6.** Review corrections. A review record can be corrected with traceability, but any retroactive adjustment must be an explicit, approved action.
+- **FR5.5.** Review corrections. A review record can be corrected with traceability, but any retroactive adjustment must be an explicit, approved action.
   - Dependencies / Relationships: FR5.4.
 
 #### 6. Users and Access
@@ -212,8 +191,8 @@
   - **FR6.1.1.** Only verified addresses from the authorised domain are accepted, and there is no self-registration.
   - **FR6.1.2.** Users can recover their password through links that expire.
   - **FR6.1.3.** Sessions expire after inactivity, and users can log out.
-  - **FR6.1.4.** Repeated failed login attempts trigger basic protection without excessive lockouts.
-- **FR6.2.** Roles and permissions. The system will support three roles: super administrator, administrator and operational user (called "reader" in the first meeting, see C1).
+  - **FR6.1.4.** After 5 consecutive failed login attempts, the account is locked for 15 minutes (both values configurable).
+- **FR6.2.** Roles and permissions. The system will support three roles: super administrator, administrator and operational user.
   - Dependencies / Relationships: FR6.1.
   - **FR6.2.1.** Only the super administrator can change the system configuration.
   - **FR6.2.2.** Administrators manage customers, contacts, companies, invoices and invoice types, assign customers and resolve approvals within their permissions.
@@ -236,7 +215,7 @@
 - **FR7.1.** Inboxes and preferences. Each user has a notification inbox, and administrators also have a global inbox.
   - Dependencies / Relationships: FR7.
   - **FR7.1.1.** Notifications have a priority and can be marked as read or as handled; reading an actionable notification does not resolve it.
-  - **FR7.1.2.** Each user can choose which notifications arrive in-app, by email or in a daily digest, but cannot change corporate rules.
+  - **FR7.1.2.** Each user can choose which notifications arrive in-app, by email or in a daily digest.
 - **FR7.2.** Configurable alert rules. Administrators can configure parameterised alerts from a closed set of conditions (e.g. invoice overdue more than N days, outstanding balance above X, sending failed N times).
   - Dependencies / Relationships: FR7, FR13.
 
@@ -244,17 +223,16 @@
 
 - **FR8.** Invoicing reports. The system will generate weekly, monthly and annual reports on invoicing and collections.
   - Dependencies / Relationships: FR2, FR3, FR14.
-- **FR8.1.** Financial dashboard. Visible only to administrators, it shows weekly, monthly, quarterly and yearly figures: invoiced, collected, outstanding, overdue, average collection time, evolution, customers with highest debt, expected recurring revenue, one-off billing and a simple forecast.
+- **FR8.1.** Financial dashboard. Visible only to administrators, it shows weekly, monthly, quarterly and yearly figures: invoiced, collected, outstanding, overdue, average collection time, evolution, customers with highest debt, expected recurring revenue, one-off billing and a forecast of next month's recurring revenue calculated from active subscriptions. Every figure can be drilled down to the records that make it up.
   - Dependencies / Relationships: FR8, FR6.2.
-  - **FR8.1.1.** Every figure can be drilled down to the records that make it up.
 - **FR8.2.** Daily work screen. On login, each user sees invoices due soon, overdue invoices, payments to reconcile, delivery problems, pending approvals, due annual reviews and tasks assigned to them, each linking directly to the item.
   - Dependencies / Relationships: FR2, FR3, FR11.
-- **FR8.3.** Search, filters and quick access. The system will let users find customers and invoices quickly, always limited to what they are allowed to see.
+- **FR8.3.** Search, filters and quick access. The system will let users find customers and invoices, always limited to what they are allowed to see.
   - Dependencies / Relationships: FR1, FR2, FR6.2.
   - **FR8.3.1.** Users can search by part of trading name, legal name, tax identifier, contact name, email or invoice number.
   - **FR8.3.2.** Users can filter customers (location, business area, tags) and invoices (status, type, date).
-  - **FR8.3.3.** Users can save frequent views.
-  - **FR8.3.4.** Users can quickly reach favourite and recently used customers.
+  - **FR8.3.3.** Users can save a combination of search and filters as a named view.
+  - **FR8.3.4.** Users can mark customers as favourites and see their 10 most recently opened customers.
 - **FR8.4.** Exports. Results can be exported at least to CSV and to a readable PDF report.
   - Dependencies / Relationships: FR8, FR6.2, FR9.1.
   - **FR8.4.1.** Exports respect the user's permissions.
@@ -264,7 +242,7 @@
   - Dependencies / Relationships: FR2, FR3.
 - **FR8.6.** Report filters. Reports can be filtered by period, customer, internal manager, country, sector, invoice status, type and currency.
   - Dependencies / Relationships: FR8.
-- **FR8.7.** Background reports. Heavy reports run in the background, and the user is notified when they are ready.
+- **FR8.7.** Background reports. Reports covering more than 1,000 invoices (configurable) run in the background, and the user is notified when they are ready.
   - Dependencies / Relationships: FR8, FR14.
 - **FR8.8.** Scheduled summaries. Administrators can schedule weekly or monthly summaries, sent only to authorised users.
   - Dependencies / Relationships: FR8, FR6.2.
@@ -281,11 +259,10 @@
   - Dependencies / Relationships: FR9, FR14.
   - **FR9.2.1.** Each automated process records when it ran, the items processed and created, and any failures with their reasons.
   - **FR9.2.2.** A health screen shows the last recurring generation, the pending email queue, recent integration errors and the last successful backup.
-  - **FR9.2.3.** Errors shown to users are understandable and include an issue code to find them in the technical log.
 
 #### 10. Subscriptions (Commercial Relationship)
 
-- **FR10.** Subscription record. The system will store each customer's commercial relationship separately from its invoices: start date, plan, agreed rate and recurring concepts, internal manager, payment terms and associated documents (month to month, no commitment period).
+- **FR10.** Subscription record. The system will store each customer's commercial relationship separately from its invoices: start date, plan, agreed rate and recurring concepts, internal manager, payment terms and associated documents .
   - Dependencies / Relationships: FR1, FR5.
 - **FR10.1.** Start date and deferred billing. The system will allow a subscription's billing start to be planned.
   - Dependencies / Relationships: FR10, FR2.2.
@@ -303,7 +280,7 @@
 
 - **FR11.** Approval workflow. Manual amount changes, extraordinary discounts, unusual due dates, one-off invoices above a threshold, corrective invoices, write-offs and price-range changes require approval before taking effect.
   - Dependencies / Relationships: FR2, FR5, FR13.
-- **FR11.1.** Separation of duties and substitution. The system will keep approvals independent from the people who request them.
+- **FR11.1.** Separation of duties and substitution. The system will control who can decide each approval.
   - Dependencies / Relationships: FR11, FR9.1.
   - **FR11.1.1.** Above a configurable threshold, users cannot approve their own requests.
   - **FR11.1.2.** An administrator can reassign a pending approval or designate a substitute approver, and every reassignment is recorded.
@@ -330,7 +307,7 @@
 
 #### 13. Configuration and Templates
 
-- **FR13.** Global configuration. The system will keep configuration separate from operational data: default payment period, reminder timings, allowed email domain, issuer tax data, logo and template, series, currencies, taxes, approval thresholds, notification channels, working calendar (weekends and a small holiday calendar) and automation policies.
+- **FR13.** Global configuration. The super administrator can configure the default payment period, reminder timings, allowed email domain, issuer tax data, logo and template, series, currencies, taxes, approval thresholds, notification channels, working calendar (weekends and a small holiday calendar) and automation policies.
   - Dependencies / Relationships: FR6.2, FR9.1.
 - **FR13.1.** Communication templates. Authorised users can edit the templates for invoice emails, reminders and other customer messages.
   - Dependencies / Relationships: FR13, FR1.1.
@@ -347,24 +324,22 @@
 
 #### 14. Automation, Background Tasks and Bulk Operations
 
-- **FR14.** Background processing. Long operations run in the background with a visible status (pending, processing, completed, completed with errors).
+- **FR14.** Background processing. Operations affecting more than 100 records (e.g. monthly generation, imports, bulk actions) run in the background with a visible status (pending, processing, completed, completed with errors).
   - Dependencies / Relationships: FR2.1, FR9.2.
 - **FR14.1.** Bulk actions. Users can perform bulk actions (reassign customers, export a selection, change sector, generate reports).
   - Dependencies / Relationships: FR6.2.
   - **FR14.1.1.** Before a bulk action, the user sees how many items are affected and confirms sensitive actions; afterwards, the system shows a per-item result.
   - **FR14.1.2.** There is no uncontrolled bulk "mark as paid".
-- **FR14.2.** Form assistance and safe editing. The system will help users fill in frequent and long forms safely.
+- **FR14.2.** Form assistance and safe editing. The system will assist users when filling in the customer, subscription and invoice forms.
   - Dependencies / Relationships: FR1, FR2, FR5.1.
-  - **FR14.2.1.** Frequent forms pre-fill sensible defaults (usual country, currency, due date, rate suggested by revenue range).
+  - **FR14.2.1.** Forms pre-fill the country and currency the user selected most often in the last 30 days, the default due date (FR3.3) and the rate of the customer's revenue range (FR5.1).
   - **FR14.2.2.** A summary of what will happen is shown before confirming.
-  - **FR14.2.3.** Long forms save drafts automatically.
+  - **FR14.2.3.** The customer and invoice forms save a draft automatically every 30 seconds.
   - **FR14.2.4.** Reversible actions offer undo, and irreversible actions are explained before confirmation.
   - **FR14.2.5.** If two users edit the same record, the system detects the conflict instead of silently overwriting changes.
 - **FR14.3.** Missed generation recovery. If the monthly generation did not run, the missing invoices are generated on recovery without duplicates.
   - Dependencies / Relationships: FR14, FR2.1.
-- **FR14.4.** Fault isolation. A failure on one item does not stop the processing of the rest; failures are recorded and routed to whoever can resolve them.
-  - Dependencies / Relationships: FR14, FR9.2.
-- **FR14.5.** Double submission protection. Issuing, sending and reconciliation are protected against double clicks and reloads.
+- **FR14.4.** Double submission protection. Issuing, sending and reconciliation are protected against double clicks and reloads.
   - Dependencies / Relationships: FR14, FR2.4, FR3.1.
 
 #### 15. API
@@ -426,7 +401,7 @@
 
 ### Contradictions and Interpretations
 
-> Only real conflicts between client statements are kept here. C5, C7, C8, C9, C10 and C12 were removed after review on 20/10/2026: they were not contradictions, because the transcript states the answer directly. Their content now lives in the FRs: C5 → FR3.1.3 (installments are in Out of Scope), C7 → FR3.3.2, C8 → FR9 and FR9.1, C9 → FR3.2.6, C10 → FR2.5.2 and FR11, C12 → FR6.1. The remaining IDs are kept unchanged so that existing references stay valid.
+> Only real conflicts between client statements are kept here. C5, C7, C8, C9, C10 and C12 were removed after review on 20/10/2026: they were not contradictions, because the transcript states the answer directly. Their content now lives in the FRs: C5 → FR3.1.3 (installments are in Out of Scope), C7 → FR3.3, C8 → FR9 and FR9.1, C9 → FR3.2.5, C10 → FR2.5.2 and FR11, C12 → FR6.1. The remaining IDs are kept unchanged so that existing references stay valid.
 
 - **C1. Roles of the second user type**.
   - *Statements:* First meeting: a "reader" who only sees what has been assigned to them, then "cannot create or edit", then CRUD on the assigned items, plus a super administrator. Extended meeting: the client asks not to cling to the name; what matters is the capability.
@@ -442,7 +417,7 @@
   - *Interpretation:* The cancellation always proceeds: new recurring invoices stop from the effective date, and collection of all previous invoices, one-off invoices included, continues until they are paid (FR4.1.1, FR4.1.2). Source (extended meeting): "I do not want a debt to block the commercial cancellation forever, but at the same time I do not want the outstanding payment to disappear when the customer is cancelled." *Team decision, to be validated at the next client review.*
 - **C6. Editable amount vs. fixed yearly price**.
   - *Statements:* First meeting: the amount "must be modifiable all the time and editable when you create the invoice", but also the recurring price "is the same throughout the year". Extended meeting: recurring invoices are automatic, and manual amount changes need approval.
-  - *Interpretation:* The amount is editable on drafts (mainly one-off invoices). Recurring prices change only through the annual review or approved commercial exceptions, and manual changes to a recurring invoice require approval (FR2.3.2, FR2.3.3, FR5.2, FR5.5, FR11).
+  - *Interpretation:* The amount is editable on drafts (mainly one-off invoices). Recurring prices change only through the annual review or approved commercial exceptions, and manual changes to a recurring invoice require approval (FR2.3.2, FR2.3.3, FR5.2, FR5, FR11).
 - **C11. Using retained data for marketing**.
   - *Statements:* First meeting: logical deletion keeps customer data "so that you can, in the future, have a marketing campaign" (the client agreed). Extended meeting: "This application must not automatically use billing data for commercial campaigns. That would be another purpose and would have to be handled separately."
   - *Interpretation:* Retained data is kept for legal and historical reasons only (FR1.3.1) and is never used for marketing in this system (see Out of Scope).
