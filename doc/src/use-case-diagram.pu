@@ -33,7 +33,7 @@ skinparam nodesep 12
 skinparam ranksep 60
 title Overview - TurbineH Invoicing & Collections System
 
-actor "Operational User\n(Reader / Assigned Staff)" as OpUser
+actor "Operational User" as OpUser
 actor "Administrator" as Admin
 actor "Super Administrator" as SuperAdmin
 actor "External Application\n(Brain / API client)" as ExtApp <<system>>
@@ -126,7 +126,7 @@ skinparam arrow {
 }
 title View 1 - Access and administration
 
-actor "Operational User\n(Reader / Assigned Staff)" as OpUser
+actor "Operational User" as OpUser
 actor "Administrator" as Admin
 actor "Super Administrator" as SuperAdmin
 actor "Communication Service\n(Email / WhatsApp, simulated)" as CommSrv <<system>>
@@ -193,7 +193,7 @@ skinparam arrow {
 }
 title View 2 - Customers and subscriptions
 
-actor "Operational User\n(Reader / Assigned Staff)" as OpUser
+actor "Operational User" as OpUser
 actor "Administrator" as Admin
 actor "External Application\n(Brain / API client)" as ExtApp <<system>>
 
@@ -254,7 +254,7 @@ skinparam arrow {
 }
 title View 3 - Invoicing
 
-actor "Operational User\n(Reader / Assigned Staff)" as OpUser
+actor "Operational User" as OpUser
 actor "Administrator" as Admin
 actor "Communication Service\n(Email / WhatsApp, simulated)" as CommSrv <<system>>
 
@@ -317,7 +317,7 @@ skinparam arrow {
 }
 title View 4 - Collections and follow-up
 
-actor "Operational User\n(Reader / Assigned Staff)" as OpUser
+actor "Operational User" as OpUser
 actor "Payment Provider\n(Stripe / Revolut, simulated)" as PayProv <<system>>
 actor "Communication Service\n(Email / WhatsApp, simulated)" as CommSrv <<system>>
 
