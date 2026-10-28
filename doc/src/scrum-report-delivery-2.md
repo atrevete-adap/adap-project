@@ -40,7 +40,7 @@ Responsibilities in Sprint 3 follow the authorship of each Submission 1 artifact
 **28/10/2026 – 11:15 to 11:30** (Sprint 3 planning, in class)
 
 * **Participants:** Deniz, Adam, Héctor, Víctor
-* **Absent:** Pablo [TODO: how Pablo was informed of his tasks, e.g. team chat]
+* **Absent:** Pablo (informed of his tasks the same day through the team's WhatsApp group)
 * **Topic:** Review of the Submission 1 feedback (grade 8.6) and planning of Sprint 3.
 * **Results:** The feedback was split into 12 tasks (#27 to #38), each with a description, owner, labels, priority and the Submission 2 milestone. Since two feedback points conflict with the advice received in the 20/10 tutoring (fragmentation of the Functional Requirements and how to model scheduled processes without the Time actor), Deniz will ask the professor before that rework starts (#27); tasks #35 and #38 wait for the answer. The design tasks of Submission 2 will be added once the feedback fixes are under way.
 
@@ -104,8 +104,8 @@ Project board: **ADAP - Atrévete** (GitHub Projects). Milestone for all tasks: 
   * **Status:** Mitigated.
 * **Absence from the planning meeting.**
   * **Impact:** Pablo did not take part in planning his tasks (#35, #36, #37).
-  * **Solution:** [TODO: e.g. tasks explained in the team chat on 28/10 and confirmed by Pablo]
-  * **Status:** [TODO]
+  * **Solution:** His tasks were explained to him the same day through the team's WhatsApp group, and each of them has a full description on the board.
+  * **Status:** Resolved.
 
 ## 5. Final Assessment
 
