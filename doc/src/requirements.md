@@ -6,16 +6,16 @@
 
 - BR-01: Operational independence from the commercial product.
   - Provide Turbine with an internal administrative tool completely separate from its commercial product (Brain), ensuring that product and           administration are not mixed and that the administrative application continues to function even if Brain changes or disappears.
-- BR-02: Separation of commercial relationship from debt collection.
-  - Formally represent the commercial agreement or subscription on a month-to-month basis without inventing non-existent commitment periods. When a customer requests cancellation, the generation of new recurring invoices must stop on the effective date without blocking commercial termination, while keeping the collection workflow active for any prior outstanding debt.
+- BR-02: Decoupling of commercial termination from debt recovery
+  - Guarantee agile month-to-month commercial relationships where customer offboarding is never blocked by outstanding balances, while ensuring the company retains full financial recovery rights over previously accrued debt.
 - BR-03: Commercial flexibility and annual tiered rate reviews.
   - Support the company's hybrid revenue model consisting of monthly subscriptions (based on configurable tiers tied to customer annual revenue) and one-off services. Drive annual revenue review campaigns with human validation to update future rates without modifying historical invoices.
 - BR-04: Financial governance, risk control and separation of duties.
   - Protect revenue through hierarchical approval workflows and separation of duties before applying extraordinary discounts, manual modifications to amounts or due dates, high-amount one-off invoices, corrective invoices, or uncollectible debt write-offs.
 - BR-05: Auditable financial visibility.
-  - Provide management with a financial dashboard showing weekly, monthly, quarterly, and annual metrics, recurring revenue forecasts, and progress against configured targets or budgets, requiring every metric to be 100% explainable and reconcilable with the underlying invoices.
-- BR-06: Ensure accounting legality and seamless cordination with the external accounting firm.
-  - The business operates in Spain, needing that the billing of the enterprise comply with the fiscal periods of the Spanish tax agency and the requirements of the external countability advisors, avoiding mismatches or improper alterations of revenue.
+  - Provide management with reliable weekly, monthly, quarterly, and annual financial metrics and recurring revenue forecasts, ensuring every figure is 100% explainable and reconcilable with the underlying billing records.
+- BR-06: Spanish fiscal compliance and external accounting alignment.
+  - Ensure all billing operations strictly adhere to Spanish tax regulations (AEAT fiscal periods) and maintain financial integrity to allow seamless auditing and reporting with the external accounting firm.
 
 ## User Requirements
 > Answering "What does the user want to achieve?" (Customer or actor goals).
