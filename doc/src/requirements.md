@@ -324,7 +324,7 @@
 
 #### 14. Automation, Background Tasks and Bulk Operations
 
-- **FR14.** Background processing. Operations affecting more than 100 records (e.g. monthly generation, imports, bulk actions) run in the background with a visible status (pending, processing, completed, completed with errors).
+- **FR14.** Background processing. Operations affecting more than 1,000 records (configurable; e.g. monthly generation, imports, bulk actions) run in the background with a visible status (pending, processing, completed, completed with errors).
   - Dependencies / Relationships: FR2.1, FR9.2.
 - **FR14.1.** Bulk actions. Users can perform bulk actions (reassign customers, export a selection, change sector, generate reports).
   - Dependencies / Relationships: FR6.2.
@@ -332,7 +332,7 @@
   - **FR14.1.2.** There is no uncontrolled bulk "mark as paid".
 - **FR14.2.** Form assistance and safe editing. The system will assist users when filling in the customer, subscription and invoice forms.
   - Dependencies / Relationships: FR1, FR2, FR5.1.
-  - **FR14.2.1.** Forms pre-fill the country and currency the user selected most often in the last 30 days, the default due date (FR3.3) and the rate of the customer's revenue range (FR5.1).
+  - **FR14.2.1.** Forms pre-fill the customer country and currency that the user selected most often in the last 30 days, the default due date (FR3.3) and the rate of the customer's revenue range (FR5.1).
   - **FR14.2.2.** A summary of what will happen is shown before confirming.
   - **FR14.2.3.** The customer and invoice forms save a draft automatically every 30 seconds.
   - **FR14.2.4.** Reversible actions offer undo, and irreversible actions are explained before confirmation.
