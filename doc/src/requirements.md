@@ -6,41 +6,55 @@
 
 - BR-01: Operational independence from the commercial product.
   - Provide Turbine with an internal administrative tool completely separate from its commercial product (Brain), ensuring that product and           administration are not mixed and that the administrative application continues to function even if Brain changes or disappears.
-- BR-02: Separation of commercial relationship from debt collection.
-  - Formally represent the commercial agreement or subscription on a month-to-month basis without inventing non-existent commitment periods. When a customer requests cancellation, the generation of new recurring invoices must stop on the effective date without blocking commercial termination, while keeping the collection workflow active for any prior outstanding debt.
+- BR-02: Decoupling of commercial termination from debt recovery
+  - Guarantee agile month-to-month commercial relationships where customer offboarding is never blocked by outstanding balances, while ensuring the company retains full financial recovery rights over previously accrued debt.
 - BR-03: Commercial flexibility and annual tiered rate reviews.
   - Support the company's hybrid revenue model consisting of monthly subscriptions (based on configurable tiers tied to customer annual revenue) and one-off services. Drive annual revenue review campaigns with human validation to update future rates without modifying historical invoices.
 - BR-04: Financial governance, risk control and separation of duties.
   - Protect revenue through hierarchical approval workflows and separation of duties before applying extraordinary discounts, manual modifications to amounts or due dates, high-amount one-off invoices, corrective invoices, or uncollectible debt write-offs.
 - BR-05: Auditable financial visibility.
-  - Provide management with a financial dashboard showing weekly, monthly, quarterly, and annual metrics, recurring revenue forecasts, and progress against configured targets or budgets, requiring every metric to be 100% explainable and reconcilable with the underlying invoices.
-- BR-06: Ensure accounting legality and seamless cordination with the external accounting firm.
-  - The business operates in Spain, needing that the billing of the enterprise comply with the fiscal periods of the Spanish tax agency and the requirements of the external countability advisors, avoiding mismatches or improper alterations of revenue.
+  - Provide management with reliable weekly, monthly, quarterly, and annual financial metrics and recurring revenue forecasts, ensuring every figure is 100% explainable and reconcilable with the underlying billing records.
+- BR-06: Spanish fiscal compliance and external accounting alignment.
+  - Ensure all billing operations strictly adhere to Spanish tax regulations (AEAT fiscal periods) and maintain financial integrity to allow seamless auditing and reporting with the external accounting firm.
 
 ## User Requirements
 > Answering "What does the user want to achieve?" (Customer or actor goals).
 
 #### A. Customer Relationship and Subscription Management
-- UR-01: Registration, import and maintenance of clients and contacts
-- UR-02: Subscription lifecycle management. 
+- UR-01: As an Administrator or Operational User, I want to register, import, update, and logically deactivate customer companies and their contact persons so that billing and communication records remain accurate while preserving historical data.
+  - Traceability: FR1, FR1.1, FR1.2, FR1.3, FR1.4, FR1.5, FR1.6, FR1.7, FR1.8.
+- UR-02: As an Administrator, I want to manage month-to-month customer subscriptions—including future start dates, pauses, reactivations, and cancellations—so that recurring billing accurately reflects the active commercial agreement.
+  - Traceability: FR4, FR4.1, FR4.2, FR4.3, FR4.4, FR10, FR10.1, FR10.2, FR10.3.
 
 #### B. Invoicing, Communications, and Collections
-- UR-03: One-off, recurring, and corrective invoicing.
-- UR-04: Multi-channel delivery and bounce handling.
-- UR-05: Automated payment follow-up and billing issue management.
-- UR-06: Payment reconciliation and uncollectible debt write-off.
+- UR-03: As an Administrator or permitted Operational User, I want to create, preview, validate, and issue one-off, automatic monthly recurring, and corrective invoices with standardized PDF generation so that customers are billed accurately and legally.
+  - Traceability: FR2, FR2.1, FR2.2, FR2.3, FR2.4, FR2.5, FR2.6, FR2.8, FR2.9, FR2.10, FR2.11.
+- UR-04: As an Operational User, I want the system to automatically deliver issued invoices via email or consented WhatsApp and notify me of delivery failures so that I can correct contact details and resend documents without altering invoice numbering.
+  - Traceability: FR2.7, FR7.
+- UR-05: As an Operational User, I want the system to send automated payment reminders for unpaid invoices and allow me to log billing issues or pause follow-ups during disputes so that collections are managed without harassing customers with active incidents.
+  - Traceability: FR3.2, FR3.3, FR3.4, FR12, FR12.1, FR12.2, FR12.3.
+- UR-06: As an Administrator, I want to automatically or manually reconcile incoming payment events with issued invoices and request approval to write off uncollectible debts so that customer balances reflect real cash collection.
+  - Traceability: FR3, FR3.1, FR3.5, FR3.6, FR3.7.
 
 #### C. Financial Governance, Rate Reviews, and Accounting
-- UR-07: Hierarchical approvals with separation of duties.
-- UR-08: Annual revenue tier review campaigns.
-- UR-09: Period closing and external accounting packages.
+- UR-07: As an Administrator or Super Administrator, I want to review and approve or reject sensitive financial actions (extraordinary discounts, manual amount edits, corrective invoices, and write-offs) under separation-of-duties rules so that company revenue is protected from unauthorized alterations.
+  - Traceability: FR11, FR11.1, FR11.2, FR11.3.
+- UR-08: As an Administrator, I want to prepare and approve annual customer rate reviews based on updated customer revenue tiers and manage temporary commercial exceptions so that subscription pricing scales with customer growth.
+  - Traceability: FR5, FR5.1, FR5.2, FR5.3, FR5.4, FR5.5, FR5.6.
+- UR-09: As an Administrator, I want to close monthly or quarterly accounting periods and export structured accounting packages (CSV/PDF) so that the external accounting firm can file taxes without retroactive data changes.
+  - Traceability: FR8.4, FR8.5, FR13.2.
 
 #### D. Daily Operations, Analytics, and System Administration
-- UR-10: Daily operational workspace, global search, and bulk actions.
-- UR-11: Financial dashboard and customizable reporting.
-- UR-12: User access control, portfolio assignment, and delegation.
-- UR-13: Global business configuration and template simulation.
-- UR-14: Immutable auditing, automation health monitoring, and backups.
+- UR-10: As an Operational User or Administrator, I want a daily workspace showing pending tasks and alerts, alongside filtered search and safe bulk actions, so that I can prioritize and execute daily billing operations efficiently.
+  - Traceability: FR7.1, FR7.2, FR8.2, FR8.3, FR14, FR14.1, FR14.2, FR14.5.
+- UR-11: As an Administrator, I want to consult a drill-down financial dashboard and generate filtered or scheduled billing reports so that I can monitor collections, debt, and revenue forecasts.
+  - Traceability: FR8, FR8.1, FR8.6, FR8.7, FR8.8.
+- UR-12: As a Super Administrator or Administrator, I want to manage user accounts, role-based permissions, customer portfolio assignments, temporary delegations, and authenticated API access so that users and external systems only access authorized records.
+  - Traceability: FR6.1, FR6.2, FR6.3, FR6.4, FR15, FR15.1, FR15.2.
+- UR-13: As a Super Administrator, I want to configure global billing parameters (series, taxes, payment terms, calendars) and multi-language communication templates so that the system adapts to business rules without code modifications.
+  - Traceability: FR13, FR13.1, FR13.3.
+- UR-14: As a Super Administrator, I want to inspect immutable audit logs, monitor background job health, and rely on automated restorable backups so that system integrity and operational traceability are guaranteed.
+  - Traceability: FR9, FR9.1, FR9.2, FR14.3, FR14.4.
 
 ## System Requirements
 > Technical translation of user and business goals into executable functional capabilities and quality constraints.
@@ -48,7 +62,7 @@
 ### Functional Requirements
 > Answering "What the system does to fulfill user requirements?" (Inputs, outputs, calculations, and technical behavior).
 >
-> Sub-requirements (FRx.y.z) state the individual rules of their parent requirement and share its dependencies.
+> Sub-requirements (FRx.y.z) detail a function of their parent requirement and share its dependencies.
 
 #### 1. Customer Management
 
@@ -78,7 +92,7 @@
 - **FR1.6.** Customer status, tags and timeline. The system will show the commercial situation of each customer.
   - Dependencies / Relationships: FR1.5, FR9.1, FR10.
   - **FR1.6.1.** The system represents the customer statuses that affect billing (at minimum: pending activation, active, paused, cancellation requested, inactive, administratively blocked), and authorised users can change them after the consequences are shown.
-  - **FR1.6.2.** Customers can be tagged (e.g. strategic, partner, collection risk); tags never replace statuses derived from data, such as "unpaid".
+  - **FR1.6.2.** Users can tag customers (e.g. strategic, partner, collection risk).
   - **FR1.6.3.** Each customer has a business timeline with its relevant events: registration, change of responsible person, rate changes, invoices, payments, issues, pauses, cancellation and reactivation.
 - **FR1.7.** Registration validation. The system will validate emails, tax identifiers (when the country's format is known) and mandatory fields, distinguishing the data required to issue an invoice from data that is only recommended.
   - Dependencies / Relationships: FR1.
@@ -89,34 +103,26 @@
 
 - **FR2.** Invoice creation. The system will allow users to create an invoice for a customer, choosing whether it is one-off or recurring.
   - Dependencies / Relationships: FR1, FR13.
-- **FR2.1.** Automatic recurring invoices. On the first day of every month, the system will automatically generate an invoice for each active subscription from the concepts configured in it.
+- **FR2.1.** Automatic recurring invoices. On the first day of every month, the system will automatically generate an invoice for each active subscription from the concepts configured in it. Paused, not-yet-active and cancelled subscriptions do not generate invoices.
   - Dependencies / Relationships: FR2, FR10, FR14.
-  - **FR2.1.1.** A generated invoice needs no manual approval as long as it matches the approved subscription.
-  - **FR2.1.2.** Paused, not-yet-active and cancelled subscriptions do not generate invoices.
-  - **FR2.1.3.** Monthly is the only recurrence frequency, and the amount stays the same until an annual review or an approved exception changes it.
-- **FR2.2.** Prorated first invoice. When a recurring customer starts during the month, the system will invoice the remaining days of that month, and normal monthly invoicing will start on the following first day.
+- **FR2.2.** Prorated first invoice. When a recurring customer starts during the month, the system will invoice the remaining days of that month, and normal monthly invoicing will start on the following first day. The proration is shown before the registration is confirmed.
   - Dependencies / Relationships: FR2.1, FR10.1.
-  - **FR2.2.1.** The proration is shown before the registration is confirmed.
-  - **FR2.2.2.** The proration follows a single documented rule.
 - **FR2.3.** Invoice lifecycle and editing. The system will model the invoice lifecycle (e.g. draft, pending approval, issued, sent, overdue, paid, with discrepancy, disputed, uncollectible, rectified).
   - Dependencies / Relationships: FR2, FR2.8, FR9.1, FR11.
-  - **FR2.3.1.** States derived from data, such as overdue or paid, are never set by hand.
+  - **FR2.3.1.** The system sets the overdue and paid states automatically from due dates and payments.
   - **FR2.3.2.** Drafts, including their amount, can be freely corrected or deleted.
   - **FR2.3.3.** A manual change to the amount of a recurring invoice requires approval.
   - **FR2.3.4.** Issued invoices can never be deleted or silently modified: relevant changes are traced, and changes that are not legally allowed go through a corrective invoice.
 - **FR2.4.** Series and numbering. Invoices will have a series and a unique, sequential number within it, configured by the super administrator.
   - Dependencies / Relationships: FR2.3, FR6.2.
   - **FR2.4.1.** Numbers are assigned only at issuance, never to drafts.
-  - **FR2.4.2.** Numbers remain unique when several invoices are issued at the same time.
-  - **FR2.4.3.** Retrying a failed sending does not consume a new number.
+  - **FR2.4.2.** Retrying a failed sending does not consume a new number.
 - **FR2.5.** Preview and issuance validation. Before issuance, the system will show a preview of the invoice.
   - Dependencies / Relationships: FR1, FR2, FR13.
   - **FR2.5.1.** Issuance is blocked if mandatory tax data is missing, stating exactly what is missing.
-  - **FR2.5.2.** The system warns, without necessarily blocking, when an amount deviates strongly from the customer's usual pattern, according to a simple configurable rule.
-- **FR2.6.** Invoice PDF generation and storage. The system will generate each issued invoice as a PDF in a single standard format with Turbine's corporate identity (logo, tax data, series and number, dates, lines, taxable bases, taxes, total, payment terms and support contact details) and store it linked to its customer.
+  - **FR2.5.2.** The system warns, without blocking, when an amount differs by more than 50% (configurable) from the average of the customer's last 6 invoices of the same type.
+- **FR2.6.** Invoice PDF generation and storage. The system will generate each issued invoice as a PDF in a single standard format with Turbine's corporate identity (logo, tax data, series and number, dates, lines, taxable bases, taxes, total, payment terms and support contact details) and store it linked to its customer. The original PDF is preserved, so later template changes do not alter historical invoices.
   - Dependencies / Relationships: FR2, FR13.
-  - **FR2.6.1.** The same PDF is used wherever the invoice is shown or sent.
-  - **FR2.6.2.** The original PDF is preserved, so later template changes do not alter historical invoices.
 - **FR2.7.** Invoice sending and delivery tracking. When an invoice is issued, the system will send it to the customer's billing contact.
   - Dependencies / Relationships: FR1.1, FR2.6, FR7, FR13.1.
   - **FR2.7.1.** Invoices are sent by email, and by WhatsApp only when the contact has consented and has a valid number (both providers may be simulated).
@@ -130,7 +136,7 @@
   - **FR2.8.2.** Customer balances take corrective documents into account.
 - **FR2.9.** Invoice lines. Each invoice is made of one or more lines with description, quantity, unit price, optional discount and a tax selected from a configurable list.
   - Dependencies / Relationships: FR2, FR13.
-- **FR2.10.** Concept catalogue. Invoice lines can reuse concepts from a lightweight catalogue, and changes to the catalogue do not affect existing invoices.
+- **FR2.10.** Concept catalogue. Invoice lines can reuse concepts from a catalogue where each concept has a name, default price and default tax; changes to the catalogue do not affect existing invoices.
   - Dependencies / Relationships: FR2.9.
 - **FR2.11.** Invoice currency. An invoice is issued in a single currency that never changes afterwards.
   - Dependencies / Relationships: FR2.
@@ -141,7 +147,7 @@
   - Dependencies / Relationships: FR2.
 - **FR3.1.** Payment reconciliation. The system will match received transactions (amount, date, currency, description, reference) to invoices.
   - Dependencies / Relationships: FR3, FR9.1.
-  - **FR3.1.1.** Clear matches are reconciled automatically according to policy; doubtful or unreferenced ones stay pending manual reconciliation.
+  - **FR3.1.1.** A transaction is reconciled automatically only when its reference matches exactly one open invoice with the same amount and currency; all other transactions stay pending manual reconciliation.
   - **FR3.1.2.** The system never silently picks one of several invoices with the same amount.
   - **FR3.1.3.** A received amount lower or higher than the invoice total is recorded as a discrepancy.
   - **FR3.1.4.** A reconciliation can be reversed with a reason.
@@ -150,14 +156,11 @@
   - Dependencies / Relationships: FR2.7, FR3, FR3.3, FR13.
   - **FR3.2.1.** A reminder is sent on day 3 after issuance and another on the due date.
   - **FR3.2.2.** After the due date, a reminder is sent every 2–3 days until payment is detected or a person intervenes.
-  - **FR3.2.3.** Reminder timings are configurable by the super administrator.
-  - **FR3.2.4.** The flow is per invoice: it stops when that invoice is paid, and the customer is never cancelled or penalised automatically.
-  - **FR3.2.5.** Every reminder includes Turbine's support email and telephone number.
-  - **FR3.2.6.** A reminder falling on a weekend or configured holiday is moved to the next working day; the legal due date of the invoice does not move.
-- **FR3.3.** Due date calculation. The system will calculate each invoice's due date with a default payment period of 5 days.
+  - **FR3.2.3.** The reminders of an invoice stop when that invoice is paid.
+  - **FR3.2.4.** Every reminder includes Turbine's support email and telephone number.
+  - **FR3.2.5.** A reminder falling on a weekend or configured holiday is moved to the next working day; the legal due date of the invoice does not move.
+- **FR3.3.** Due date calculation. The system will calculate each invoice's due date with a default payment period of 5 days. Payment terms agreed with a customer take precedence over the default.
   - Dependencies / Relationships: FR2, FR6.2, FR10.
-  - **FR3.3.1.** Only the super administrator can change the default payment period.
-  - **FR3.3.2.** Payment terms agreed with a customer take precedence over the default.
 - **FR3.4.** Disputes and paused follow-up. The responsible user can pause the collection follow-up of an invoice.
   - Dependencies / Relationships: FR3.2, FR7.
   - **FR3.4.1.** An invoice can be marked as disputed or follow-up paused, with a reason and a review date.
@@ -165,10 +168,6 @@
   - **FR3.4.3.** The responsible user is notified when the review date arrives.
 - **FR3.5.** Uncollectible debt. Authorised users can mark a debt as uncollectible, with a reason and approval, as a state distinct from paid.
   - Dependencies / Relationships: FR2.3, FR11.
-- **FR3.6.** Additional payment sources. Other payment sources, such as Revolut or a bank account, can be added without changing the invoice model.
-  - Dependencies / Relationships: FR3.
-- **FR3.7.** Duplicate payment events. A payment event received more than once is counted only once.
-  - Dependencies / Relationships: FR3.
 
 #### 4. Cancellation
 
@@ -178,21 +177,17 @@
   - Dependencies / Relationships: FR2.1, FR3.2, FR4.
   - **FR4.1.1.** From the effective date, no new invoices are generated for the customer.
   - **FR4.1.2.** Outstanding debt, including unpaid one-off invoices, does not block the cancellation; collection of all previous invoices continues until they are paid (see C4).
-  - **FR4.1.3.** Data that must be kept for accounting is never deleted automatically.
 - **FR4.2.** Outstanding obligations query (API). The system will provide an API that, given a customer identifier, returns whether the customer has outstanding obligations and the minimum authorised detail.
   - Dependencies / Relationships: FR3, FR15.
 - **FR4.3.** Cancellation task. A cancellation request creates a task for the customer's responsible user.
   - Dependencies / Relationships: FR4, FR7.
-- **FR4.4.** Controlled external requests. External systems cannot end a recurrence directly without passing through the system's rules.
-  - Dependencies / Relationships: FR4, FR15.
 
 #### 5. Pricing
 
 - **FR5.** Annual price review. Once a year (or when configured), the system will review the price range of each recurring customer according to its annual revenue.
   - Dependencies / Relationships: FR1, FR2.1, FR5.1, FR11.
-- **FR5.1.** Rate table. Revenue ranges and their prices will be stored as configuration editable by the super administrator.
+- **FR5.1.** Rate table. Revenue ranges and their prices will be stored as configuration editable by the super administrator. Changes to the rate table apply to new reviews only and never alter issued invoices.
   - Dependencies / Relationships: FR6.2.
-  - **FR5.1.1.** Changes to the rate table apply to new reviews only and never alter issued invoices.
 - **FR5.2.** Commercial exceptions. The system will support time-limited discounts, free periods and extra services with agreed prices.
   - Dependencies / Relationships: FR10, FR11.
   - **FR5.2.1.** Users managing a customer can request an exception; an administrator approves it, and the super administrator above a configurable threshold.
@@ -201,9 +196,7 @@
   - Dependencies / Relationships: FR5.
 - **FR5.4.** Review approval. The system will propose the corresponding price range; the change requires human approval, has an effective date, and records who approved it and the previous and new prices.
   - Dependencies / Relationships: FR5, FR11.
-- **FR5.5.** Fixed price between reviews. A recurring customer's price stays the same between annual reviews.
-  - Dependencies / Relationships: FR5.
-- **FR5.6.** Review corrections. A review record can be corrected with traceability, but any retroactive adjustment must be an explicit, approved action.
+- **FR5.5.** Review corrections. A review record can be corrected with traceability, but any retroactive adjustment must be an explicit, approved action.
   - Dependencies / Relationships: FR5.4.
 
 #### 6. Users and Access
@@ -212,8 +205,8 @@
   - **FR6.1.1.** Only verified addresses from the authorised domain are accepted, and there is no self-registration.
   - **FR6.1.2.** Users can recover their password through links that expire.
   - **FR6.1.3.** Sessions expire after inactivity, and users can log out.
-  - **FR6.1.4.** Repeated failed login attempts trigger basic protection without excessive lockouts.
-- **FR6.2.** Roles and permissions. The system will support three roles: super administrator, administrator and operational user (called "reader" in the first meeting, see C1).
+  - **FR6.1.4.** After 5 consecutive failed login attempts, the account is locked for 15 minutes (both values configurable).
+- **FR6.2.** Roles and permissions. The system will support three roles: super administrator, administrator and operational user.
   - Dependencies / Relationships: FR6.1.
   - **FR6.2.1.** Only the super administrator can change the system configuration.
   - **FR6.2.2.** Administrators manage customers, contacts, companies, invoices and invoice types, assign customers and resolve approvals within their permissions.
@@ -236,7 +229,7 @@
 - **FR7.1.** Inboxes and preferences. Each user has a notification inbox, and administrators also have a global inbox.
   - Dependencies / Relationships: FR7.
   - **FR7.1.1.** Notifications have a priority and can be marked as read or as handled; reading an actionable notification does not resolve it.
-  - **FR7.1.2.** Each user can choose which notifications arrive in-app, by email or in a daily digest, but cannot change corporate rules.
+  - **FR7.1.2.** Each user can choose which notifications arrive in-app, by email or in a daily digest.
 - **FR7.2.** Configurable alert rules. Administrators can configure parameterised alerts from a closed set of conditions (e.g. invoice overdue more than N days, outstanding balance above X, sending failed N times).
   - Dependencies / Relationships: FR7, FR13.
 
@@ -244,17 +237,16 @@
 
 - **FR8.** Invoicing reports. The system will generate weekly, monthly and annual reports on invoicing and collections.
   - Dependencies / Relationships: FR2, FR3, FR14.
-- **FR8.1.** Financial dashboard. Visible only to administrators, it shows weekly, monthly, quarterly and yearly figures: invoiced, collected, outstanding, overdue, average collection time, evolution, customers with highest debt, expected recurring revenue, one-off billing and a simple forecast.
+- **FR8.1.** Financial dashboard. Visible only to administrators, it shows weekly, monthly, quarterly and yearly figures: invoiced, collected, outstanding, overdue, average collection time, evolution, customers with highest debt, expected recurring revenue, one-off billing and a forecast of next month's recurring revenue calculated from active subscriptions. Every figure can be drilled down to the records that make it up.
   - Dependencies / Relationships: FR8, FR6.2.
-  - **FR8.1.1.** Every figure can be drilled down to the records that make it up.
 - **FR8.2.** Daily work screen. On login, each user sees invoices due soon, overdue invoices, payments to reconcile, delivery problems, pending approvals, due annual reviews and tasks assigned to them, each linking directly to the item.
   - Dependencies / Relationships: FR2, FR3, FR11.
-- **FR8.3.** Search, filters and quick access. The system will let users find customers and invoices quickly, always limited to what they are allowed to see.
+- **FR8.3.** Search, filters and quick access. The system will let users find customers and invoices, always limited to what they are allowed to see.
   - Dependencies / Relationships: FR1, FR2, FR6.2.
   - **FR8.3.1.** Users can search by part of trading name, legal name, tax identifier, contact name, email or invoice number.
   - **FR8.3.2.** Users can filter customers (location, business area, tags) and invoices (status, type, date).
-  - **FR8.3.3.** Users can save frequent views.
-  - **FR8.3.4.** Users can quickly reach favourite and recently used customers.
+  - **FR8.3.3.** Users can save a combination of search and filters as a named view.
+  - **FR8.3.4.** Users can mark customers as favourites and see their 10 most recently opened customers.
 - **FR8.4.** Exports. Results can be exported at least to CSV and to a readable PDF report.
   - Dependencies / Relationships: FR8, FR6.2, FR9.1.
   - **FR8.4.1.** Exports respect the user's permissions.
@@ -264,7 +256,7 @@
   - Dependencies / Relationships: FR2, FR3.
 - **FR8.6.** Report filters. Reports can be filtered by period, customer, internal manager, country, sector, invoice status, type and currency.
   - Dependencies / Relationships: FR8.
-- **FR8.7.** Background reports. Heavy reports run in the background, and the user is notified when they are ready.
+- **FR8.7.** Background reports. Reports covering more than 1,000 invoices (configurable) run in the background, and the user is notified when they are ready.
   - Dependencies / Relationships: FR8, FR14.
 - **FR8.8.** Scheduled summaries. Administrators can schedule weekly or monthly summaries, sent only to authorised users.
   - Dependencies / Relationships: FR8, FR6.2.
@@ -281,11 +273,10 @@
   - Dependencies / Relationships: FR9, FR14.
   - **FR9.2.1.** Each automated process records when it ran, the items processed and created, and any failures with their reasons.
   - **FR9.2.2.** A health screen shows the last recurring generation, the pending email queue, recent integration errors and the last successful backup.
-  - **FR9.2.3.** Errors shown to users are understandable and include an issue code to find them in the technical log.
 
 #### 10. Subscriptions (Commercial Relationship)
 
-- **FR10.** Subscription record. The system will store each customer's commercial relationship separately from its invoices: start date, plan, agreed rate and recurring concepts, internal manager, payment terms and associated documents (month to month, no commitment period).
+- **FR10.** Subscription record. The system will store each customer's commercial relationship separately from its invoices: start date, plan, agreed rate and recurring concepts, internal manager, payment terms and associated documents .
   - Dependencies / Relationships: FR1, FR5.
 - **FR10.1.** Start date and deferred billing. The system will allow a subscription's billing start to be planned.
   - Dependencies / Relationships: FR10, FR2.2.
@@ -303,7 +294,7 @@
 
 - **FR11.** Approval workflow. Manual amount changes, extraordinary discounts, unusual due dates, one-off invoices above a threshold, corrective invoices, write-offs and price-range changes require approval before taking effect.
   - Dependencies / Relationships: FR2, FR5, FR13.
-- **FR11.1.** Separation of duties and substitution. The system will keep approvals independent from the people who request them.
+- **FR11.1.** Separation of duties and substitution. The system will control who can decide each approval.
   - Dependencies / Relationships: FR11, FR9.1.
   - **FR11.1.1.** Above a configurable threshold, users cannot approve their own requests.
   - **FR11.1.2.** An administrator can reassign a pending approval or designate a substitute approver, and every reassignment is recorded.
@@ -330,7 +321,7 @@
 
 #### 13. Configuration and Templates
 
-- **FR13.** Global configuration. The system will keep configuration separate from operational data: default payment period, reminder timings, allowed email domain, issuer tax data, logo and template, series, currencies, taxes, approval thresholds, notification channels, working calendar (weekends and a small holiday calendar) and automation policies.
+- **FR13.** Global configuration. The super administrator can configure the default payment period, reminder timings, allowed email domain, issuer tax data, logo and template, series, currencies, taxes, approval thresholds, notification channels, working calendar (weekends and a small holiday calendar) and automation policies.
   - Dependencies / Relationships: FR6.2, FR9.1.
 - **FR13.1.** Communication templates. Authorised users can edit the templates for invoice emails, reminders and other customer messages.
   - Dependencies / Relationships: FR13, FR1.1.
@@ -347,24 +338,22 @@
 
 #### 14. Automation, Background Tasks and Bulk Operations
 
-- **FR14.** Background processing. Long operations run in the background with a visible status (pending, processing, completed, completed with errors).
+- **FR14.** Background processing. Operations affecting more than 1,000 records (configurable; e.g. monthly generation, imports, bulk actions) run in the background with a visible status (pending, processing, completed, completed with errors).
   - Dependencies / Relationships: FR2.1, FR9.2.
 - **FR14.1.** Bulk actions. Users can perform bulk actions (reassign customers, export a selection, change sector, generate reports).
   - Dependencies / Relationships: FR6.2.
   - **FR14.1.1.** Before a bulk action, the user sees how many items are affected and confirms sensitive actions; afterwards, the system shows a per-item result.
   - **FR14.1.2.** There is no uncontrolled bulk "mark as paid".
-- **FR14.2.** Form assistance and safe editing. The system will help users fill in frequent and long forms safely.
+- **FR14.2.** Form assistance and safe editing. The system will assist users when filling in the customer, subscription and invoice forms.
   - Dependencies / Relationships: FR1, FR2, FR5.1.
-  - **FR14.2.1.** Frequent forms pre-fill sensible defaults (usual country, currency, due date, rate suggested by revenue range).
+  - **FR14.2.1.** Forms pre-fill the customer country and currency that the user selected most often in the last 30 days, the default due date (FR3.3) and the rate of the customer's revenue range (FR5.1).
   - **FR14.2.2.** A summary of what will happen is shown before confirming.
-  - **FR14.2.3.** Long forms save drafts automatically.
+  - **FR14.2.3.** The customer and invoice forms save a draft automatically every 30 seconds.
   - **FR14.2.4.** Reversible actions offer undo, and irreversible actions are explained before confirmation.
   - **FR14.2.5.** If two users edit the same record, the system detects the conflict instead of silently overwriting changes.
 - **FR14.3.** Missed generation recovery. If the monthly generation did not run, the missing invoices are generated on recovery without duplicates.
   - Dependencies / Relationships: FR14, FR2.1.
-- **FR14.4.** Fault isolation. A failure on one item does not stop the processing of the rest; failures are recorded and routed to whoever can resolve them.
-  - Dependencies / Relationships: FR14, FR9.2.
-- **FR14.5.** Double submission protection. Issuing, sending and reconciliation are protected against double clicks and reloads.
+- **FR14.4.** Double submission protection. Issuing, sending and reconciliation are protected against double clicks and reloads.
   - Dependencies / Relationships: FR14, FR2.4, FR3.1.
 
 #### 15. API
@@ -380,53 +369,65 @@
 > Answering "How well?" or "Under what quality standards/restrictions does the system operate?" (Performance, security, usability).
 
 - NFR-01: Usability and Operational Efficiency
-  - Description: The system shall provide an intuitive interface that allows users to complete common administrative tasks quickly and with minimal effort.
+  - Description: The system shall allow users to complete standard customer registration and invoice issuance workflows within defined limits for task completion time and navigation clicks.
   - Dependencies / Relationships: Related to customer registration, customer management, invoice creation, and invoice search functionalities. Related functional requirements: FR1, FR1.4, FR2, FR2.5, FR8.2, FR8.3, FR14.2.
-  - Metric / Acceptance criterion: At least 4 out of 5 test users shall be able to complete a predefined standard customer registration or invoice issuance task in less than 60 seconds, using no more than 5 navigation clicks.
-  - Verification method: Timed User Acceptance Test with 5 representative users performing predefined administrative tasks. Task completion time and navigation clicks will be recorded.
+  - Metric / Acceptance criterion: For each predefined workflow (standard customer registration and standard invoice issuance), at least 4 out of 5 test users shall complete the task in less than 60 seconds, using no more than 5 navigation clicks. Clicks used to enter data into form fields are not counted as navigation clicks.
+  - Verification method: Timed User Acceptance Test with 5 representative users performing both administrative workflows from a defined starting screen. Task completion time, navigation clicks, and successful completion will be recorded for each user.
 
 - NFR-02: Multi-Device Compatibility and Accessibility
-  - Description: The application shall provide a responsive and accessible interface for desktop computers, tablets, and smartphones.
+  - Description: The application shall provide a responsive interface supporting customer consultation, invoice consultation, payment monitoring, approval workflows, and daily administrative operations on desktop computers, tablets, and smartphones.
   - Dependencies / Relationships: Related to customer management, invoice consultation, payment monitoring, approval workflows, and dashboard functionalities. Related functional requirements: FR1.2, FR2.6, FR3, FR8.1, FR8.2, FR11.
-  - Metric / Acceptance criterion: All main administrative workflows shall remain usable without unintended horizontal scrolling at screen resolutions of 360x800, 768x1024, and 1920x1080 pixels. The main application views shall achieve an accessibility score of at least 90/100 in Google Lighthouse and meet WCAG 2.1 Level AA accessibility requirements.
-  - Verification method: Responsive design testing using Chrome DevTools at the specified screen resolutions. Accessibility testing using Google Lighthouse, complemented by manual WCAG 2.1 AA checks, including keyboard navigation and visual accessibility verification.
+  - Metric / Acceptance criterion: All defined administrative workflows shall remain usable without unintended horizontal scrolling at screen resolutions of 360x800, 768x1024, and 1920x1080 pixels. The main application views shall achieve an accessibility score of at least 90/100 in Google Lighthouse and meet WCAG 2.1 Level AA accessibility requirements.
+  - Verification method: Responsive design testing using Chrome DevTools at the specified screen resolutions. Accessibility testing using Google Lighthouse, complemented by manual WCAG 2.1 AA checks, including keyboard navigation, contrast verification, zoom, and form label inspection.
 
 - NFR-03: Performance and Scalability
-  - Description: The system shall maintain fast response times while supporting an increasing number of customers, historical invoices, and concurrent users without significant performance degradation.
+  - Description: The system shall meet defined response-time and error-rate limits when processing customer and invoice queries under the specified database size and concurrent user load.
   - Dependencies / Relationships: Related to customer management, customer imports, recurring invoice generation, search operations, reporting, and background processing. Related functional requirements: FR1, FR1.4, FR2.1, FR8, FR8.3, FR14.
-  - Metric / Acceptance criterion: The system shall support at least 5,000 active customers, 200,000 historical invoices, and 50 concurrent users. The 95th percentile response time (P95) for standard customer and invoice queries shall remain below 2 seconds, with no failed requests during a 15-minute load test.
-  - Verification method: Automated load testing using Apache JMeter with a database containing at least 5,000 customers and 200,000 historical invoices. Response times, concurrent user capacity, and error rates will be measured during the defined test period.
+  - Metric / Acceptance criterion: The system shall support at least 5,000 active customers, 200,000 historical invoices, and 50 concurrent users. The 95th percentile response time (P95) for standard customer and invoice queries shall remain below 2 seconds, with zero server errors (HTTP 5xx) and zero timed-out queries during a 15-minute load test.
+  - Verification method: Automated load testing using Apache JMeter with a database containing at least 5,000 customers and 200,000 historical invoices. A 15-minute test with 50 concurrent virtual users will measure P95 response times, HTTP 5xx errors, and query timeouts.
 
 - NFR-04: Authentication Security and Data Protection
-  - Description: The system shall protect sensitive customer, financial, and tax information through secure authentication, role-based authorization, and encrypted communications, preventing unauthorized access to restricted resources.
+  - Description: The system shall protect customer, financial, and tax information through corporate-domain authentication, role-based authorization, password hashing, and encrypted communications.
   - Dependencies / Relationships: Related to user authentication, role-based access control, user management, customer data, invoice management, document access, exports, and external API operations. Related functional requirements: FR6.1, FR6.2, FR6.3, FR8.4, FR12.2, FR15.
-  - Metric / Acceptance criterion: 100% of login attempts using unauthorized email domains shall be rejected. Passwords shall be securely hashed using bcrypt with a cost factor of at least 12 or an equivalently secure mechanism. Sensitive data shall be transmitted using HTTPS with TLS 1.3. 100% of unauthorized attempts to access restricted customer records, documents, exports, or API resources shall be rejected. No High or Critical security vulnerabilities shall remain in the final security test report.
-  - Verification method: Automated authentication and authorization tests, including unauthorized email domains and attempts to access restricted resources through direct URLs and API requests. Security scanning using OWASP ZAP, inspection of password storage, and verification of TLS configuration.
+  - Metric / Acceptance criterion: 100% of login attempts using unauthorized email domains shall be rejected. All stored user passwords shall be hashed using bcrypt with a cost factor of at least 12. All authenticated HTTP communications shall use HTTPS with TLS 1.3. 100% of tested unauthorized attempts to access restricted customer records, documents, exports, or API resources shall be rejected. No High or Critical security vulnerabilities shall remain in the final OWASP ZAP security test report.
+  - Verification method: Automated authentication and authorization tests, including attempts using unauthorized email domains and requests to restricted resources through direct URLs and API endpoints. Security scanning using OWASP ZAP, inspection of password storage, and verification of TLS configuration.
 
-- NFR-05: Data Retention, Auditability and Backup
-  - Description: The system shall preserve historical financial information, maintain protected audit records of critical administrative operations, and provide reliable mechanisms for recovering data and documents after a failure.
-  - Dependencies / Relationships: Related to customer deactivation, invoice history, financial record management, cancellation, administrative period closing, backups, and auditing functionalities. Related functional requirements: FR1.1, FR1.3, FR2.3, FR2.6, FR4.1, FR9, FR9.1, FR13.2.
-  - Metric / Acceptance criterion: 100% of issued invoices shall remain accessible to authorized users after customer deactivation, subject to the approved data retention policy. 100% of critical financial and administrative changes defined in FR9.1 shall generate an audit record containing the responsible user, action, and timestamp. 100% of attempts to modify or delete existing audit records through application interfaces shall be rejected. Automatic backups shall be performed at least once every 24 hours, and data recovery from a valid backup shall be possible within 4 hours.
-  - Verification method: Database inspection and tests involving customer deactivation and historical invoices. Audit log inspection after critical operations and unauthorized modification attempts. Backup restoration tests and role-based access control tests.
+- NFR-05: Data Retention, Auditability, Availability and Recovery
+  - Description: The system shall preserve historical financial records, protect audit information from unauthorized modifications, and meet defined availability, backup, and disaster recovery requirements.
+  - Dependencies / Relationships: Related to customer deactivation, invoice history, financial record management, cancellation, administrative period closing, backups, auditing, and system monitoring. Related functional requirements: FR1.1, FR1.3, FR2.3, FR2.6, FR4.1, FR9, FR9.1, FR9.2, FR13.2.
+  - Metric / Acceptance criterion:
+    - Data Retention: 100% of issued invoices shall remain accessible to authorized users after customer deactivation, subject to the approved data retention policy.
+    - Auditability: 100% of critical financial and administrative operations defined in FR9.1 shall generate an audit record containing the responsible user, action, and timestamp. All attempts to modify or delete existing audit records through the application or API shall be rejected.
+    - Backup Frequency: Automatic backups of the database and stored documents shall be completed at least once every 24 hours.
+    - Availability: The application shall achieve at least 99.5% availability per calendar month, including scheduled maintenance periods.
+    - Recovery Point Objective (RPO): The maximum age of recoverable data after a system failure shall not exceed 24 hours.
+    - Recovery Time Objective (RTO): The system shall restore its main administrative services and access to stored data within 4 hours after a simulated complete system outage.
+  - Verification method:
+    - Data Retention: Database inspection and tests involving customer deactivation and historical invoice retrieval.
+    - Auditability: Audit log inspection after critical operations and authorization tests attempting to modify or delete existing audit records.
+    - Backup Frequency: Inspection of automated backup logs and verification that backups include both database records and stored documents.
+    - Availability: Continuous availability monitoring using an independent monitoring tool performing health checks every minute. Monthly availability will be calculated as the percentage of successful checks over all scheduled checks, including maintenance periods.
+    - RPO: Controlled backup restoration tests comparing the timestamp of the most recent recoverable consistent data state with the simulated failure time. The difference must not exceed 24 hours.
+    - RTO: Timed disaster recovery tests measuring the interval between a simulated complete outage and the restoration of login, customer consultation, and invoice retrieval. The elapsed time must not exceed 4 hours.
 
 - NFR-06: Data Integrity and Automation Reliability
-  - Description: The system shall ensure that automated invoicing, payment processing, and administrative operations execute reliably, preventing duplicate records, inconsistent financial data, and silent overwriting of concurrent modifications.
+  - Description: The system shall prevent duplicate financial records, detect conflicting modifications, and record automation failures without interrupting independent operations.
   - Dependencies / Relationships: Related to recurring invoice generation, invoice numbering, payment detection, payment reconciliation, automation logs, background processing, and concurrent record editing. Related functional requirements: FR2.1, FR2.4, FR3, FR3.1, FR9.2, FR14, FR14.2.
-  - Metric / Acceptance criterion: Repeated processing of the same payment event shall not create duplicate payments. Retrying automated recurring invoice generation shall not create duplicate invoices for the same customer and billing period. 100% of simulated conflicting updates to the same record shall be detected, preventing silent data overwriting. 100% of simulated automation failures shall be recorded with an identifiable error status, without preventing independent operations from continuing.
-  - Verification method: Integration tests simulating duplicate payment notifications, repeated invoice generation, concurrent record modifications, and failures during automated processes. Database consistency checks and inspection of automation execution logs will verify the results.
+  - Metric / Acceptance criterion: Repeated processing of the same payment event shall result in exactly one recorded payment. Retrying automated recurring invoice generation shall produce at most one invoice for the same customer and billing period. 100% of simulated conflicting updates to the same record shall be detected without silently overwriting previously accepted changes. 100% of simulated automation failures shall generate an identifiable error record and status, while independent operations continue processing.
+  - Verification method: Integration tests simulating duplicate payment notifications, repeated invoice generation, concurrent record modifications, and individual failures during automated batch processing. Database consistency checks and inspection of automation execution logs will verify payment counts, invoice uniqueness, conflict detection, and error reporting.
 
 - NFR-07: Maintainability and Deployment Reproducibility
-  - Description: The system shall be maintainable and deployable independently of Turbine's Brain product, allowing configuration changes and future system modifications without affecting core administrative operations.
+  - Description: The system shall support modifications to global configuration parameters without source code changes and allow deployment of its administrative functionalities independently of Turbine's Brain product.
   - Dependencies / Relationships: Related to configurable pricing, global system configuration, and external API integration. Related functional requirements: FR5.1, FR13, FR15. Related business requirements: BR-01, BR-03.
-  - Metric / Acceptance criterion: 100% of the configurable parameters defined in FR13 shall be modifiable without changing the source code. The application shall be deployable in a clean test environment using documented instructions and shall successfully perform its core customer and invoice operations without requiring Brain.
-  - Verification method: Configuration testing to verify that system parameters can be modified without source code changes. Deployment testing in a clean environment following the technical documentation, followed by integration tests confirming that customer and invoice operations function independently of Brain.
+  - Metric / Acceptance criterion: 100% of the configurable parameters defined in FR13 shall be modifiable without changing the source code. The application shall be deployable in a clean test environment following documented instructions. Customer registration, customer consultation, and invoice creation shall operate without requiring an active connection to Brain.
+  - Verification method: Configuration testing to verify that all parameters defined in FR13 can be modified without source code changes. Deployment testing in a clean environment following the technical documentation, followed by integration tests confirming that customer and invoice operations function independently of Brain.
 
 ## Additional Information
 > Interpretation of contradictory client statements and items the client explicitly placed out of scope.
 
 ### Contradictions and Interpretations
 
-> Only real conflicts between client statements are kept here. C5, C7, C8, C9, C10 and C12 were removed after review on 20/10/2026: they were not contradictions, because the transcript states the answer directly. Their content now lives in the FRs: C5 → FR3.1.3 (installments are in Out of Scope), C7 → FR3.3.2, C8 → FR9 and FR9.1, C9 → FR3.2.6, C10 → FR2.5.2 and FR11, C12 → FR6.1. The remaining IDs are kept unchanged so that existing references stay valid.
+> Only real conflicts between client statements are kept here. C5, C7, C8, C9, C10 and C12 were removed after review on 20/10/2026: they were not contradictions, because the transcript states the answer directly. Their content now lives in the FRs: C5 → FR3.1.3 (installments are in Out of Scope), C7 → FR3.3, C8 → FR9 and FR9.1, C9 → FR3.2.5, C10 → FR2.5.2 and FR11, C12 → FR6.1. The remaining IDs are kept unchanged so that existing references stay valid.
 
 - **C1. Roles of the second user type**.
   - *Statements:* First meeting: a "reader" who only sees what has been assigned to them, then "cannot create or edit", then CRUD on the assigned items, plus a super administrator. Extended meeting: the client asks not to cling to the name; what matters is the capability.
@@ -442,7 +443,7 @@
   - *Interpretation:* The cancellation always proceeds: new recurring invoices stop from the effective date, and collection of all previous invoices, one-off invoices included, continues until they are paid (FR4.1.1, FR4.1.2). Source (extended meeting): "I do not want a debt to block the commercial cancellation forever, but at the same time I do not want the outstanding payment to disappear when the customer is cancelled." *Team decision, to be validated at the next client review.*
 - **C6. Editable amount vs. fixed yearly price**.
   - *Statements:* First meeting: the amount "must be modifiable all the time and editable when you create the invoice", but also the recurring price "is the same throughout the year". Extended meeting: recurring invoices are automatic, and manual amount changes need approval.
-  - *Interpretation:* The amount is editable on drafts (mainly one-off invoices). Recurring prices change only through the annual review or approved commercial exceptions, and manual changes to a recurring invoice require approval (FR2.3.2, FR2.3.3, FR5.2, FR5.5, FR11).
+  - *Interpretation:* The amount is editable on drafts (mainly one-off invoices). Recurring prices change only through the annual review or approved commercial exceptions, and manual changes to a recurring invoice require approval (FR2.3.2, FR2.3.3, FR5.2, FR5, FR11).
 - **C11. Using retained data for marketing**.
   - *Statements:* First meeting: logical deletion keeps customer data "so that you can, in the future, have a marketing campaign" (the client agreed). Extended meeting: "This application must not automatically use billing data for commercial campaigns. That would be another purpose and would have to be handled separately."
   - *Interpretation:* Retained data is kept for legal and historical reasons only (FR1.3.1) and is never used for marketing in this system (see Out of Scope).
