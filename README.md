@@ -47,7 +47,8 @@ This project models and designs an **independent, internal responsive web applic
   - [`doc/src/use-cases/README.md`](doc/src/use-cases/README.md) (contract inventory, shared rules and traceability; one Cockburn-style contract per file). `doc/src/use-case-specification.md` redirects to this index
   - `doc/src/scrum-report.md` (Sprint planning, meetings, board snapshots & risk log)
   - `doc/src/img/` (Board screenshots and exported use case diagram views)
-- `notes/` — Historical coordination and review notes; excluded from the four Submission 1 PDFs.
+- `notes/` — Coordination and review notes, including the [Submission 2 handoff to Adam](notes/delivery2-use-case-handoff.md); excluded from the four Submission 1 PDFs.
+- `scripts/validate-use-cases.cjs` — Run with `node scripts/validate-use-cases.cjs` to check contract structure, links and traceability against the current requirement definitions.
 - `README.md` — Project overview and documentation index.
 - `.gitignore` — Git ignore rules.
 
