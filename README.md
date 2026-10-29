@@ -44,7 +44,7 @@ This project models and designs an **independent, internal responsive web applic
 - `doc/src/` — Editable source files:
   - `doc/src/requirements.md` (Business, User, Functional & Non-Functional Requirements, plus contradictions and out-of-scope items)
   - `doc/src/use-case-diagram.pu` (PlantUML source for the Use Case Diagram)
-  - `doc/src/use-case-specification.md` (18 Cockburn-style contracts; grouped from 24 and renumbered UC-01 to UC-18, with full FR coverage)
+  - [`doc/src/use-cases/README.md`](doc/src/use-cases/README.md) (contract inventory, shared rules and traceability; one Cockburn-style contract per file). `doc/src/use-case-specification.md` redirects to this index
   - `doc/src/scrum-report.md` (Sprint planning, meetings, board snapshots & risk log)
   - `doc/src/img/` (Board screenshots and exported use case diagram views)
 - `notes/` — Historical coordination and review notes; excluded from the four Submission 1 PDFs.
@@ -60,5 +60,5 @@ This project models and designs an **independent, internal responsive web applic
 | **Milestone 1** | **Environment Setup & Project Management Kickoff:** Designate Scrum Master, initialize public GitHub repo (`doc/` & `doc/src/`), configure GitHub Projects board, and hold Sprint Planning. |
 | **Milestone 2** | **Requirements Elicitation & Documentation:** Analyze client interview notes and document `BR`, `UR`, `FR` (with dependencies), and `NFR` (with quantifiable metrics & verification tests) in `requirements.md`. |
 | **Milestone 3** | **UML Use Case Diagram Modeling:** Identify primary/secondary actors, system boundaries, core use cases, and `<<include>>`/`<<extend>>` relationships in `use-case-diagram.pu`. |
-| **Milestone 4** | **Use Case Specifications & Behavioral Contracts:** Document full Cockburn specifications in `use-case-specification.md` with strict traceability to `FR` and `NFR`. |
+| **Milestone 4** | **Use Case Specifications & Behavioral Contracts:** Document full Cockburn specifications in [`doc/src/use-cases/`](doc/src/use-cases/README.md) with strict traceability to `FR` and `NFR`. |
 | **Milestone 5** | **Sprint Review, Scrum Report & Peer Evaluation:** Hold Sprint Retrospective, compile `scrum-report.md` and all PDFs into `doc/`, complete Balls Method evaluation, and submit `.zip` + Repo URL. |
