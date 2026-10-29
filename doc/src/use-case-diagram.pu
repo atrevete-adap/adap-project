@@ -1,8 +1,9 @@
-' TurbineH: 18 use cases (UC-01..UC-18).
+' TurbineH: 22 use cases (UC-01..UC-22); contracts in use-cases/ (index: use-cases/README.md).
 ' Overview: the whole system in one diagram. Views 1-4: the same model split by business area;
-' each use case appears in exactly one view. See use-case-specification.md for the contracts.
+' each use case appears in exactly one view.
 ' Notation (Session 1.5): actor-use case associations are undirected; <<include>> points to the
-' included case (Base <.. Included); <<extend>> points to the base case (Base <.. Extension). Scheduled jobs are system behaviour, not an actor.
+' included case (Base <.. Included); <<extend>> points to the base case (Base <.. Extension).
+' Scheduled jobs are system behaviour started by the system scheduler, not an actor.
 
 @startuml use-case-diagram-0-overview
 !pragma layout smetana
@@ -45,7 +46,7 @@ rectangle "TurbineH Invoicing & Collections System" {
   usecase "UC-02 Maintain customers\nand import records" as UC02
   usecase "UC-03 Administer staff access\nand customer assignments" as UC03
   usecase "UC-04 Manage subscriptions\nand annual rate reviews" as UC04
-  usecase "UC-05 Prepare, issue and\ndeliver an invoice" as UC05
+  usecase "UC-05 Prepare an\ninvoice draft" as UC05
   usecase "UC-06 Generate monthly\nrecurring invoices" as UC06
   usecase "UC-07 Reconcile payments\nwith invoices" as UC07
   usecase "UC-08 Run reminders and\noverdue follow-up" as UC08
@@ -54,11 +55,15 @@ rectangle "TurbineH Invoicing & Collections System" {
   usecase "UC-11 Query outstanding obligations\nthrough the API" as UC11
   usecase "UC-12 Consult financial\ndashboard and reports" as UC12
   usecase "UC-13 Configure billing and\nautomation policies" as UC13
-  usecase "UC-14 Supervise audit,\nbackups and recovery" as UC14
+  usecase "UC-14 Inspect audit and\nautomation health" as UC14
   usecase "UC-15 Correct an\nissued invoice" as UC15
   usecase "UC-16 Resolve a billing\nor delivery issue" as UC16
   usecase "UC-17 Decide a sensitive\nfinancial approval" as UC17
   usecase "UC-18 Close or reopen an\nadministrative period" as UC18
+  usecase "UC-19 Issue an\ninvoice" as UC19
+  usecase "UC-20 Send an issued\ninvoice" as UC20
+  usecase "UC-21 Create a data and\ndocument backup" as UC21
+  usecase "UC-22 Restore a\nvalidated backup" as UC22
 }
 
 OpUser <|-- Admin
@@ -70,6 +75,8 @@ OpUser -- UC05
 OpUser -- UC07
 OpUser -- UC09
 OpUser -- UC16
+OpUser -- UC19
+OpUser -- UC20
 Admin -- UC03
 Admin -- UC10
 Admin -- UC12
@@ -78,24 +85,29 @@ Admin -- UC17
 Admin -- UC18
 SuperAdmin -- UC13
 SuperAdmin -- UC14
+SuperAdmin -- UC21
+SuperAdmin -- UC22
 ExtApp -- UC10
 ExtApp -- UC11
 UC01 -- CommSrv
 UC03 -- CommSrv
-UC05 -- CommSrv
 UC08 -- CommSrv
 UC12 -- CommSrv
+UC20 -- CommSrv
 UC07 -- PayProv
 UC05 <.. UC06 : <<include>>
+UC19 <.. UC06 : <<include>>
 UC05 <.. UC15 : <<include>>
+UC19 <.. UC15 : <<include>>
+UC20 <.. UC19 : <<include>>
 UC11 <.. UC10 : <<include>>
 UC04 <.. UC05 : <<extend>>\n(initial proration due)
+UC05 <.. UC19 : <<extend>>\n(issuance requested)
 UC04 <.. UC17 : <<extend>>\n(rate or commercial approval)
-UC05 <.. UC17 : <<extend>>\n(sensitive proposal)
+UC19 <.. UC17 : <<extend>>\n(sensitive issuance)
 UC15 <.. UC17 : <<extend>>\n(correction above threshold)
-UC05 <.. UC16 : <<extend>>\n(delivery problem)
+UC20 <.. UC16 : <<extend>>\n(delivery problem)
 UC07 <.. UC16 : <<extend>>\n(reconciliation problem)
-
 
 @enduml
 
@@ -136,8 +148,10 @@ rectangle "TurbineH Invoicing & Collections System" {
   usecase "UC-03 Administer staff access\nand customer assignments" as UC03
   usecase "UC-12 Consult financial\ndashboard and reports" as UC12
   usecase "UC-13 Configure billing and\nautomation policies" as UC13
-  usecase "UC-14 Supervise audit,\nbackups and recovery" as UC14
+  usecase "UC-14 Inspect audit and\nautomation health" as UC14
   usecase "UC-18 Close or reopen an\nadministrative period" as UC18
+  usecase "UC-21 Create a data and\ndocument backup" as UC21
+  usecase "UC-22 Restore a\nvalidated backup" as UC22
 }
 
 OpUser <|-- Admin
@@ -148,14 +162,17 @@ Admin -- UC12
 Admin -- UC18
 SuperAdmin -- UC13
 SuperAdmin -- UC14
+SuperAdmin -- UC21
+SuperAdmin -- UC22
 UC01 -- CommSrv
 UC03 -- CommSrv
 UC12 -- CommSrv
 
-note bottom of UC14
-  Audit is read-only; only the Super Administrator
-  can restore. Scheduled backups are started by
-  the system scheduler. NFR-05, NFR-06
+note bottom of UC21
+  Scheduled backups are started by the
+  system scheduler; manual backups by the
+  Super Administrator. A backup never
+  restores itself (UC-22). NFR-05
 end note
 
 note bottom of UC03
@@ -259,32 +276,44 @@ actor "Administrator" as Admin
 actor "Communication Service\n(Email / WhatsApp, simulated)" as CommSrv <<system>>
 
 rectangle "TurbineH Invoicing & Collections System" {
-  usecase "UC-05 Prepare, issue and\ndeliver an invoice" as UC05
+  usecase "UC-05 Prepare an\ninvoice draft" as UC05
   usecase "UC-06 Generate monthly\nrecurring invoices" as UC06
   usecase "UC-15 Correct an\nissued invoice" as UC15
   usecase "UC-17 Decide a sensitive\nfinancial approval" as UC17
+  usecase "UC-19 Issue an\ninvoice" as UC19
+  usecase "UC-20 Send an issued\ninvoice" as UC20
 }
 
 OpUser <|-- Admin
 OpUser -- UC05
+OpUser -- UC19
+OpUser -- UC20
 Admin -- UC15
 Admin -- UC17
-UC05 -- CommSrv
+UC20 -- CommSrv
 UC05 <.. UC06 : <<include>>
+UC19 <.. UC06 : <<include>>
 UC05 <.. UC15 : <<include>>
-UC05 <.. UC17 : <<extend>>\n(sensitive proposal)
+UC19 <.. UC15 : <<include>>
+UC20 <.. UC19 : <<include>>
+UC05 <.. UC19 : <<extend>>\n(issuance requested)
+UC19 <.. UC17 : <<extend>>\n(sensitive issuance)
 UC15 <.. UC17 : <<extend>>\n(correction above threshold)
 
 note bottom of UC06
   Started by the system scheduler under
   the UC-13 policies; no actor. Idempotent
-  per subscription and period. NFR-06
+  per subscription and period.
+end note
+
+note bottom of UC19
+  Only issuance consumes a number.
+  A failed delivery (UC-20) never
+  undoes or renumbers an invoice.
 end note
 
 note bottom of UC05
-  Included callers supply an authorised
-  proposal. Failed dispatch never
-  renumbers an invoice. Relationships with use cases of other
+  Relationships with use cases of other
   views are shown in the overview diagram.
 end note
 

@@ -11,15 +11,15 @@ Turbine is an independent internal invoicing and collections application. Custom
 | Operational User | Assigned staff; customer-scoped operations, invoice work and payment follow-up when permitted. |
 | Administrator | Specialises Operational User; wider operational management, assignments, approvals, financial reporting, corrections and period closing within authority. |
 | Super Administrator | Specialises Administrator; global configuration, protected audit and recovery. A specific capability check still applies to every action. |
+| Time | Authorised timer automation for monthly billing, annual-review tasks, reminders, payment queries and backups. |
 | External Application | Separately authenticated/scoped API caller; debt queries and cancellation intake confer no interactive customer access. |
 | Payment Provider | Supporting service providing verified transaction evidence; Turbine does not operate a payment gateway. |
 | Communication Service | Supporting service for email and consented complementary WhatsApp. |
 
-- Time is not an actor. Scheduled jobs (monthly billing, annual-review lists, reminders, payment queries, report schedules and backups) are system behaviour: the system scheduler starts them under the policies configured in UC-13. UC-06 and UC-08 therefore have no primary actor.
 - Authentication and current role/customer scope are rechecked on every protected request, direct download, bulk item and API operation. An inherited actor association never bypasses an operation's capability or approval threshold. UC-12 requires financial-report permission even for a technical Super Administrator account; the unresolved account-policy choice is not silently decided here.
 - Issued snapshots, numbers and original PDFs are preserved. Corrections, cash movements and collection state have distinct evidence; logical deactivation or cancellation never marks a debt paid.
 - Automated issuance, transaction allocation and reminder occurrences are idempotent. Recovery resumes the failed stage without repeating successful financial work; item failures have explicit outcomes.
-- Customer-agreed terms override the default five days. FR3.2.6 (formerly C9) moves communications only, not the legal due date; C4 separates cancellation from old debt; C11 excludes marketing reuse. Document and approve proration, rounding and day-count conventions before activation rather than inventing client decisions.
+- Customer-agreed terms override the default five days. FR3.2.5 (formerly C9) moves communications only, not the legal due date; C4 separates cancellation from old debt; C11 excludes marketing reuse. Document and approve proration, rounding and day-count conventions before activation rather than inventing client decisions.
 - Existing NFR targets remain acceptance conditions, not measured results. Retention, backup/recovery and immutable audit checks follow NFR-05; no universal legal retention period is asserted here.
 - Shared details such as saved views, comments, scoped attachments, background status and per-item bulk results follow their mapped FR. They are not separate use cases merely because they require a screen.
 
@@ -62,13 +62,13 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 | [UC-01](#uc-01) | Access the internal application | FR6.1, FR6.2 |
 | [UC-02](#uc-02) | Maintain customers and import records | FR1, FR1.1, FR1.2, FR1.3, FR1.6, FR1.4, FR1.7, FR1.8 |
 | [UC-03](#uc-03) | Administer staff access and customer assignments | FR6.2, FR6.3, FR1.5, FR6.4, FR14.1 |
-| [UC-04](#uc-04) | Manage subscriptions and annual rate reviews | FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR5.6, FR10.3 |
-| [UC-05](#uc-05) | Prepare, issue and deliver an invoice | FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.5 |
-| [UC-06](#uc-06) | Generate monthly recurring invoices | FR2.1, FR9.2, FR14, FR11.2, FR14.3, FR14.4 |
-| [UC-07](#uc-07) | Reconcile payments with invoices | FR3, FR3.1, FR3.6, FR3.7, FR14.5 |
+| [UC-04](#uc-04) | Manage subscriptions and annual rate reviews | FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR10.3 |
+| [UC-05](#uc-05) | Prepare, issue and deliver an invoice | FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.4 |
+| [UC-06](#uc-06) | Generate monthly recurring invoices | FR2.1, FR9.2, FR14, FR11.2, FR14.3 |
+| [UC-07](#uc-07) | Reconcile payments with invoices | FR3, FR3.1, FR14.4 |
 | [UC-08](#uc-08) | Run reminders and overdue follow-up | FR3.2, FR3.3, FR3.4, FR13 |
 | [UC-09](#uc-09) | Review daily work and notifications | FR7, FR7.1, FR7.2, FR8.2, FR8.3 |
-| [UC-10](#uc-10) | Record subscription cancellation | FR4, FR4.1, FR15, FR4.3, FR4.4, FR15.1, FR15.2 |
+| [UC-10](#uc-10) | Record subscription cancellation | FR4, FR4.1, FR15, FR4.3, FR15.1, FR15.2 |
 | [UC-11](#uc-11) | Query outstanding obligations through the API | FR4.2, FR15, FR15.1, FR15.2 |
 | [UC-12](#uc-12) | Consult financial dashboard and reports | FR8, FR8.1, FR8.3, FR8.4, FR8.5, FR8.6, FR8.7, FR8.8 |
 | [UC-13](#uc-13) | Configure billing and automation policies | FR5.1, FR6.2, FR13, FR13.1, FR13.3 |
@@ -182,11 +182,11 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Use Case Name:** Manage subscriptions and annual rate reviews
 * **Description:** Maintain monthly subscription terms and effective dates, including pauses, initial proration and an administrator-led annual rate review.
 * **Primary Actor:** Operational User
-* **Other Initiating Contexts:** Administrator performs annual-rate decisions; the system scheduler creates due-review tasks but cannot approve rates.
+* **Other Initiating Contexts:** Administrator performs annual-rate decisions; Time creates due-review tasks but cannot approve rates.
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-02, UR-03, UR-08; FR: FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR5.6, FR10.3; NFR-01, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-03, BR-04; UR: UR-02, UR-03, UR-08; FR: FR2.2, FR5.2, FR10, FR10.1, FR10.2, FR5, FR5.1, FR5.3, FR5.4, FR5.5, FR10.3; NFR-01, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 2-5, 14.; E pp. 2-3, 11.
 * **Stakeholders & Interests:**
   * *Assigned staff:* set up the service and follow up review tasks.
@@ -196,7 +196,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Postconditions:** Approved terms, dates and review evidence are retained. Billing follows their effective dates; prior invoices and old debt remain intact.
 * **Success Guarantee:** The subscription or approved future rate is stored with a traceable effective date and appropriate billing schedule.
 * **Minimal Guarantee:** Unapproved terms are not billed, unavailable revenue is not invented and a pause never settles old debt.
-* **Trigger:** Staff request a subscription operation or the system scheduler makes an annual review due.
+* **Trigger:** Staff request a subscription operation or Time makes an annual review due.
 * **Main Success Scenario:**
 1. The user selects the customer, service, start date, rate, recurring concepts and agreed payment terms.
 2. The system validates tax data and previews the documented proration calculation and first regular billing date.
@@ -208,7 +208,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
   * **2a.** Future start or approved no-proration option: record it explicitly; create no premature invoice or reminder. A first-day start must not generate an overlapping extra proration invoice.
   * **1a.** Pause/reactivate: record reason and dates; suppress the affected future monthly invoices, retain old debt and notify the responsible person when review/reactivation is due.
   * **3a.** Discount, free period or extra service: UC-17 decides the exact proposal under configured thresholds; apply approved effective dates and expire time-limited discounts automatically.
-  * **1b.** Annual review: the system lists due reviews. An authorised Administrator records annual revenue, source and date; the system proposes the band. Obtain the required UC-17 decision, retain old/new values and activate only from the approved date.
+  * **1b.** Annual review: Time lists due reviews. An authorised Administrator records annual revenue, source and date; the system proposes the band. Obtain the required UC-17 decision, retain old/new values and activate only from the approved date.
   * **1c.** Annual evidence missing or proposal rejected: retain the pending review or rejection and existing rate; corrections remain traced, with no automatic retroactive charge.
   * **5a.** Issuance or delivery fails: preserve the subscription and invoice stages separately and retry without duplicating the charge.
 
@@ -222,7 +222,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Supporting Actors:** Communication Service
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04, BR-06; UR: UR-03, UR-04; FR: FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.5; NFR-01, NFR-02, NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-04, BR-06; UR: UR-03, UR-04; FR: FR2, FR2.3, FR2.5, FR14.2, FR2.4, FR2.6, FR14, FR2.7, FR13.1, FR2.9, FR2.10, FR2.11, FR11.2, FR14.4; NFR-01, NFR-02, NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 3-5, 16.; E pp. 3-5, 8-9, 14.; E pp. 5, 12, 15.
 * **Stakeholders & Interests:**
   * *Customer and billing recipients:* receive a correct invoice through an eligible channel.
@@ -254,11 +254,11 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **ID / Code:** UC-06
 * **Use Case Name:** Generate monthly recurring invoices
 * **Description:** Process eligible monthly subscriptions and recover interrupted billing runs without repeating a subscription-period charge.
-* **Primary Actor:** None (started by the system scheduler under the UC-13 billing policy)
+* **Primary Actor:** Time
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
-* **Related requirements:** BR-02, BR-03, BR-06; UR: UR-03, UR-10; FR: FR2.1, FR9.2, FR14, FR11.2, FR14.3, FR14.4; NFR-03, NFR-05, NFR-06.
+* **Related requirements:** BR-02, BR-03, BR-06; UR: UR-03, UR-10; FR: FR2.1, FR9.2, FR14, FR11.2, FR14.3; NFR-03, NFR-05, NFR-06.
 * **Source:** E pp. 4, 9, 14, 17.
 * **Stakeholders & Interests:**
   * *Turbine:* complete scheduled billing after failures.
@@ -287,11 +287,11 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Use Case Name:** Reconcile payments with invoices
 * **Description:** Match verified provider transactions to invoices and preserve discrepancies or authorised reversals as auditable evidence.
 * **Primary Actor:** Operational User
-* **Other Initiating Contexts:** The system scheduler starts authorised queries; validated Payment Provider notifications supply transaction evidence.
+* **Other Initiating Contexts:** Time starts authorised queries; validated Payment Provider notifications supply transaction evidence.
 * **Supporting Actors:** Payment Provider
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-04, BR-05, BR-06; UR: UR-06; FR: FR3, FR3.1, FR3.6, FR3.7, FR14.5; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-04, BR-05, BR-06; UR: UR-06; FR: FR3, FR3.1, FR14.4; NFR-04, NFR-05, NFR-06.
 * **Source:** E p. 6.
 * **Stakeholders & Interests:**
   * *Assigned staff:* resolve uncertain matches.
@@ -301,7 +301,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Postconditions:** Verified transactions are allocated once, balances and internal alerts reflect the result, and unmatched/partial/excess amounts remain available for review.
 * **Success Guarantee:** A clear match is reconciled or a discrepancy is explicitly retained; paid status requires verified allocations settling the balance.
 * **Minimal Guarantee:** Invalid events and provider errors never create payments; original evidence and reversal history remain available.
-* **Trigger:** Staff review a transaction, the system scheduler starts a query, or Payment Provider supplies a validated event.
+* **Trigger:** Staff review a transaction, Time starts a query, or Payment Provider supplies a validated event.
 * **Main Success Scenario:**
 1. The system records the transaction identity, successful/settled status, amount, currency, date and reference.
 2. It checks event and transaction identity for prior processing.
@@ -320,7 +320,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **ID / Code:** UC-08
 * **Use Case Name:** Run reminders and overdue follow-up
 * **Description:** Send eligible invoice reminders using stored terms and current balances, suspending follow-up when authorised.
-* **Primary Actor:** None (started by the system scheduler under the UC-13 reminder policy)
+* **Primary Actor:** Time
 * **Supporting Actors:** Communication Service
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
@@ -342,7 +342,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 4. Communication Service processes the attempt; the system records its observed result, next occurrence and any overdue alert.
 
 * **Extensions:**
-  * **1a.** Weekend/holiday: move only communication to the next working day under FR3.2.6; retain the legal due date. Use the documented counting/collision policy.
+  * **1a.** Weekend/holiday: move only communication to the next working day under FR3.2.5; retain the legal due date. Use the documented counting/collision policy.
   * **2a.** Settled balance or valid dispute pause: suppress dispatch; keep unpaid debt and review task where applicable.
   * **4a.** Provider failure or duplicate job: record a retryable failure or reuse the occurrence result; do not send the same occurrence twice.
   * **1b.** Customer-specific terms, e.g. thirty days: do not declare overdue on default day five; overdue spacing is the configured two/three-day policy.
@@ -389,7 +389,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
-* **Related requirements:** BR-02; UR: UR-02; FR: FR4, FR4.1, FR15, FR4.3, FR4.4, FR15.1, FR15.2; NFR-04, NFR-05, NFR-06.
+* **Related requirements:** BR-02; UR: UR-02; FR: FR4, FR4.1, FR15, FR4.3, FR15.1, FR15.2; NFR-04, NFR-05, NFR-06.
 * **Source:** E pp. 4, 11-12, 14, 17.
 * **Stakeholders & Interests:**
   * *Customer:* end the commercial relationship without debt disappearing.
@@ -452,7 +452,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Use Case Name:** Consult financial dashboard and reports
 * **Description:** Inspect explainable financial indicators, export authorised reports and prepare accounting packages.
 * **Primary Actor:** Administrator
-* **Other Initiating Contexts:** The system scheduler can execute a previously authorised report schedule for authorised recipients.
+* **Other Initiating Contexts:** Time can execute a previously authorised report schedule for authorised recipients.
 * **Supporting Actors:** Communication Service (scheduled internal summaries)
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** User Goal
@@ -517,7 +517,7 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 * **Use Case Name:** Supervise audit, backups and recovery
 * **Description:** Inspect integrity evidence and automation health, and create or restore backups through explicit operation-specific branches.
 * **Primary Actor:** Super Administrator
-* **Other Initiating Contexts:** The system scheduler creates scheduled backups only; restoration always requires Super Administrator confirmation.
+* **Other Initiating Contexts:** Time creates scheduled backups only; restoration always requires Super Administrator confirmation.
 * **Supporting Actors:** None
 * **Scope:** Turbine internal invoicing and collections application.
 * **Level:** Summary
@@ -527,18 +527,18 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
   * *Super Administrator:* diagnose failures and recover a validated state.
   * *Turbine:* retain intact financial history and usable backups.
   * *Customer:* retain documents and scoped access after recovery.
-* **Preconditions:** The actor has Super Administrator audit/recovery authority. The system scheduler may create only the configured scheduled backup; restore additionally requires a valid backup, approved target and explicit human confirmation.
+* **Preconditions:** The actor has Super Administrator audit/recovery authority. Time may create only the configured scheduled backup; restore additionally requires a valid backup, approved target and explicit human confirmation.
 * **Postconditions:** Audit consultation changes no historical evidence. Backup attempts have recorded scope/outcome; restoration releases operations only after data/document/permission checks pass.
 * **Success Guarantee:** The selected inspection, backup or recovery operation has a traceable result and failed stages remain visible.
 * **Minimal Guarantee:** Audit history cannot be edited/deleted; failed recovery is not declared complete or allowed to resume normal billing.
-* **Trigger:** The Super Administrator opens supervision/recovery or the system scheduler starts a backup.
+* **Trigger:** The Super Administrator opens supervision/recovery or Time starts a backup.
 * **Main Success Scenario:**
 1. The Super Administrator selects audit/health inspection, backup creation or recovery.
 2. For inspection, the system shows permitted actions and executions with actor/process, target, time and outcome; the actor filters or opens an event.
 3. The system shows last generation, pending dispatches, integration failures and last successful backup, with an actionable issue code and actual status.
 
 * **Extensions:**
-  * **1a.** Backup creation: the Super Administrator requests a manual backup or the system scheduler fires the schedule; create data-and-document backup and record scope/time/outcome. Apply the at-least-24-hour NFR-05 target.
+  * **1a.** Backup creation: the Super Administrator requests a manual backup or Time fires the schedule; create data-and-document backup and record scope/time/outcome. Apply the at-least-24-hour NFR-05 target.
   * **1b.** Restore: select a valid backup and approved target, show scope, obtain Super Administrator confirmation and restrict conflicting operations. Restore and validate invoice/PDF links, balances and permissions; record duration/outcome before resuming idempotent jobs. The recovery target is NFR-05’s four hours, not a measured achievement.
   * **2a.** Non-Super Administrator requests protected global audit/backup data or tries audit mutation: reject; ordinary customer timelines remain separately scoped.
   * **1c.** Backup fails or is invalid: retain the last valid backup, record the failure and notify the responsible operator.
@@ -673,8 +673,8 @@ The original 24 cases were consolidated into 18 and renumbered consecutively as 
 
 ## 4. Relationships and coverage
 
-The overview diagram in [use-case-diagram.pu](use-case-diagram.pu) shows the 18 IDs, every actor and every relationship; the four views split the same model by business area, and each use case appears in exactly one view. UC-06 and UC-15 include UC-05; their caller supplies the appropriate approved recurring or corrective proposal. UC-10 includes UC-11's debt calculation. UC-05 extends UC-04 only when an initial prorated invoice is due. UC-17 extends UC-04, UC-05 or UC-15 only when the applicable rate, commercial or correction decision requires approval. UC-16 extends UC-05 or UC-07 for delivery or reconciliation problems; it does not run after every successful invoice/payment.
+The four views of [use-case-diagram.pu](use-case-diagram.pu) show exactly these 18 IDs. UC-06 and UC-15 include UC-05; their caller supplies the appropriate approved recurring or corrective proposal. UC-10 includes UC-11's debt calculation. UC-05 extends UC-04 only when an initial prorated invoice is due. UC-17 extends UC-04, UC-05 or UC-15 only when the applicable rate, commercial or correction decision requires approval. UC-16 extends UC-05 or UC-07 for delivery or reconciliation problems; it does not run after every successful invoice/payment.
 
-The grouped cases retain their distinct branch permissions and outcomes; grouping is a presentation change, not a grant of new capabilities. All 59 original FR remain covered; the current 85 parent requirements and all 112 explicitly defined descendant rules (197 FR IDs) are covered. Each listed parent FR includes its defined sub-requirements; the coordination note records the complete parent mapping. The diagram's historical C9 label refers to FR3.2.6, which now defines the working-calendar rule directly. BR links use the six current BR, without renumbering requirements. Broader UR goals for controlled merging, cost centres, budget targets or refunds do not override the existing scope exclusions or create unsupported cash flows.
+The grouped cases retain their distinct branch permissions and outcomes; grouping is a presentation change, not a grant of new capabilities. All 59 original FR remain covered; the current 85 parent requirements and all 112 explicitly defined descendant rules (197 FR IDs) are covered. Each listed parent FR includes its defined sub-requirements; the coordination note records the complete parent mapping. The diagram's historical C9 label refers to FR3.2.5, which now defines the working-calendar rule directly. BR links use the six current BR, without renumbering requirements. Broader UR goals for controlled merging, cost centres, budget targets or refunds do not override the existing scope exclusions or create unsupported cash flows.
 
 Compile only the four named Submission 1 deliverables. Historical review/consolidation notes remain in `notes/`; they are not additional PDFs. These contracts define expected behaviour and make no claim of implementation or executed application tests.
