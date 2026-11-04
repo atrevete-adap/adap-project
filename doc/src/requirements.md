@@ -339,7 +339,7 @@
   - Priority: Must
 - **FR10.1.** Start date and deferred billing. The system will allow a subscription's billing start to be planned.
   - Dependencies / Relationships: FR10, FR2.2.
-  - Priority: Should
+  - Priority: Must
   - **FR10.1.1.** A subscription can start on a future date; until then the customer is pending activation and no invoices or reminders are generated.
   - **FR10.1.2.** A subscription can be explicitly marked to start billing the following month without proration.
 - **FR10.2.** Pause and reactivation. A subscription can be paused and reactivated.
@@ -396,7 +396,7 @@
   - Priority: Must
 - **FR13.1.** Communication templates. Authorised users can edit the templates for invoice emails, reminders and other customer messages.
   - Dependencies / Relationships: FR13, FR1.1.
-  - Priority: Should
+  - Priority: Must
   - **FR13.1.1.** Templates use variables (company, invoice number, amount, due date, responsible person, support details).
   - **FR13.1.2.** Templates exist in at least Spanish and English, chosen per customer or contact.
   - **FR13.1.3.** The preview warns about missing variables; users can send a test to themselves and preview the reminder schedule.
@@ -414,7 +414,7 @@
 
 - **FR14.** Background processing. Operations affecting more than 1,000 records (configurable; e.g. monthly generation, imports, bulk actions) run in the background with a visible status (pending, processing, completed, completed with errors).
   - Dependencies / Relationships: FR2.1, FR9.2.
-  - Priority: Should
+  - Priority: Must
 - **FR14.1.** Bulk actions. Users can perform bulk actions (reassign customers, export a selection, change sector, generate reports).
   - Dependencies / Relationships: FR6.2.
   - Priority: Could
