@@ -164,8 +164,8 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
   * **Status:** Resolved.
 * **Direct commits to `main` without review.**
   * **Impact:** Three changes reached `main` without a pull request (`1f3c59c`, `7b5d6f0`, `1bf9c0d`). The last one added UR traceability with FR identifiers from before PR #40, so five references pointed to removed or renumbered requirements; UR-14 pointed silently to a different requirement.
-  * **Solution:** The references were fixed in PR #60, and the repository owner was asked to protect `main` so that every change needs a pull request with one approval. In the 04/11 meeting the whole team agreed to send every change through a pull request; branch protection was not yet enabled at the end of Sprint 3.
-  * **Status:** Mitigated (branch protection pending).
+  * **Solution:** The references were fixed in PR #60, and the repository owner was asked to protect `main` so that every change needs a pull request with one approval. In the 04/11 meeting the whole team agreed to send every change through a pull request, and the same day the owner enabled branch protection on `main`, so changes can only reach it through a reviewed pull request.
+  * **Status:** Resolved.
 * **Finished work waiting in draft pull requests.**
   * **Impact:** The use case split (#59) and the diagram (#41) were finished by 30/10, but #59 stayed a draft, so neither reached `main` during the sprint.
   * **Solution:** Draft pull requests are marked ready as soon as the work is finished, and the Scrum Master checks the review queue at each meeting.
