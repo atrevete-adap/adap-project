@@ -328,7 +328,7 @@
   - **FR9.1.2.** The super administrator can consult and filter it.
 - **FR9.2.** Automation log and health screen. The system will monitor its automated processes.
   - Dependencies / Relationships: FR9, FR14.
-  - Priority: Should
+  - Priority: Must
   - **FR9.2.1.** Each automated process records when it ran, the items processed and created, and any failures with their reasons.
   - **FR9.2.2.** A health screen shows the last recurring generation, the pending email queue, recent integration errors and the last successful backup.
 
