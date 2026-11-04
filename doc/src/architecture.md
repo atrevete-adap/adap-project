@@ -32,7 +32,7 @@ Session 2.1 recommends the layered architecture for *critical banking and financ
 | **NFR-04** Security | The presentation layer cannot reach the database; every protected operation is authorised in the application layer before touching data. |
 | **NFR-05** Auditability, availability and recovery | Controllers record an audit entry for every critical operation. Backups and restores are application use cases (UC-21, UC-22) that use a storage interface, so the backup target can change without touching business rules. |
 | **NFR-06** Data integrity and automation reliability | Transactions are opened by the application layer, and automatic jobs run through the same controllers as interactive users, so duplicate checks and idempotency rules are written once. |
-| **NFR-07** Maintainability and independent deployment | Each layer can be changed or tested on its own. The simulated payment and communication services are adapters, so replacing a simulation with a real provider (Stripe, Revolut, an email or WhatsApp service) only changes the infrastructure layer. |
+| **NFR-07** Maintainability and Deployment Reproducibility | Each layer can be changed or tested on its own, and the application is deployed independently of Brain. The simulated payment and communication services are adapters, so replacing a simulation with a real provider (Stripe, Revolut, an email or WhatsApp service) only changes the infrastructure layer. |
 
 ### Alternatives considered
 
@@ -62,7 +62,7 @@ Because every job goes through a controller, the same permission checks, transac
 
 ## 4. Components per layer
 
-This is the starting point for the component diagram (#46). Component names in the application layer group the 22 use cases; the domain packages follow the domain model (#42).
+This is the starting point for the component diagram (#46). Component names in the application layer group the 22 use cases; the domain layer follows the domain model (#42).
 
 **Presentation layer**
 - `Web UI` `<<boundary>>`: responsive screens for internal users (NFR-02).
@@ -80,7 +80,7 @@ This is the starting point for the component diagram (#46). Component names in t
 - `Scheduler`: starts the jobs in section 3.
 
 **Domain layer**
-- Packages from the domain model: `Customers and Subscriptions`, `Invoicing`, `Collections`, `Users and Governance`.
+- The concepts of the domain model (#42), grouped as *Customers and subscriptions*, *Invoicing and collection* and *Governance and automation*.
 - Interfaces (ports): repositories for each aggregate, `PaymentGateway`, `CommunicationService`, `DocumentStorage`, `PdfRenderer`.
 
 **Infrastructure layer** (`<<infrastructure>>`)
