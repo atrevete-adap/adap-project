@@ -1,0 +1,287 @@
+@startuml domain-model
+' TurbineH — Internal Invoicing & Payment Tracking System (Submission 2, task #42)
+' Domain model: the main concepts of the problem domain, their attributes and
+' associations, derived from the Functional Requirements and the 22 use cases.
+' No types or operations: those belong to the class diagram (#45).
+
+left to right direction
+hide circle
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam packageStyle rectangle
+
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam package {
+    BorderColor #2B3E6A
+    FontColor #2B3E6A
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam arrow {
+    Color #2B3E6A
+}
+
+package "Customers and subscriptions" {
+    class Customer {
+        tradingName
+        legalName
+        taxId
+        taxAddress
+        country
+        workingCurrency
+        status
+        deleted
+    }
+    class Contact {
+        name
+        email
+        phone
+        contactRole
+        whatsAppConsent
+        preferredLanguage
+        active
+    }
+    class Tag {
+        name
+    }
+    class Subscription {
+        startDate
+        billingStartDate
+        status
+        agreedRate
+        paymentTermDays
+    }
+    class Pause {
+        reason
+        startDate
+        reactivationDate
+    }
+    class CommercialException {
+        exceptionType
+        value
+        startDate
+        endDate
+    }
+    class Cancellation {
+        requestDate
+        effectiveDate
+        origin
+    }
+    class RateTier {
+        minAnnualRevenue
+        maxAnnualRevenue
+        monthlyPrice
+    }
+    class AnnualReview {
+        year
+        annualRevenue
+        revenueSource
+        status
+        effectiveDate
+        previousPrice
+        newPrice
+    }
+}
+
+package "Invoicing" {
+    class Invoice {
+        invoiceType
+        status
+        number
+        issueDate
+        dueDate
+        currency
+        totalAmount
+    }
+    class InvoiceSeries {
+        code
+        lastNumber
+    }
+    class InvoiceLine {
+        description
+        quantity
+        unitPrice
+        discount
+    }
+    class Concept {
+        name
+        defaultPrice
+    }
+    class Tax {
+        name
+        rate
+    }
+    class InvoiceDocument {
+        fileName
+        generatedAt
+    }
+    class DeliveryAttempt {
+        channel
+        recipients
+        sentAt
+        result
+    }
+    class MessageTemplate {
+        templateType
+        language
+        version
+    }
+}
+
+package "Collections" {
+    class PaymentTransaction {
+        source
+        amount
+        currency
+        transactionDate
+        reference
+    }
+    class Reconciliation {
+        reconciledAmount
+        reconciledAt
+        automatic
+        reversed
+        reversalReason
+    }
+    class Reminder {
+        reminderType
+        scheduledDate
+        sentAt
+    }
+    class BillingIssue {
+        issueType
+        status
+        priority
+        resolution
+    }
+    class Comment {
+        text
+        restricted
+        createdAt
+    }
+    class Attachment {
+        documentType
+        description
+        fileName
+    }
+}
+
+package "Users and governance" {
+    class User {
+        corporateEmail
+        role
+        active
+    }
+    class Delegation {
+        startDate
+        endDate
+    }
+    class ApprovalRequest {
+        requestType
+        reason
+        status
+        decisionComment
+        decidedAt
+    }
+    class Notification {
+        eventType
+        priority
+        read
+        handled
+    }
+    class AuditEntry {
+        action
+        target
+        occurredAt
+    }
+    class AccountingPeriod {
+        startDate
+        endDate
+        status
+    }
+    class AutomationRun {
+        job
+        startedAt
+        itemsProcessed
+        failures
+    }
+    class Backup {
+        createdAt
+        status
+    }
+}
+
+' --- Customers and subscriptions
+Customer "1..*" -- "0..*" Contact : has
+Customer "0..*" -- "0..*" Tag : labelled with
+Customer "0..*" -- "1" User : responsible user
+Customer "1" -- "0..*" Subscription : contracts
+Subscription "1" -- "1..*" Concept : recurring concepts
+Subscription "1" -- "0..*" Pause : paused by
+Subscription "1" -- "0..*" CommercialException : adjusted by
+Subscription "1" -- "0..1" Cancellation : ended by
+Subscription "1" -- "0..*" AnnualReview : reviewed in
+AnnualReview "0..*" -- "1" RateTier : proposes
+
+' --- Invoicing
+Customer "1" -- "0..*" Invoice : billed with
+Subscription "0..1" -- "0..*" Invoice : generates
+Invoice "0..*" -- "1" InvoiceSeries : numbered in
+Invoice "1" *-- "1..*" InvoiceLine : contains
+InvoiceLine "0..*" -- "0..1" Concept : based on
+InvoiceLine "0..*" -- "1" Tax : taxed with
+Invoice "1" *-- "0..1" InvoiceDocument : preserved as
+Invoice "1" -- "0..*" DeliveryAttempt : sent through
+DeliveryAttempt "0..*" -- "1" Contact : sent to
+DeliveryAttempt "0..*" -- "1" MessageTemplate : uses
+Invoice "0..1" -- "0..*" Invoice : corrected by
+
+' --- Collections
+PaymentTransaction "1" -- "0..*" Reconciliation : applied in
+Reconciliation "0..*" -- "1" Invoice : settles
+Invoice "1" -- "0..*" Reminder : followed up by
+Customer "1" -- "0..*" BillingIssue : concerns
+BillingIssue "0..*" -- "0..1" Invoice : about
+BillingIssue "1" -- "0..*" Comment : discussed in
+Customer "1" -- "0..*" Attachment : documents
+Invoice "1" -- "0..*" Attachment : documents
+
+' --- Users and governance
+User "1" -- "0..*" Delegation : delegates
+Delegation "0..*" -- "1" User : to
+User "1" -- "0..*" ApprovalRequest : requests
+ApprovalRequest "0..*" -- "0..1" User : decided by
+ApprovalRequest "0..*" -- "0..1" Invoice : about
+User "1" -- "0..*" Notification : receives
+User "1" -- "0..*" AuditEntry : performs
+Invoice "0..*" -- "1" AccountingPeriod : belongs to
+AutomationRun "0..1" -- "0..*" Invoice : generates
+Backup "0..*" -- "0..1" User : restored by
+
+note bottom of Cancellation
+  **FR4.1**: no new invoices from the
+  effective date; previous invoices stay
+  in collection (C4).
+end note
+
+note bottom of Reconciliation
+  **FR3.1**: an invoice is paid only through
+  the transactions that justify it; a
+  reconciliation can be reversed.
+end note
+
+note bottom of AutomationRun
+  Scheduled jobs (monthly generation,
+  reminders, payment checks, backups)
+  are system behaviour, not an actor
+  (professor's answer, #27).
+end note
+
+@enduml
