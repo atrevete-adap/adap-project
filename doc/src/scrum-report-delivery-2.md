@@ -50,7 +50,7 @@ Responsibilities in Sprint 3 follow the authorship of each Submission 1 artifact
 * **Topic:** The two Submission 1 feedback points that conflicted with the 20/10 tutoring (#27).
 * **Results:** (1) The items under each FR must be sub-requirements, i.e. things the system does; business rules, descriptions and anything not about the system can be removed. (2) Time cannot be an actor: automatic scheduling is part of the system and its architecture. Both answers were recorded in #27, which was closed, and unblocked #35 and #38.
 
-**04/11/2026 – [TODO: start time] to [TODO: end time]** (Sprint 3 review and retrospective / Sprint 4 planning, in class)
+**04/11/2026 – 11:15 to 11:30** (Sprint 3 review and retrospective / Sprint 4 planning, in class)
 
 * **Participants:** Deniz, Adam, Héctor, Víctor
 * **Absent:** Pablo (informed of the decisions and his tasks through the team's WhatsApp group)
@@ -83,7 +83,7 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 | # | Task | Assignee | Priority | Label | Sprint | Status | Depends on |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | #42 | Design: domain model | Deniz, Héctor | High | design | Sprint 4 | In progress (first draft) | – |
-| #43 | Design: architecture pattern and rationale | Adam | High | design | Sprint 4 | Todo | – |
+| #43 | Design: architecture pattern and rationale | Adam | High | design | Sprint 4 | In progress (PR #64) | – |
 | #44 | Design: physical ER diagram | Víctor, Héctor | High | design | Sprint 4 | Todo | #42 |
 | #45 | Design: UML class diagram | Pablo, Deniz | High | design | Sprint 4 | Todo | #42 |
 | #46 | Design: UML component diagram | Adam | High | design | Sprint 4 | Todo | #43 |
@@ -109,7 +109,7 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 * **Sprint Goal:** Fix the Submission 1 feedback and start the basics of the Submission 2 design tasks.
 * **Planned tasks:** #27 to #38 (feedback fixes, see the Product Backlog). #38 (FR priorities) was carried over to Sprint 4.
 * **Completed tasks:** #27 (professor's answers), #28 (vague wording, PR #40), #29 (URs in standard format), #30 (BR-02 and BR-06), #32 (availability and recovery metrics). Finished and waiting to be merged on 04/11: #31 (PR #60), #33–#37 (PRs #41 and #59). In progress: #38 (sub-requirements done in PR #40, priorities pending) and the first draft of the domain model (#42).
-* **Meetings held:** 28/10/2026 (11:15 to 11:30, planning), 28/10/2026 (questions to the professor) and 04/11/2026 (review and retrospective). See Section 2.
+* **Meetings held:** 28/10/2026 (11:15 to 11:30, planning), 28/10/2026 (questions to the professor) and 04/11/2026 (11:15 to 11:30, review and retrospective). See Section 2.
 * **Issues encountered:** Two points of the Submission 1 feedback conflict with the advice received in the 20/10 tutoring: the fragmentation of the Functional Requirements (sub-IDs were suggested in the tutoring) and the modelling of scheduled processes. Pablo was absent from the planning meeting. Three changes were committed directly to `main` without a pull request, and one of them used FR identifiers that had just been renumbered. The finished pull requests waited several days because two of them were still drafts, and on 04/11 a GitHub outage blocked merging. The Submission 2 design tasks were not started.
 * **Solutions applied:** The conflicting points were turned into a question to the professor (#27), and the tasks that depend on the answer (#35, #38) were marked as blocked so that no work is redone twice; the professor answered the same day. The broken references were fixed in PR #60, and the owner was asked to protect `main` so that every change needs a reviewed pull request. The drafts were marked ready on 04/11 and merged once GitHub recovered. The design core was planned for Sprint 4.
 
@@ -132,7 +132,7 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 * **Sprint Goal:** Complete the design core of Submission 2: domain model, architecture pattern, physical ER diagram, class diagram and component diagram.
 * **Planned tasks:** #42 domain model, #43 architecture pattern and rationale, #44 physical ER diagram, #45 class diagram, #46 component diagram, and #38 FR priorities (carried over from Sprint 3). The Scrum Report (#53) continues across all sprints.
 * **Completed tasks:** [TODO: update at the end of the sprint]
-* **Meetings held:** 04/11/2026 (planning). [TODO: + closing meeting]. See Section 2.
+* **Meetings held:** 04/11/2026 (11:15 to 11:30, planning). [TODO: + closing meeting]. See Section 2.
 * **Issues encountered:** [TODO: complete during the sprint]
 * **Solutions applied:** [TODO: complete during the sprint]
 
@@ -164,8 +164,8 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
   * **Status:** Resolved.
 * **Direct commits to `main` without review.**
   * **Impact:** Three changes reached `main` without a pull request (`1f3c59c`, `7b5d6f0`, `1bf9c0d`). The last one added UR traceability with FR identifiers from before PR #40, so five references pointed to removed or renumbered requirements; UR-14 pointed silently to a different requirement.
-  * **Solution:** The references were fixed in PR #60, and the repository owner was asked to protect `main` so that every change needs a pull request with one approval. [TODO: confirm whether branch protection was enabled]
-  * **Status:** Mitigated.
+  * **Solution:** The references were fixed in PR #60, and the repository owner was asked to protect `main` so that every change needs a pull request with one approval. In the 04/11 meeting the whole team agreed to send every change through a pull request; branch protection was not yet enabled at the end of Sprint 3.
+  * **Status:** Mitigated (branch protection pending).
 * **Finished work waiting in draft pull requests.**
   * **Impact:** The use case split (#59) and the diagram (#41) were finished by 30/10, but #59 stayed a draft, so neither reached `main` during the sprint.
   * **Solution:** Draft pull requests are marked ready as soon as the work is finished, and the Scrum Master checks the review queue at each meeting.
@@ -176,8 +176,8 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
   * **Status:** Resolved.
 * **GitHub outage on 04/11/2026.**
   * **Impact:** GitHub reported a partial outage of Pull Requests and degraded Git operations, so #59, #41 and #60 could not be merged at the end of the sprint.
-  * **Solution:** The merges were tested locally (no conflicts), and the pull requests were merged once the service recovered. [TODO: confirm the merge date]
-  * **Status:** [TODO]
+  * **Solution:** The merges were tested locally (no conflicts), and the pull requests were merged once the service recovered, on 04/11/2026 between 11:22 and 11:23.
+  * **Status:** Resolved.
 * **Design work not started in Sprint 3.**
   * **Impact:** About two weeks remain before the delivery (week of 17/11) and no design artifact was in progress at the end of Sprint 3.
   * **Solution:** The design core (domain model, architecture, ER, class and component diagrams) is planned for Sprint 4, and a first draft of the domain model (#42) was prepared on 04/11 so that the ER and class diagrams can start.
