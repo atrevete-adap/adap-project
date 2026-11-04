@@ -44,7 +44,9 @@ skinparam arrow {
 ' ============================================================================
 ' APPLICATION LAYER: controllers coordinate; they hold no business rules
 ' ============================================================================
+!if ($VIEW == "all")
 package "Application" {
+!endif
     class AccessController <<control>> $application {
         ' UC-01, UC-03
         + login(email: String, password: String): Session
@@ -184,12 +186,16 @@ package "Application" {
         + authorize(capability: Capability, customer: Customer [0..1]): void
         + isSystem(): Boolean
     }
+!if ($VIEW == "all")
 }
+!endif
 
 ' ============================================================================
 ' DOMAIN LAYER: customers and subscriptions
 ' ============================================================================
+!if ($VIEW == "all")
 package "Domain: customers and subscriptions" {
+!endif
     class Customer <<entity>> $customers $invoicing {
         - tradingName: String
         - legalName: String
@@ -309,12 +315,16 @@ package "Domain: customers and subscriptions" {
         + confirm(effectiveDate: Date): void
         + reject(reason: String): void
     }
+!if ($VIEW == "all")
 }
+!endif
 
 ' ============================================================================
 ' DOMAIN LAYER: invoicing and collection
 ' ============================================================================
+!if ($VIEW == "all")
 package "Domain: invoicing and collection" {
+!endif
     class Invoice <<entity>> $customers $invoicing $governance {
         - type: InvoiceType
         - number: String [0..1]
@@ -505,12 +515,16 @@ package "Domain: invoicing and collection" {
         + allowsFinancialChange(hasExceptionalAuthority: Boolean): Boolean
         + blockingExceptions(): List<String>
     }
+!if ($VIEW == "all")
 }
+!endif
 
 ' ============================================================================
 ' DOMAIN LAYER: governance and automation
 ' ============================================================================
+!if ($VIEW == "all")
 package "Domain: governance and automation" {
+!endif
     class User <<entity>> $customers $governance {
         - corporateEmail: String
         - role: Role
@@ -696,12 +710,16 @@ package "Domain: governance and automation" {
         + complete(now: DateTime): void
         + withinRecoveryTarget(): Boolean
     }
+!if ($VIEW == "all")
 }
+!endif
 
 ' ============================================================================
 ' DOMAIN LAYER: ports declared by the domain, implemented by infrastructure
 ' ============================================================================
+!if ($VIEW == "all")
 package "Domain: ports" {
+!endif
     interface PaymentGateway $application {
         + queryTransactions(since: DateTime): List<TransactionEvidence>
         + verifyNotification(rawEvent: String): TransactionEvidence
@@ -802,12 +820,16 @@ package "Domain: ports" {
         + latestValid(): Backup [0..1]
         + saveRecovery(recovery: RecoveryExecution): RecoveryExecution
     }
+!if ($VIEW == "all")
 }
+!endif
 
 ' ============================================================================
 ' INFRASTRUCTURE LAYER: adapters named in PR #64 and the timer that starts jobs
 ' ============================================================================
+!if ($VIEW == "all")
 package "Infrastructure" {
+!endif
     class PaymentProviderAdapter <<infrastructure>> $application
     class EmailAdapter <<infrastructure>> $application
     class WhatsAppAdapter <<infrastructure>> $application
@@ -816,12 +838,16 @@ package "Infrastructure" {
     class SystemTimer <<infrastructure>> $application {
         + start(): void
     }
+!if ($VIEW == "all")
 }
+!endif
 
 ' ============================================================================
 ' SUPPORTING VALUE OBJECTS
 ' ============================================================================
+!if ($VIEW == "all")
 package "Value objects" {
+!endif
     class Money <<value>> $types {
         - amount: Decimal
         - currency: CurrencyCode
@@ -932,12 +958,16 @@ package "Value objects" {
         - location: String
         - checksum: String
     }
+!if ($VIEW == "all")
 }
+!endif
 
 ' ============================================================================
 ' ENUMERATIONS: literals come from the requirements and contracts
 ' ============================================================================
+!if ($VIEW == "all")
 package "Enumerations" {
+!endif
     enum Role $types {
         OPERATIONAL_USER
         ADMINISTRATOR
@@ -1204,7 +1234,9 @@ package "Enumerations" {
         INVOICE_DRAFT
         ASSIGNED_TASK
     }
+!if ($VIEW == "all")
 }
+!endif
 
 ' ============================================================================
 ' ASSOCIATIONS FROM THE APPROVED DOMAIN MODEL (same multiplicities)
@@ -1238,7 +1270,9 @@ Reconciliation "0..*" -- "1" Payment : allocates
 ' ============================================================================
 ' SUPPORTING ASSOCIATIONS
 ' ============================================================================
+!if ($VIEW == "all" || $VIEW == "customers")
 (Customer, Contact) .. CustomerContact
+!endif
 CustomerImport "0..*" -- "1" User : run by
 CustomerImport "0..1" -- "0..*" Customer : creates or updates
 Subscription "1" *-- "0..*" SubscriptionPause : paused by
@@ -1335,6 +1369,86 @@ AuditBackupController ..> BackupEngine
 !endif
 
 ' ============================================================================
+' LAYOUT ONLY: hidden links arrange the classes in columns; they are not relations
+' ============================================================================
+AccessController -[hidden]down- ApprovalController
+ApprovalController -[hidden]down- CustomerSubscriptionController
+CustomerSubscriptionController -[hidden]down- CollectionsController
+ConfigurationController -[hidden]down- AuditBackupController
+AuditBackupController -[hidden]down- InvoicingController
+InvoicingController -[hidden]down- ReportingOperationsController
+PaymentGateway -[hidden]down- AnnualRevenueProvider
+AnnualRevenueProvider -[hidden]down- PaymentRepository
+PaymentRepository -[hidden]down- AuditRepository
+AuditRepository -[hidden]down- BackupRepository
+CommunicationService -[hidden]down- BackupEngine
+BackupEngine -[hidden]down- ApprovalRepository
+ApprovalRepository -[hidden]down- ConfigurationRepository
+DocumentStorage -[hidden]down- CustomerRepository
+CustomerRepository -[hidden]down- UserRepository
+UserRepository -[hidden]down- AccountingPeriodRepository
+PdfRenderer -[hidden]down- SubscriptionRepository
+SubscriptionRepository -[hidden]down- IssueRepository
+IssueRepository -[hidden]down- ReportRepository
+PasswordHasher -[hidden]down- InvoiceRepository
+InvoiceRepository -[hidden]down- WorkRepository
+WorkRepository -[hidden]down- AutomationRunRepository
+Money -[hidden]down- CustomerData
+CustomerData -[hidden]down- ReportFilters
+ReportFilters -[hidden]down- OutboundMessage
+ValidationResult -[hidden]down- SubscriptionTerms
+SubscriptionTerms -[hidden]down- FinancialIndicators
+FinancialIndicators -[hidden]down- DispatchReceipt
+Preview -[hidden]down- DebtSnapshot
+DebtSnapshot -[hidden]down- HealthSummary
+HealthSummary -[hidden]down- DocumentContent
+InvoiceProposal -[hidden]down- WorkItem
+WorkItem -[hidden]down- TransactionEvidence
+TransactionEvidence -[hidden]down- DocumentRef
+Role -[hidden]down- ReviewStatus
+ReviewStatus -[hidden]down- TemplateType
+TemplateType -[hidden]down- PeriodKind
+PeriodKind -[hidden]down- JobType
+JobType -[hidden]down- WorkItemKind
+Capability -[hidden]down- CancellationOrigin
+CancellationOrigin -[hidden]down- PaymentSource
+PaymentSource -[hidden]down- PeriodStatus
+PeriodStatus -[hidden]down- RunStatus
+CustomerStatus -[hidden]down- CancellationStatus
+CancellationStatus -[hidden]down- PaymentStatus
+PaymentStatus -[hidden]down- ApprovalType
+ApprovalType -[hidden]down- ItemOutcome
+ContactRole -[hidden]down- InvoiceType
+InvoiceType -[hidden]down- ReminderType
+ReminderType -[hidden]down- ApprovalStatus
+ApprovalStatus -[hidden]down- ReportType
+SubscriptionStatus -[hidden]down- InvoiceStatus
+InvoiceStatus -[hidden]down- ReminderStatus
+ReminderStatus -[hidden]down- TaskType
+TaskType -[hidden]down- ReportStatus
+ExceptionType -[hidden]down- DocumentStage
+DocumentStage -[hidden]down- IssueType
+IssueType -[hidden]down- TaskStatus
+TaskStatus -[hidden]down- SummaryFrequency
+ExceptionStatus -[hidden]down- DeliveryStatus
+DeliveryStatus -[hidden]down- IssueStatus
+IssueStatus -[hidden]down- NotificationEvent
+NotificationEvent -[hidden]down- BackupStatus
+RevenueSource -[hidden]down- Channel
+Channel -[hidden]down- Priority
+Priority -[hidden]down- PolicyStatus
+PolicyStatus -[hidden]down- RecoveryStatus
+
+' Stacks the groups vertically in the complete view.
+!if ($VIEW == "all")
+MessageTemplate -[hidden]down- AccessController
+ReportingOperationsController -[hidden]down- PaymentGateway
+BackupRepository -[hidden]down- Money
+DocumentRef -[hidden]down- Role
+Scheduler -[hidden]down- PaymentProviderAdapter
+!endif
+
+' ============================================================================
 ' DESIGN NOTES (shown only in the views that contain their class)
 ' ============================================================================
 !if ($VIEW == "all" || $VIEW == "invoicing")
@@ -1398,22 +1512,25 @@ end note
 !endif
 
 ' ============================================================================
-' VIEWS: filter the single definition above; nothing is redefined
+' VIEWS: filter the single definition above; nothing is redefined. Packages exist
+' only in the complete view, so the filtered views show no empty package boxes.
 ' ============================================================================
+!if ($VIEW != "all")
+remove $application
+remove $customers
+remove $invoicing
+remove $governance
+remove $types
+!endif
 !if ($VIEW == "customers")
-remove *
 restore $customers
 !elseif ($VIEW == "invoicing")
-remove *
 restore $invoicing
 !elseif ($VIEW == "governance")
-remove *
 restore $governance
 !elseif ($VIEW == "application")
-remove *
 restore $application
 !elseif ($VIEW == "types")
-remove *
 restore $types
 !endif
 

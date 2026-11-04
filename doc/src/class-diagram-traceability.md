@@ -7,7 +7,16 @@ Companion to [class-diagram.pu](class-diagram.pu) (#45). The matrix shows which 
 - **Base.** The 15 concepts of [domain-model.pu](domain-model.pu) keep their names, attributes and association multiplicities. The domain model is not changed by this diagram.
 - **Layers.** Names follow the architecture proposal in PR #64: controllers coordinate and check permissions, entities hold the business rules, and the domain declares ports that infrastructure adapters implement.
 - **`ctx: ExecutionContext`.** The caller's identity on every protected operation: a user, an API client or the system identity used by `Scheduler`. Automatic jobs therefore pass through the same controllers and checks as people.
-- **Views.** All classes are defined once in `class-diagram.pu`. The `$VIEW` line at the top selects `all`, `customers`, `invoicing`, `governance`, `application` or `types`; no view redefines a class.
+- **Views.** All classes are defined once in `class-diagram.pu`. The `$VIEW` line at the top selects `all`, `customers`, `invoicing`, `governance`, `application` or `types`; no view redefines a class. Controller-to-port dependencies appear only in the `application` view.
+
+| View | Image | Content |
+| --- | --- | --- |
+| `all` | [class-diagram.png](img/class-diagram.png) | Every class and relationship except the controller-to-port dependencies. Very large: open it at full size. |
+| `customers` | [class-diagram-customers.png](img/class-diagram-customers.png) | Customers, subscriptions, annual reviews, cancellation. |
+| `invoicing` | [class-diagram-invoicing.png](img/class-diagram-invoicing.png) | Invoices, delivery, payments, reconciliations, reminders, issues. |
+| `governance` | [class-diagram-governance.png](img/class-diagram-governance.png) | Users, approvals, audit, policies, automation, reports, backups. |
+| `application` | [class-diagram-application.png](img/class-diagram-application.png) | Controllers, Scheduler, ports, adapters and their dependencies. |
+| `types` | [class-diagram-types.png](img/class-diagram-types.png) | Value objects and enumerations. |
 
 ## 2. Main scenario traceability
 
