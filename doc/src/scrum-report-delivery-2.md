@@ -50,12 +50,12 @@ Responsibilities in Sprint 3 follow the authorship of each Submission 1 artifact
 * **Topic:** The two Submission 1 feedback points that conflicted with the 20/10 tutoring (#27).
 * **Results:** (1) The items under each FR must be sub-requirements, i.e. things the system does; business rules, descriptions and anything not about the system can be removed. (2) Time cannot be an actor: automatic scheduling is part of the system and its architecture. Both answers were recorded in #27, which was closed, and unblocked #35 and #38.
 
-**04/11/2026 – [TODO: start time] to [TODO: end time]** (Sprint 3 review and retrospective / Sprint 4 planning)
+**04/11/2026 – [TODO: start time] to [TODO: end time]** (Sprint 3 review and retrospective / Sprint 4 planning, in class)
 
-* **Participants:** [TODO]
-* **Absent:** [TODO, or remove]
+* **Participants:** Deniz, Adam, Héctor, Víctor
+* **Absent:** Pablo (informed of the decisions and his tasks through the team's WhatsApp group)
 * **Topic:** Review of the Sprint 3 feedback fixes, retrospective, and planning of the Submission 2 design work in Sprint 4.
-* **Results:** [TODO: decisions of the meeting]
+* **Results:** The sprint went smoothly because the team applied what it learned in Submission 1: small tasks with descriptions and owners, and questions to the professor before reworking. All feedback tasks except the FR priorities (#38) were finished; the finished pull requests (#59, #41, #60) were left to merge after the GitHub outage. The team agreed to stop committing directly to `main` and to send every change through a pull request with a reviewer. Sprint 4 was planned with the goal of completing the design core (see Section 3).
 
 ### Product Backlog
 
@@ -82,23 +82,23 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 
 | # | Task | Assignee | Priority | Label | Sprint | Status | Depends on |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| #42 | Design: domain model | Deniz, Héctor | High | design | [TODO] | In progress (first draft) | – |
-| #43 | Design: architecture pattern and rationale | Adam | High | design | [TODO] | Todo | – |
-| #44 | Design: physical ER diagram | Víctor, Héctor | High | design | [TODO] | Todo | #42 |
-| #45 | Design: UML class diagram | Pablo, Deniz | High | design | [TODO] | Todo | #42 |
-| #46 | Design: UML component diagram | Adam | High | design | [TODO] | Todo | #43 |
-| #47 | Design: sequence diagram – issue an invoice | Pablo | Medium | design | [TODO] | Todo | #45, #46 |
-| #48 | Design: sequence diagram – monthly invoice generation | Adam | Medium | design | [TODO] | Todo | #43, #45, #46 |
-| #49 | Design: sequence diagram – reconcile a payment | Víctor | Medium | design | [TODO] | Todo | #45, #46 |
-| #50 | Design: sequence diagram – cancellation with debt query | Héctor | Medium | design | [TODO] | Todo | #45, #46 |
-| #51 | Design: consistency check across design artifacts | Deniz | Medium | design, review | [TODO] | Todo | #44–#50 |
-| #52 | Balls method peer evaluation – Submission 2 | All members | High | scrum | [TODO] | Todo | – |
+| #42 | Design: domain model | Deniz, Héctor | High | design | Sprint 4 | In progress (first draft) | – |
+| #43 | Design: architecture pattern and rationale | Adam | High | design | Sprint 4 | Todo | – |
+| #44 | Design: physical ER diagram | Víctor, Héctor | High | design | Sprint 4 | Todo | #42 |
+| #45 | Design: UML class diagram | Pablo, Deniz | High | design | Sprint 4 | Todo | #42 |
+| #46 | Design: UML component diagram | Adam | High | design | Sprint 4 | Todo | #43 |
+| #47 | Design: sequence diagram – issue an invoice | Pablo | Medium | design | Sprint 5 (planned) | Todo | #45, #46 |
+| #48 | Design: sequence diagram – monthly invoice generation | Adam | Medium | design | Sprint 5 (planned) | Todo | #43, #45, #46 |
+| #49 | Design: sequence diagram – reconcile a payment | Víctor | Medium | design | Sprint 5 (planned) | Todo | #45, #46 |
+| #50 | Design: sequence diagram – cancellation with debt query | Héctor | Medium | design | Sprint 5 (planned) | Todo | #45, #46 |
+| #51 | Design: consistency check across design artifacts | Deniz | Medium | design, review | Sprint 5 (planned) | Todo | #44–#50 |
+| #52 | Balls method peer evaluation – Submission 2 | All members | High | scrum | Sprint 5 (planned) | Todo | – |
 | #53 | Scrum Report – Submission 2 | Deniz | High | scrum | All sprints | In progress (PR #39) | – |
-| #54 | Export Submission 2 artifacts to PDF in doc/ | Adam | Medium | scrum | [TODO] | Todo | #51 |
-| #55 | Update README for Submission 2 | Deniz | Low | scrum | [TODO] | Todo | #54 |
-| #56 | Presentation – Submission 2 slides | All members | Medium | scrum | [TODO] | Todo | – |
-| #57 | Presentation – rehearsal with timer | All members | Medium | scrum | [TODO] | Todo | #56 |
-| #58 | Submit .zip + repo URL to Campus Virtual – Submission 2 | Deniz | High | scrum | [TODO] | Todo | #54, #55, #53 |
+| #54 | Export Submission 2 artifacts to PDF in doc/ | Adam | Medium | scrum | Sprint 5 (planned) | Todo | #51 |
+| #55 | Update README for Submission 2 | Deniz | Low | scrum | Sprint 5 (planned) | Todo | #54 |
+| #56 | Presentation – Submission 2 slides | All members | Medium | scrum | Sprint 5 (planned) | Todo | – |
+| #57 | Presentation – rehearsal with timer | All members | Medium | scrum | Sprint 5 (planned) | Todo | #56 |
+| #58 | Submit .zip + repo URL to Campus Virtual – Submission 2 | Deniz | High | scrum | Sprint 5 (planned) | Todo | #54, #55, #53 |
 
 ## 3. Sprints Performed
 
@@ -107,7 +107,7 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 * **Start date:** 28/10/2026
 * **End date:** 04/11/2026
 * **Sprint Goal:** Fix the Submission 1 feedback and start the basics of the Submission 2 design tasks.
-* **Planned tasks:** #27 to #38 (feedback fixes, see the Product Backlog).
+* **Planned tasks:** #27 to #38 (feedback fixes, see the Product Backlog). #38 (FR priorities) was carried over to Sprint 4.
 * **Completed tasks:** #27 (professor's answers), #28 (vague wording, PR #40), #29 (URs in standard format), #30 (BR-02 and BR-06), #32 (availability and recovery metrics). Finished and waiting to be merged on 04/11: #31 (PR #60), #33–#37 (PRs #41 and #59). In progress: #38 (sub-requirements done in PR #40, priorities pending) and the first draft of the domain model (#42).
 * **Meetings held:** 28/10/2026 (11:15 to 11:30, planning), 28/10/2026 (questions to the professor) and 04/11/2026 (review and retrospective). See Section 2.
 * **Issues encountered:** Two points of the Submission 1 feedback conflict with the advice received in the 20/10 tutoring: the fragmentation of the Functional Requirements (sub-IDs were suggested in the tutoring) and the modelling of scheduled processes. Pablo was absent from the planning meeting. Three changes were committed directly to `main` without a pull request, and one of them used FR identifiers that had just been renumbered. The finished pull requests waited several days because two of them were still drafts, and on 04/11 a GitHub outage blocked merging. The Submission 2 design tasks were not started.
@@ -121,7 +121,30 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 
 #### Board Status at Sprint Retrospective
 
-[TODO: insert board screenshots at the end of Sprint 3]
+![Sprint 3 retrospective: Sprint Backlog board](img/sprint3-retrospective-board.png)
+
+![Sprint 3 retrospective: Product Backlog table](img/sprint3-retrospective-product-backlog.png)
+
+### Sprint 4
+
+* **Start date:** 04/11/2026
+* **End date:** 11/11/2026
+* **Sprint Goal:** Complete the design core of Submission 2: domain model, architecture pattern, physical ER diagram, class diagram and component diagram.
+* **Planned tasks:** #42 domain model, #43 architecture pattern and rationale, #44 physical ER diagram, #45 class diagram, #46 component diagram, and #38 FR priorities (carried over from Sprint 3). The Scrum Report (#53) continues across all sprints.
+* **Completed tasks:** [TODO: update at the end of the sprint]
+* **Meetings held:** 04/11/2026 (planning). [TODO: + closing meeting]. See Section 2.
+* **Issues encountered:** [TODO: complete during the sprint]
+* **Solutions applied:** [TODO: complete during the sprint]
+
+#### Board Status at Sprint Planning
+
+![Sprint 4 planning: Sprint Backlog board](img/sprint4-planning-board.png)
+
+![Sprint 4 planning: Product Backlog table](img/sprint4-planning-product-backlog.png)
+
+#### Board Status at Sprint Retrospective
+
+[TODO: insert board screenshots at the end of Sprint 4]
 
 ## 4. Issues and Risks
 
