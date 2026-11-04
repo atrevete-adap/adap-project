@@ -106,6 +106,13 @@ class BillingIssue {
     status
 }
 
+class AutomationRun {
+    job
+    startedAt
+    itemsProcessed
+    failures
+}
+
 ' --- customers and subscriptions
 User "1" -- "0..*" Customer : is responsible for
 Customer "1..*" -- "0..*" Contact : has
@@ -113,6 +120,7 @@ Customer "1" -- "0..*" Subscription : contracts
 Subscription "0..*" -- "1..*" Concept : bills
 Subscription "1" -- "0..*" AnnualReview : reviewed in
 AnnualReview "0..*" -- "1" RateTier : proposes
+Subscription "0..*" -- "0..1" RateTier : priced by
 Subscription "1" -- "0..1" Cancellation : ended by
 
 ' --- invoicing and collection
@@ -121,13 +129,18 @@ Subscription "0..1" -- "0..*" Invoice : generates
 Invoice "1" *-- "1..*" InvoiceLine : contains
 InvoiceLine "0..*" -- "0..1" Concept : based on
 Invoice "0..1" -- "0..*" Invoice : corrected by
-Invoice "1..*" -- "0..*" Payment : settled by
+Invoice "0..*" -- "0..*" Payment : settled by
 Invoice "1" -- "0..*" Reminder : followed up by
 Invoice "0..1" -- "0..*" BillingIssue : about
 
 ' --- governance
-User "1" -- "0..*" ApprovalRequest : requests / decides
+User "1" -- "0..*" ApprovalRequest : requests
+ApprovalRequest "0..*" -- "0..1" User : decided by
 ApprovalRequest "0..*" -- "0..1" Invoice : about
+
+' --- automation (FR9.2)
+AutomationRun "0..1" -- "0..*" Invoice : generates
+AutomationRun "0..1" -- "0..*" Reminder : sends
 
 note right of Cancellation
   **FR4.1**: no new invoices from the
@@ -141,9 +154,10 @@ note right of Payment
   with it.
 end note
 
-note bottom of Reminder
-  Sent automatically by the system
-  scheduler, not by an actor (#27).
+note bottom of AutomationRun
+  **FR9.2.1**: each run of the system
+  scheduler (monthly invoices, reminders)
+  is recorded. Time is not an actor (#27).
 end note
 
 @enduml
