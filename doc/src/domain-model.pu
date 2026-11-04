@@ -51,6 +51,13 @@ package "Customers and subscriptions" {
     class Tag {
         name
     }
+    class CustomerImport {
+        fileName
+        importedAt
+        createdRows
+        updatedRows
+        rejectedRows
+    }
     class Subscription {
         startDate
         billingStartDate
@@ -99,6 +106,8 @@ package "Invoicing" {
         dueDate
         currency
         totalAmount
+        followUpPaused
+        reviewDate
     }
     class InvoiceSeries {
         code
@@ -216,6 +225,25 @@ package "Users and governance" {
         createdAt
         status
     }
+    class BillingPolicy {
+        defaultPaymentDays
+        reminderOffsets
+        approvalThresholds
+    }
+    class Holiday {
+        date
+    }
+    class AlertRule {
+        condition
+        threshold
+        active
+    }
+    class AccountingPackage {
+        periodStart
+        periodEnd
+        generatedAt
+        version
+    }
 }
 
 ' --- Customers and subscriptions
@@ -264,6 +292,12 @@ User "1" -- "0..*" AuditEntry : performs
 Invoice "0..*" -- "1" AccountingPeriod : belongs to
 AutomationRun "0..1" -- "0..*" Invoice : generates
 Backup "0..*" -- "0..1" User : restored by
+CustomerImport "0..*" -- "1" User : run by
+CustomerImport "0..1" -- "0..*" Customer : creates
+BillingPolicy "1" -- "0..*" Holiday : working calendar
+AlertRule "0..*" -- "1" User : configured by
+AccountingPackage "0..*" -- "1" AccountingPeriod : covers
+AccountingPackage "1" -- "0..*" Invoice : includes
 
 note bottom of Cancellation
   **FR4.1**: no new invoices from the
