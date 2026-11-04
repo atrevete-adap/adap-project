@@ -4,7 +4,7 @@ The editable Submission 2 contracts are listed below. The requirement source is 
 
 ## 1. Scope, actors and shared rules
 
-Turbine is an independent internal invoicing and collections application. Customers and the accounting firm receive documents or support externally; neither has an application account. Payment and communication providers may be simulated. `E p. n` denotes the supplied 18-page extended client transcript. The current [requirements](../requirements.md), including the remaining C1-C4, C6 and C11 interpretations, functional sub-requirements and Out of Scope, define the baseline; client-review caveats remain in force.
+TurbineH is an independent internal invoicing and collections application. Customers and the accounting firm receive documents or support externally; neither has an application account. Payment and communication providers may be simulated. `E p. n` denotes the supplied 18-page extended client transcript. The current [requirements](../requirements.md), including the remaining C1-C4, C6 and C11 interpretations, functional sub-requirements and Out of Scope, define the baseline; client-review caveats remain in force.
 
 | Actor | Capability |
 | --- | --- |
@@ -12,7 +12,7 @@ Turbine is an independent internal invoicing and collections application. Custom
 | Administrator | Specialises Operational User; wider operational management, assignments, approvals, financial reporting, corrections and period closing within authority. |
 | Super Administrator | Specialises Administrator; global configuration, protected audit and recovery. A specific capability check still applies to every action. |
 | External Application | Separately authenticated/scoped API caller; debt queries and cancellation intake confer no interactive customer access. |
-| Payment Provider | Supporting service providing verified transaction evidence; Turbine does not operate a payment gateway. |
+| Payment Provider | Supporting service providing verified transaction evidence; TurbineH does not operate a payment gateway. |
 | Communication Service | Supporting service for email and consented complementary WhatsApp. |
 
 - Authentication and current role/customer scope are rechecked on every protected request, direct download, bulk item and API operation. An inherited actor association never bypasses an operation's capability or approval threshold. UC-12 requires financial-report permission even for a technical Super Administrator account; the unresolved account-policy choice is not silently decided here.
