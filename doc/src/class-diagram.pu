@@ -1,0 +1,1742 @@
+@startuml class-diagram
+' TurbineH - Internal Invoicing & Payment Tracking System (Submission 2, task #45)
+' UML class diagram. Starts from the approved domain model (domain-model.pu, 15
+' concepts) and adds types, operations and the supporting classes needed to run
+' the 22 use case contracts. Layer names follow the architecture proposal in PR #64.
+' This is a design model, not the SQL schema of #44: no keys or column types.
+'
+' SINGLE DEFINITION. Every class is defined once in this file. To render a view,
+' set $VIEW below to: all | core | customers | invoicing | governance | application | types
+' Traceability and review notes: class-diagram-traceability.md
+
+!$VIEW = "all"
+
+top to bottom direction
+hide circle
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam nodesep 45
+skinparam ranksep 60
+skinparam shadowing false
+
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+    BackgroundColor<<control>> #D9E4F7
+    BackgroundColor<<port>> #DDF0E0
+    BackgroundColor<<value>> #F0F0F0
+    BackgroundColor<<infrastructure>> #E2E2E2
+}
+skinparam package {
+    BorderColor #2B3E6A
+    FontColor #2B3E6A
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam arrow {
+    Color #2B3E6A
+}
+
+' ============================================================================
+' APPLICATION LAYER: controllers coordinate; they hold no business rules
+' ============================================================================
+!if ($VIEW == "all" || $VIEW == "core")
+package "Application" {
+!endif
+    class AccessController <<control>> $application {
+        ' UC-01, UC-03
+        + login(email: String, password: String): Session
+        + logout(session: Session): void
+        + requestPasswordRecovery(email: String): void
+        + previewAssignment(ctx: ExecutionContext, customers: List<Customer>, responsible: User): Preview
+        + confirmAssignment(ctx: ExecutionContext, customers: List<Customer>, responsible: User): void
+        + createUser(ctx: ExecutionContext, corporateEmail: String, role: Role): User
+        + changeRole(ctx: ExecutionContext, user: User, role: Role): User
+        + deactivateUser(ctx: ExecutionContext, user: User): void
+        + delegateCustomers(ctx: ExecutionContext, from: User, to: User, startDate: Date, endDate: Date): Delegation
+    }
+
+    class CustomerSubscriptionController <<control>> $core $application {
+        ' UC-02, UC-04, UC-10
+        + searchCustomers(ctx: ExecutionContext, query: String): List<Customer>
+        + previewCustomerChange(ctx: ExecutionContext, customer: Customer, data: CustomerData): Preview
+        + saveCustomer(ctx: ExecutionContext, customer: Customer, data: CustomerData, expectedVersion: Integer): Customer
+        + getCustomerTimeline(ctx: ExecutionContext, customer: Customer): List<AuditEntry>
+        + previewImport(ctx: ExecutionContext, file: DocumentContent, columnMapping: String): CustomerImport
+        + confirmImport(ctx: ExecutionContext, customerImport: CustomerImport): CustomerImport
+        + previewSubscription(ctx: ExecutionContext, customer: Customer, terms: SubscriptionTerms): Preview
+        + confirmSubscription(ctx: ExecutionContext, customer: Customer, terms: SubscriptionTerms): Subscription
+        + pauseSubscription(ctx: ExecutionContext, subscription: Subscription, reason: String, startDate: Date, reactivationDate: Date): SubscriptionPause
+        + reactivateSubscription(ctx: ExecutionContext, subscription: Subscription, date: Date): Subscription
+        + requestCommercialException(ctx: ExecutionContext, subscription: Subscription, type: ExceptionType, value: Decimal, startDate: Date, endDate: Date): ApprovalRequest
+        + createDueReviews(ctx: ExecutionContext, year: Integer): AutomationRun
+        + recordAnnualRevenue(ctx: ExecutionContext, review: AnnualReview, annualRevenue: Money, source: RevenueSource, sourceDate: Date): ApprovalRequest
+        + applyApprovedReview(ctx: ExecutionContext, review: AnnualReview, approval: ApprovalRequest): Subscription
+        + requestCancellation(ctx: ExecutionContext, subscription: Subscription, reason: String, effectiveDate: Date, origin: CancellationOrigin): Cancellation
+        + confirmCancellation(ctx: ExecutionContext, cancellation: Cancellation, effectiveDate: Date): Cancellation
+    }
+
+    class InvoicingController <<control>> $core $application {
+        ' UC-05 preparation
+        + offerDraftDefaults(ctx: ExecutionContext, customer: Customer, type: InvoiceType): InvoiceProposal
+        + prepareDraft(ctx: ExecutionContext, proposal: InvoiceProposal): Invoice
+        + previewDraft(ctx: ExecutionContext, draft: Invoice): Preview
+        + saveDraft(ctx: ExecutionContext, draft: Invoice, expectedVersion: Integer): Invoice
+        + deleteDraft(ctx: ExecutionContext, draft: Invoice): void
+        ' UC-19 issuance
+        + previewIssuance(ctx: ExecutionContext, draft: Invoice): Preview
+        + issueInvoice(ctx: ExecutionContext, draft: Invoice, draftVersion: Integer): Invoice
+        + resumeDocumentStage(ctx: ExecutionContext, invoice: Invoice): Invoice
+        + downloadOriginalPdf(ctx: ExecutionContext, invoice: Invoice): DocumentContent
+        ' UC-20 sending
+        + sendInvoice(ctx: ExecutionContext, invoice: Invoice): DeliveryAttempt
+        + resendInvoice(ctx: ExecutionContext, invoice: Invoice, recipients: List<Contact>): DeliveryAttempt
+        + receiveDeliveryReport(channel: Channel, rawReport: String): DeliveryAttempt [0..1]
+        + refreshDeliveryStatus(ctx: ExecutionContext, attempt: DeliveryAttempt): DeliveryAttempt
+        ' UC-06 and UC-15
+        + generateMonthlyInvoices(ctx: ExecutionContext, period: YearMonth): AutomationRun
+        + previewCorrection(ctx: ExecutionContext, original: Invoice, reason: String, proposal: InvoiceProposal): Preview
+        + correctInvoice(ctx: ExecutionContext, original: Invoice, reason: String, proposal: InvoiceProposal): Invoice
+    }
+
+    class CollectionsController <<control>> $core $application {
+        ' UC-07
+        + synchronizePayments(ctx: ExecutionContext): AutomationRun
+        + receivePaymentNotification(rawEvent: String): Payment
+        + reconcileAutomatically(ctx: ExecutionContext, payment: Payment): Reconciliation [0..1]
+        + allocateManually(ctx: ExecutionContext, payment: Payment, invoice: Invoice, amount: Money, reason: String): Reconciliation
+        + reverseReconciliation(ctx: ExecutionContext, reconciliation: Reconciliation, reason: String): Reconciliation
+        ' UC-08
+        + runReminders(ctx: ExecutionContext, now: DateTime): AutomationRun
+        ' UC-16
+        + openIssue(ctx: ExecutionContext, customer: Customer, invoice: Invoice [0..1], type: IssueType, description: String, priority: Priority, owner: User): BillingIssue
+        + addComment(ctx: ExecutionContext, target: AnnotationTarget, text: String, restricted: Boolean, mentioned: List<User>): Comment
+        + addAttachment(ctx: ExecutionContext, target: AnnotationTarget, file: DocumentContent, documentType: String, description: String): Attachment
+        + createAttachmentLink(ctx: ExecutionContext, attachment: Attachment): DownloadLink
+        + openAttachmentLink(ctx: ExecutionContext, link: DownloadLink): DocumentContent
+        + pauseFollowUp(ctx: ExecutionContext, invoice: Invoice, reason: String, reviewDate: Date): Invoice
+        + resolveIssue(ctx: ExecutionContext, issue: BillingIssue, resolution: String): BillingIssue
+    }
+
+    class ApprovalController <<control>> $core $application {
+        ' UC-17
+        + requestApproval(ctx: ExecutionContext, type: ApprovalType, subject: ApprovalSubject): ApprovalRequest
+        + listPending(ctx: ExecutionContext): List<ApprovalRequest>
+        + openRequest(ctx: ExecutionContext, request: ApprovalRequest): ProposalSnapshot
+        + decide(ctx: ExecutionContext, request: ApprovalRequest, approved: Boolean, comment: String, proposalVersion: Integer): ApprovalRequest
+        + reassign(ctx: ExecutionContext, request: ApprovalRequest, substitute: User, reason: String): ApprovalRequest
+    }
+
+    class ReportingOperationsController <<control>> $application {
+        ' UC-09
+        + loadWorkQueue(ctx: ExecutionContext): List<WorkItem>
+        + searchWork(ctx: ExecutionContext, query: String, filters: SearchFilters): List<WorkItem>
+        + saveNamedView(ctx: ExecutionContext, name: String, query: String, filters: SearchFilters): SavedView
+        + setFavourite(ctx: ExecutionContext, customer: Customer, favourite: Boolean): void
+        + listQuickAccess(ctx: ExecutionContext): List<Customer>
+        + setNotificationPreference(ctx: ExecutionContext, eventType: NotificationEvent, channel: NotificationChannel): void
+        + sendDailyDigests(ctx: ExecutionContext, now: DateTime): AutomationRun
+        + saveAlertRule(ctx: ExecutionContext, condition: AlertCondition, threshold: Decimal, currency: CurrencyCode [0..1]): AlertRule
+        + evaluateAlertRules(ctx: ExecutionContext, now: DateTime): AutomationRun
+        + openWorkItem(ctx: ExecutionContext, item: WorkItem): WorkItem
+        + markNotification(ctx: ExecutionContext, notification: Notification, handled: Boolean): Notification
+        ' UC-11
+        + queryObligations(ctx: ExecutionContext, customer: Customer): DebtSnapshot
+        + queryObligationsViaApi(credential: String, customerReference: String): DebtSnapshot
+        ' UC-12
+        + getFinancialIndicators(ctx: ExecutionContext, filters: ReportFilters): FinancialIndicators
+        + drillDown(ctx: ExecutionContext, figure: String, filters: ReportFilters): List<Invoice>
+        + generateExport(ctx: ExecutionContext, type: ReportType, filters: ReportFilters): ReportOutput
+        + generateAccountingPackage(ctx: ExecutionContext, period: AccountingPeriod): ReportOutput
+        + downloadOutput(ctx: ExecutionContext, output: ReportOutput): DocumentContent
+        + scheduleSummary(ctx: ExecutionContext, frequency: SummaryFrequency, recipients: List<User>): SummarySchedule
+        + runScheduledSummaries(ctx: ExecutionContext, now: DateTime): AutomationRun
+        ' UC-18
+        + previewPeriodClose(ctx: ExecutionContext, period: AccountingPeriod): Preview
+        + closePeriod(ctx: ExecutionContext, period: AccountingPeriod, reason: String): AccountingPeriod
+        + reopenPeriod(ctx: ExecutionContext, period: AccountingPeriod, reason: String): AccountingPeriod
+    }
+
+    class ConfigurationController <<control>> $application {
+        ' UC-13
+        + getPolicy(ctx: ExecutionContext): BillingPolicy
+        + previewPolicyChange(ctx: ExecutionContext, proposed: BillingPolicy): Preview
+        + confirmPolicyChange(ctx: ExecutionContext, proposed: BillingPolicy, effectiveFrom: Date, reason: String): BillingPolicy
+        + previewTemplate(ctx: ExecutionContext, template: MessageTemplate): Preview
+        + sendTemplateTest(ctx: ExecutionContext, template: MessageTemplate): DispatchReceipt
+        + saveTemplateVersion(ctx: ExecutionContext, template: MessageTemplate, effectiveFrom: Date, reason: String): MessageTemplate
+    }
+
+    class AuditBackupController <<control>> $application {
+        ' UC-14
+        + searchAudit(ctx: ExecutionContext, action: String, from: DateTime, to: DateTime): List<AuditEntry>
+        + openAuditEntry(ctx: ExecutionContext, entry: AuditEntry): AuditEntry
+        + getAutomationHealth(ctx: ExecutionContext): HealthSummary
+        ' UC-21
+        + createBackup(ctx: ExecutionContext, scope: String): Backup
+        ' UC-22
+        + previewRestore(ctx: ExecutionContext, backup: Backup, target: String): Preview
+        + confirmRestore(ctx: ExecutionContext, backup: Backup, target: String): RecoveryExecution
+    }
+
+    class Scheduler <<control>> $core $application {
+        + onTick(now: DateTime): void
+        + resumeInterruptedJobs(now: DateTime): void
+        - systemContext(job: JobType): ExecutionContext
+    }
+
+    class ExecutionContext <<control>> $application {
+        - user: User [0..1]
+        - apiClient: ApiClient [0..1]
+        - job: JobType [0..1]
+        + authorize(capability: Capability, customer: Customer [0..1]): void
+        + isSystem(): Boolean
+    }
+!if ($VIEW == "all" || $VIEW == "core")
+}
+!endif
+
+' ============================================================================
+' DOMAIN LAYER: customers and subscriptions
+' ============================================================================
+!if ($VIEW == "all")
+package "Domain: customers and subscriptions" {
+!elseif ($VIEW == "core")
+package "Domain entities" {
+!endif
+    class Customer <<entity>> $core $customers $invoicing #FFF3C9 {
+        - tradingName: String
+        - legalName: String
+        - taxId: String
+        - taxAddress: String
+        - country: CountryCode
+        - workingCurrency: CurrencyCode
+        - status: CustomerStatus
+        - businessArea: String [0..1]
+        - tags: Set<String>
+        - version: Integer
+        + validateForInvoicing(): ValidationResult
+        + validateData(data: CustomerData): ValidationResult
+        + applyChange(data: CustomerData, expectedVersion: Integer): void
+        + changeStatus(status: CustomerStatus): void
+        + deactivate(): void
+        + reactivate(): void
+        + assignResponsible(user: User): void
+        + billingContacts(): List<Contact>
+        + calculateObligations(invoices: List<Invoice>, now: DateTime): DebtSnapshot
+        + scopeCustomer(): Customer
+        + scopeInvoice(): Invoice [0..1]
+    }
+
+    class Contact <<entity>> $core $customers $invoicing #FFF3C9 {
+        - name: String
+        - email: String
+        - phone: String [0..1]
+        - whatsAppConsent: Boolean
+        - preferredLanguage: LanguageCode
+        - active: Boolean
+        + canReceive(channel: Channel): Boolean
+        + deactivate(): void
+    }
+
+    class CustomerContact <<entity>> $customers {
+        - role: ContactRole
+        + isBillingRecipient(): Boolean
+    }
+
+    class CustomerImport <<entity>> $customers {
+        - fileName: String
+        - importedAt: DateTime
+        - createdRows: Integer
+        - updatedRows: Integer
+        - rejectedRows: Integer
+        - rowOutcomes: List<String>
+        + previewRows(file: DocumentContent, columnMapping: String): void
+        + applyValidRows(): List<Customer>
+    }
+
+    class Subscription <<entity>> $core $customers #FFF3C9 {
+        - startDate: Date
+        - billingStartDate: Date
+        - status: SubscriptionStatus
+        - agreedRate: Money
+        - paymentTermDays: Integer
+        - prorationRequested: Boolean
+        + validateActivation(customer: Customer): ValidationResult
+        + previewProration(policy: BillingPolicy): Money
+        + activate(effectiveDate: Date): void
+        + pause(reason: String, startDate: Date, reactivationDate: Date [0..1]): SubscriptionPause
+        + reactivate(date: Date): void
+        + isBillableIn(period: YearMonth): Boolean
+        + buildRecurringProposal(period: YearMonth): InvoiceProposal
+        + buildProratedProposal(policy: BillingPolicy): InvoiceProposal
+        + applyApprovedRate(rate: Money, effectiveDate: Date): void
+        + stopBillingFrom(effectiveDate: Date): void
+    }
+
+    class SubscriptionPause <<entity>> $customers {
+        - reason: String
+        - startDate: Date
+        - reactivationDate: Date [0..1]
+        + covers(date: Date): Boolean
+    }
+
+    class CommercialException <<entity>> $customers $governance {
+        - type: ExceptionType
+        - value: Decimal
+        - startDate: Date
+        - endDate: Date
+        - status: ExceptionStatus
+        - proposalVersion: Integer
+        + isActiveOn(date: Date): Boolean
+        + activate(approval: ApprovalRequest): void
+        + currentProposal(): ProposalSnapshot
+    }
+
+    class RateTier <<entity>> $customers #FFF3C9 {
+        - minAnnualRevenue: Money
+        - maxAnnualRevenue: Money
+        - monthlyPrice: Money
+        + covers(annualRevenue: Money): Boolean
+    }
+
+    class AnnualReview <<entity>> $core $customers $governance #FFF3C9 {
+        - year: Integer
+        - annualRevenue: Money [0..1]
+        - revenueSource: RevenueSource [0..1]
+        - revenueDate: Date [0..1]
+        - status: ReviewStatus
+        - effectiveDate: Date [0..1]
+        - previousPrice: Money
+        - newPrice: Money [0..1]
+        - proposalVersion: Integer
+        + recordRevenue(annualRevenue: Money, source: RevenueSource, sourceDate: Date): void
+        + proposeTier(tiers: List<RateTier>): RateTier
+        + applyDecision(approval: ApprovalRequest): void
+        + correctEvidence(annualRevenue: Money, reason: String): void
+        + currentProposal(): ProposalSnapshot
+    }
+
+    class Cancellation <<entity>> $core $customers #FFF3C9 {
+        - requestDate: Date
+        - effectiveDate: Date
+        - reason: String
+        - origin: CancellationOrigin
+        - status: CancellationStatus
+        + confirm(effectiveDate: Date): void
+        + reject(reason: String): void
+    }
+!if ($VIEW == "all" || $VIEW == "core")
+}
+!endif
+
+' ============================================================================
+' DOMAIN LAYER: invoicing and collection
+' ============================================================================
+!if ($VIEW == "all")
+package "Domain: invoicing and collection" {
+!elseif ($VIEW == "core")
+package "Domain entities" {
+!endif
+    class Invoice <<entity>> $core $customers $invoicing $governance #FFF3C9 {
+        - type: InvoiceType
+        - number: String [0..1]
+        - status: InvoiceStatus
+        - dueDate: Date
+        - total: Money
+        - currency: CurrencyCode
+        - issueDate: Date [0..1]
+        - billingPeriod: YearMonth [0..1]
+        - documentStage: DocumentStage
+        - draftVersion: Integer
+        - followUpPaused: Boolean
+        - followUpReason: String [0..1]
+        - reviewDate: Date [0..1]
+        + {static} createDraft(proposal: InvoiceProposal): Invoice
+        + addLine(line: InvoiceLine): void
+        + removeLine(line: InvoiceLine): void
+        + applyDraftEdit(proposal: InvoiceProposal, expectedVersion: Integer): void
+        + recalculateTotal(): Money
+        + calculateDueDate(paymentTermDays: Integer): Date
+        + validateForIssuance(): ValidationResult
+        + deviationWarning(policy: BillingPolicy, recent: List<Invoice>): String [0..1]
+        + isCurrentDraft(draftVersion: Integer): Boolean
+        + isIssued(): Boolean
+        + requiresApproval(policy: BillingPolicy): Boolean
+        + hasCurrentApproval(): Boolean
+        + currentProposal(): ProposalSnapshot
+        + issue(series: InvoiceSeries, issuedAt: DateTime): IssuedSnapshot
+        + attachOriginalDocument(document: InvoiceDocument): void
+        + eligibleRecipients(channel: Channel): List<Contact>
+        + isNotified(): Boolean
+        + createCorrection(reason: String, proposal: InvoiceProposal): Invoice
+        + linkCorrection(correction: Invoice): void
+        + isCorrective(): Boolean
+        + adjustedTotal(): Money
+        + allocatedAmount(): Money
+        + outstandingBalance(): Money
+        + excessAmount(): Money
+        + refreshPaymentStatus(now: DateTime): void
+        + pauseFollowUp(reason: String, reviewDate: Date): void
+        + resumeFollowUp(): void
+        + markUncollectible(reason: String, approval: ApprovalRequest): void
+        + scopeCustomer(): Customer
+        + scopeInvoice(): Invoice [0..1]
+    }
+
+    class InvoiceLine <<entity>> $core $invoicing #FFF3C9 {
+        - description: String
+        - quantity: Decimal
+        - unitPrice: Money
+        - discount: Decimal [0..1]
+        + taxableBase(): Money
+        + taxAmount(): Money
+    }
+
+    class IssuedSnapshot <<value>> $core $invoicing {
+        - issuerTaxData: String {readOnly}
+        - customerTaxData: String {readOnly}
+        - lineData: String {readOnly}
+        - taxableBase: Money {readOnly}
+        - taxAmount: Money {readOnly}
+        - total: Money {readOnly}
+        - issuedAt: DateTime {readOnly}
+    }
+
+    class InvoiceDocument <<entity>> $invoicing {
+        - documentRef: DocumentRef {readOnly}
+        - generatedAt: DateTime {readOnly}
+        - fileName: String {readOnly}
+    }
+
+    class InvoiceSeries <<entity>> $invoicing {
+        - code: String
+        - lastNumber: Integer
+        - active: Boolean
+        + nextNumber(): String
+    }
+
+    class Concept <<entity>> $invoicing $customers #FFF3C9 {
+        - name: String
+        - defaultPrice: Money
+        - active: Boolean
+        + toLine(quantity: Decimal): InvoiceLine
+    }
+
+    class Tax <<entity>> $invoicing {
+        - name: String
+        - rate: Decimal
+        - active: Boolean
+        + applyTo(base: Money): Money
+    }
+
+    class DeliveryAttempt <<entity>> $core $invoicing {
+        - channel: Channel
+        - requestedAt: DateTime
+        - status: DeliveryStatus
+        - idempotencyKey: String
+        - templateVersion: Integer
+        - providerMessageRef: String [0..1]
+        - failureReason: String [0..1]
+        - processedEventIds: Set<String>
+        + {static} queue(channel: Channel, recipients: List<Contact>, template: MessageTemplate): DeliveryAttempt
+        + recordDispatch(receipt: DispatchReceipt): void
+        + matches(evidence: DeliveryEvidence): Boolean
+        + recordObservedResult(evidence: DeliveryEvidence): void
+    }
+
+    class MessageTemplate <<entity>> $invoicing $governance {
+        - type: TemplateType
+        - language: LanguageCode
+        - version: Integer
+        - subject: String
+        - body: String
+        - effectiveFrom: Date
+        + missingVariables(): List<String>
+        + render(variables: Map<String, String>): OutboundMessage
+    }
+
+    class Payment <<entity>> $core $invoicing #FFF3C9 {
+        - amount: Money
+        - date: Date
+        - reference: String
+        - source: PaymentSource
+        - providerTransactionId: String
+        - processedEventIds: Set<String>
+        - description: String [0..1]
+        - evidence: String {readOnly}
+        - status: PaymentStatus
+        - discrepancy: Money [0..1]
+        + {static} fromEvidence(evidence: TransactionEvidence): Payment
+        + matchesExactly(invoice: Invoice): Boolean
+        + allocateTo(invoice: Invoice, amount: Money, automatic: Boolean, reason: String [0..1], allocatedBy: User [0..1]): Reconciliation
+        + unallocatedAmount(): Money
+        + recordDiscrepancy(difference: Money): void
+    }
+
+    class Reconciliation <<entity>> $core $invoicing #FFF3C9 {
+        - allocatedAmount: Money
+        - reconciledAt: DateTime
+        - automatic: Boolean
+        - evidence: String {readOnly}
+        - reason: String [0..1]
+        - reversed: Boolean
+        - reversalReason: String [0..1]
+        - reversedAt: DateTime [0..1]
+        + reverse(reason: String, reversedBy: User): void
+        + isActive(): Boolean
+    }
+
+    class Reminder <<entity>> $core $invoicing #FFF3C9 {
+        - type: ReminderType
+        - sentAt: DateTime [0..1]
+        - scheduledDate: Date
+        - occurrenceKey: String
+        - status: ReminderStatus
+        + isDue(now: DateTime): Boolean
+        + moveToWorkingDay(policy: BillingPolicy): void
+        + prepareMessage(template: MessageTemplate): OutboundMessage
+        + scheduleNext(policy: BillingPolicy): Reminder [0..1]
+        + suppress(reason: String): void
+    }
+
+    class BillingIssue <<entity>> $core $invoicing #FFF3C9 {
+        - type: IssueType
+        - status: IssueStatus
+        - description: String
+        - priority: Priority
+        - resolution: String [0..1]
+        - closedAt: DateTime [0..1]
+        + close(resolution: String): void
+        + scopeCustomer(): Customer
+        + scopeInvoice(): Invoice [0..1]
+    }
+
+    interface AnnotationTarget $core $invoicing {
+        + scopeCustomer(): Customer
+        + scopeInvoice(): Invoice [0..1]
+    }
+
+    class Comment <<entity>> $core $invoicing $governance {
+        - text: String
+        - restricted: Boolean
+        - createdAt: DateTime
+        + {static} create(target: AnnotationTarget, author: User, text: String, restricted: Boolean, mentioned: List<User>): Comment
+        + isVisibleTo(user: User): Boolean
+        + notifiableMentions(): List<User>
+    }
+
+    class Attachment <<entity>> $core $invoicing $governance {
+        - documentType: String
+        - description: String
+        - documentRef: DocumentRef
+        - uploadedAt: DateTime
+        + {static} checkLimits(file: DocumentContent, policy: BillingPolicy): ValidationResult
+        + {static} create(target: AnnotationTarget, uploadedBy: User, documentType: String, description: String, documentRef: DocumentRef): Attachment
+        + createDownloadLink(now: DateTime, policy: BillingPolicy): DownloadLink
+    }
+
+    class AccountingPeriod <<entity>> $invoicing $governance {
+        - startDate: Date
+        - endDate: Date
+        - kind: PeriodKind
+        - status: PeriodStatus
+        - reason: String [0..1]
+        + close(reason: String): void
+        + reopen(reason: String): void
+        + allowsFinancialChange(hasExceptionalAuthority: Boolean): Boolean
+        + blockingExceptions(): List<String>
+    }
+!if ($VIEW == "all" || $VIEW == "core")
+}
+!endif
+
+' ============================================================================
+' DOMAIN LAYER: governance and automation
+' ============================================================================
+!if ($VIEW == "all")
+package "Domain: governance and automation" {
+!elseif ($VIEW == "core")
+package "Domain entities" {
+!endif
+    class User <<entity>> $core $customers $governance #FFF3C9 {
+        - corporateEmail: String
+        - role: Role
+        - capabilities: Set<Capability>
+        - passwordHash: String
+        - active: Boolean
+        - verified: Boolean
+        - failedAttempts: Integer
+        - lockedUntil: DateTime [0..1]
+        - savedViews: List<SavedView>
+        - favouriteCustomers: Set<Customer>
+        - recentCustomers: List<Customer> [0..10]
+        - notificationPreferences: List<NotificationPreference>
+        + saveView(view: SavedView): void
+        + setFavourite(customer: Customer, favourite: Boolean): void
+        + recordOpened(customer: Customer): void
+        + setNotificationPreference(eventType: NotificationEvent, channel: NotificationChannel): void
+        + channelFor(eventType: NotificationEvent): NotificationChannel
+        + isAdministrator(): Boolean
+        + canLogin(now: DateTime): Boolean
+        + verifyPassword(password: String, hasher: PasswordHasher): Boolean
+        + registerFailedAttempt(policy: BillingPolicy): void
+        + openSession(now: DateTime): Session
+        + hasCapability(capability: Capability): Boolean
+        + canAccess(customer: Customer): Boolean
+        + changeRole(role: Role): void
+        + deactivate(): void
+    }
+
+    class Session <<entity>> $governance {
+        - startedAt: DateTime
+        - lastActivityAt: DateTime
+        - invalidated: Boolean
+        + isValid(now: DateTime, policy: BillingPolicy): Boolean
+        + invalidate(): void
+    }
+
+    class Delegation <<entity>> $governance {
+        - startDate: Date
+        - endDate: Date
+        + isActiveOn(date: Date): Boolean
+    }
+
+    class ApiClient <<entity>> $governance {
+        - name: String
+        - credentialHash: String
+        - scopes: Set<String>
+        - callsPerMinute: Integer
+        - active: Boolean
+        + authenticate(credential: String, hasher: PasswordHasher): Boolean
+        + allows(scope: String): Boolean
+        + withinCallLimit(now: DateTime): Boolean
+    }
+
+    interface ApprovalSubject $governance {
+        + currentProposal(): ProposalSnapshot
+    }
+
+    class ApprovalRequest <<entity>> $core $governance #FFF3C9 {
+        - type: ApprovalType
+        - status: ApprovalStatus
+        - reason: String
+        - decisionComment: String [0..1]
+        - decidedAt: DateTime [0..1]
+        + isProposalCurrent(subject: ApprovalSubject, proposalVersion: Integer): Boolean
+        + canBeDecidedBy(approver: User, policy: BillingPolicy): Boolean
+        + approve(approver: User, comment: String): void
+        + reject(approver: User, comment: String): void
+        + reassign(substitute: User, reason: String): void
+    }
+
+    class ProposalSnapshot <<value>> $core $governance {
+        - version: Integer {readOnly}
+        - operation: String {readOnly}
+        - values: String {readOnly}
+        - financialImpact: Money [0..1] {readOnly}
+        - capturedAt: DateTime {readOnly}
+    }
+
+    class WorkTask <<entity>> $governance {
+        - type: TaskType
+        - dueDate: Date [0..1]
+        - status: TaskStatus
+        - description: String
+        + reassignTo(user: User): void
+        + complete(): void
+    }
+
+    class Notification <<entity>> $governance {
+        - eventType: NotificationEvent
+        - priority: Priority
+        - read: Boolean
+        - handled: Boolean
+        - createdAt: DateTime
+        + {static} create(recipient: User, eventType: NotificationEvent, priority: Priority): Notification
+        + markRead(): void
+        + markHandled(): void
+    }
+
+    class AlertRule <<entity>> $governance {
+        - condition: AlertCondition
+        - threshold: Decimal
+        - currency: CurrencyCode [0..1]
+        - active: Boolean
+        + validate(): ValidationResult
+        + matches(invoice: Invoice, now: DateTime): Boolean
+    }
+
+    class AuditEntry <<entity>> $governance {
+        - action: String {readOnly}
+        - target: String {readOnly}
+        - occurredAt: DateTime {readOnly}
+        - actorLabel: String {readOnly}
+        - outcome: String {readOnly}
+        + {static} record(actorLabel: String, action: String, target: String, outcome: String): AuditEntry
+    }
+
+    class BillingPolicy <<entity>> $governance {
+        - version: Integer
+        - effectiveFrom: Date
+        - changeReason: String
+        - status: PolicyStatus
+        - defaultPaymentDays: Integer
+        - reminderDaysAfterIssue: Integer
+        - overdueReminderIntervalDays: Integer
+        - authorisedEmailDomain: String
+        - maxFailedLogins: Integer
+        - loginLockMinutes: Integer
+        - issuerTaxData: String
+        - holidays: Set<Date>
+        - selfApprovalThreshold: Money
+        - superAdminApprovalThreshold: Money
+        - oneOffApprovalThreshold: Money
+        - deviationWarningPercent: Decimal
+        - attachmentMaxMegabytes: Integer
+        - attachmentFormats: Set<String>
+        - downloadLinkMinutes: Integer
+        - backgroundThreshold: Integer
+        - backupIntervalHours: Integer
+        + isAuthorisedDomain(email: String): Boolean
+        + validate(): ValidationResult
+        + activate(effectiveFrom: Date, reason: String): void
+        + requiredApproverRole(type: ApprovalType, amount: Money): Role
+        + nextWorkingDay(date: Date): Date
+        + dueJobs(now: DateTime): List<JobType>
+    }
+
+    class AutomationRun <<entity>> $core $governance #FFF3C9 {
+        - job: JobType
+        - startedAt: DateTime
+        - itemsProcessed: Integer
+        - failures: Integer
+        - finishedAt: DateTime [0..1]
+        - status: RunStatus
+        + {static} open(job: JobType, now: DateTime): AutomationRun
+        + recordItem(reference: String, stage: String, outcome: ItemOutcome, reason: String [0..1]): void
+        + missingItems(): List<AutomationItem>
+        + finish(now: DateTime): void
+    }
+
+    class AutomationItem <<entity>> $governance {
+        - reference: String
+        - stage: String
+        - outcome: ItemOutcome
+        - reason: String [0..1]
+    }
+
+    class ReportOutput <<entity>> $governance {
+        - type: ReportType
+        - filters: ReportFilters
+        - generatedAt: DateTime
+        - version: Integer [0..1]
+        - status: ReportStatus
+        - documentRef: DocumentRef [0..1]
+        - retainedUntil: Date
+        + markFailed(stage: String): void
+        + isDownloadable(now: DateTime): Boolean
+    }
+
+    class SummarySchedule <<entity>> $governance {
+        - frequency: SummaryFrequency
+        - nextOccurrence: DateTime
+        - active: Boolean
+        + authorisedRecipients(): List<User>
+        + isDue(now: DateTime): Boolean
+    }
+
+    class Backup <<entity>> $governance {
+        - createdAt: DateTime
+        - scope: String
+        - status: BackupStatus
+        - archiveRef: DocumentRef [0..1]
+        - failedStage: String [0..1]
+        + recordValidation(valid: Boolean): void
+        + isRestorable(): Boolean
+    }
+
+    class RecoveryExecution <<entity>> $governance {
+        - target: String
+        - confirmedAt: DateTime
+        - finishedAt: DateTime [0..1]
+        - status: RecoveryStatus
+        - failedStage: String [0..1]
+        + recordValidation(stage: String, passed: Boolean): void
+        + complete(now: DateTime): void
+        + withinRecoveryTarget(): Boolean
+    }
+!if ($VIEW == "all" || $VIEW == "core")
+}
+!endif
+
+' ============================================================================
+' DOMAIN LAYER: ports declared by the domain, implemented by infrastructure
+' ============================================================================
+!if ($VIEW == "all" || $VIEW == "core")
+package "Domain: ports" {
+!endif
+    interface PaymentGateway <<port>> $core $application {
+        + queryTransactions(since: DateTime): List<TransactionEvidence>
+        + verifyNotification(rawEvent: String): TransactionEvidence
+    }
+    interface CommunicationService <<port>> $core $application {
+        + send(message: OutboundMessage, recipients: List<Contact>, channel: Channel): DispatchReceipt
+        + verifyDeliveryReport(channel: Channel, rawReport: String): DeliveryEvidence [0..1]
+        + queryStatus(channel: Channel, providerMessageRef: String): DeliveryEvidence [0..1]
+    }
+    interface DocumentStorage <<port>> $core $application {
+        + store(content: DocumentContent): DocumentRef
+        + retrieve(ref: DocumentRef): DocumentContent
+        + exists(ref: DocumentRef): Boolean
+    }
+    interface PdfRenderer <<port>> $core $application {
+        + renderInvoice(snapshot: IssuedSnapshot, number: String): DocumentContent
+        + renderReport(output: ReportOutput): DocumentContent
+    }
+    interface PasswordHasher <<port>> $application {
+        + hash(secret: String): String
+        + matches(secret: String, hash: String): Boolean
+    }
+    interface AnnualRevenueProvider <<port>> $application {
+        + fetchAnnualRevenue(customer: Customer, year: Integer): Money [0..1]
+    }
+    interface BackupEngine <<port>> $application {
+        + createArchive(scope: String): DocumentRef
+        + verifyArchive(ref: DocumentRef): Boolean
+        + restoreArchive(ref: DocumentRef, target: String): void
+    }
+
+    interface CustomerRepository <<port>> $application {
+        + search(query: String, user: User): List<Customer>
+        + findByTaxId(taxId: String): List<Customer>
+        + findByReference(reference: String): Customer [0..1]
+        + save(customer: Customer): Customer
+    }
+    interface SubscriptionRepository <<port>> $application {
+        + findBillable(period: YearMonth): List<Subscription>
+        + findDueForReview(year: Integer): List<Subscription>
+        + save(subscription: Subscription): Subscription
+    }
+    interface InvoiceRepository <<port>> $core $application {
+        + findOpenByReference(reference: String): List<Invoice>
+        + findForSubscriptionPeriod(subscription: Subscription, period: YearMonth): Invoice [0..1]
+        + findOutstanding(customer: Customer): List<Invoice>
+        + findDueForFollowUp(now: DateTime): List<Reminder>
+        + findAttemptByProviderRef(providerMessageRef: String): DeliveryAttempt [0..1]
+        + findMatching(filters: ReportFilters): List<Invoice>
+        + save(invoice: Invoice): Invoice
+    }
+    interface PaymentRepository <<port>> $application {
+        + findByProviderTransaction(providerTransactionId: String): Payment [0..1]
+        + isEventProcessed(eventId: String): Boolean
+        + save(payment: Payment): Payment
+    }
+    interface ApprovalRepository <<port>> $application {
+        + findPendingFor(approver: User): List<ApprovalRequest>
+        + save(request: ApprovalRequest): ApprovalRequest
+    }
+    interface UserRepository <<port>> $application {
+        + findByEmail(corporateEmail: String): User [0..1]
+        + findApiClient(credential: String): ApiClient [0..1]
+        + save(user: User): User
+    }
+    interface IssueRepository <<port>> $application {
+        + save(issue: BillingIssue): BillingIssue
+        + saveComment(comment: Comment): Comment
+        + saveAttachment(attachment: Attachment): Attachment
+        + findComments(target: AnnotationTarget, viewer: User): List<Comment>
+        + findAttachments(target: AnnotationTarget): List<Attachment>
+    }
+    interface WorkRepository <<port>> $application {
+        + findWorkFor(user: User): List<WorkItem>
+        + searchWork(query: String, filters: SearchFilters, user: User): List<WorkItem>
+        + saveTask(task: WorkTask): WorkTask
+        + saveNotification(notification: Notification): Notification
+        + saveAlertRule(rule: AlertRule): AlertRule
+        + findActiveAlertRules(): List<AlertRule>
+    }
+    interface AuditRepository <<port>> $application {
+        + append(entry: AuditEntry): void
+        + search(action: String, from: DateTime, to: DateTime): List<AuditEntry>
+    }
+    interface ConfigurationRepository <<port>> $application {
+        + currentPolicy(): BillingPolicy
+        + savePolicy(policy: BillingPolicy): BillingPolicy
+        + activeSeries(type: InvoiceType): InvoiceSeries
+        + currentTemplate(type: TemplateType, language: LanguageCode): MessageTemplate
+        + saveTemplate(template: MessageTemplate): MessageTemplate
+    }
+    interface AccountingPeriodRepository <<port>> $application {
+        + findCovering(date: Date): AccountingPeriod [0..1]
+        + save(period: AccountingPeriod): AccountingPeriod
+    }
+    interface ReportRepository <<port>> $application {
+        + saveOutput(output: ReportOutput): ReportOutput
+        + saveSchedule(schedule: SummarySchedule): SummarySchedule
+    }
+    interface AutomationRunRepository <<port>> $application {
+        + save(run: AutomationRun): AutomationRun
+        + findInterrupted(): List<AutomationRun>
+        + latestByJob(): List<AutomationRun>
+    }
+    interface BackupRepository <<port>> $application {
+        + save(backup: Backup): Backup
+        + latestValid(): Backup [0..1]
+        + saveRecovery(recovery: RecoveryExecution): RecoveryExecution
+    }
+!if ($VIEW == "all" || $VIEW == "core")
+}
+!endif
+
+' ============================================================================
+' INFRASTRUCTURE LAYER: adapters named in PR #64 and the timer that starts jobs
+' ============================================================================
+!if ($VIEW == "all")
+package "Infrastructure" {
+!endif
+    class PaymentProviderAdapter <<infrastructure>> $application
+    class EmailAdapter <<infrastructure>> $application
+    class WhatsAppAdapter <<infrastructure>> $application
+    class DocumentStorageAdapter <<infrastructure>> $application
+    class PdfGeneratorAdapter <<infrastructure>> $application
+    class SystemTimer <<infrastructure>> $application {
+        + start(): void
+    }
+!if ($VIEW == "all")
+}
+!endif
+
+' ============================================================================
+' SUPPORTING VALUE OBJECTS
+' ============================================================================
+!if ($VIEW == "all" || $VIEW == "core")
+package "Value objects" {
+!endif
+    class Money <<value>> $core $types {
+        - amount: Decimal
+        - currency: CurrencyCode
+        + add(other: Money): Money
+        + subtract(other: Money): Money
+        + isZero(): Boolean
+    }
+    class ValidationResult <<value>> $types {
+        - valid: Boolean
+        - messages: List<String>
+    }
+    class Preview <<value>> $types {
+        - summary: String
+        - warnings: List<String>
+        - financialImpact: Money [0..1]
+        - version: Integer
+    }
+    class InvoiceProposal <<value>> $core $types {
+        - customer: Customer
+        - type: InvoiceType
+        - currency: CurrencyCode
+        - lines: List<InvoiceLine>
+        - paymentTermDays: Integer
+        - billingPeriod: YearMonth [0..1]
+        - origin: Invoice [0..1]
+    }
+    class CustomerData <<value>> $types {
+        - tradingName: String
+        - legalName: String
+        - taxId: String
+        - taxAddress: String
+        - country: CountryCode
+        - workingCurrency: CurrencyCode
+        - contacts: List<Contact>
+    }
+    class SubscriptionTerms <<value>> $types {
+        - startDate: Date
+        - agreedRate: Money
+        - concepts: List<Concept>
+        - paymentTermDays: Integer
+        - prorationRequested: Boolean
+    }
+    class DebtSnapshot <<value>> $core $types {
+        - hasObligations: Boolean
+        - outstandingByCurrency: List<Money>
+        - overdueByCurrency: List<Money>
+        - openInvoices: Integer
+        - snapshotAt: DateTime
+    }
+    class WorkItem <<value>> $types {
+        - kind: WorkItemKind
+        - reference: String
+        - summary: String
+        - dueDate: Date [0..1]
+    }
+    class SearchFilters <<value>> $types {
+        - location: String [0..1]
+        - businessArea: String [0..1]
+        - tags: Set<String>
+        - status: InvoiceStatus [0..1]
+        - type: InvoiceType [0..1]
+        - from: Date [0..1]
+        - to: Date [0..1]
+    }
+    class SavedView <<value>> $types {
+        - name: String
+        - query: String
+        - filters: SearchFilters
+    }
+    class NotificationPreference <<value>> $types {
+        - eventType: NotificationEvent
+        - channel: NotificationChannel
+    }
+    class DownloadLink <<value>> $types {
+        - token: String
+        - documentRef: DocumentRef
+        - expiresAt: DateTime
+        + isValid(now: DateTime): Boolean
+    }
+    class DeliveryEvidence <<value>> $core $types {
+        - eventId: String
+        - channel: Channel
+        - providerMessageRef: String
+        - status: DeliveryStatus
+        - observedAt: DateTime
+        - failureReason: String [0..1]
+    }
+    class ReportFilters <<value>> $types {
+        - periodKind: PeriodKind
+        - from: Date
+        - to: Date
+        - customer: Customer [0..1]
+        - manager: User [0..1]
+        - country: CountryCode [0..1]
+        - sector: String [0..1]
+        - status: InvoiceStatus [0..1]
+        - type: InvoiceType [0..1]
+        - currency: CurrencyCode [0..1]
+    }
+    class FinancialIndicators <<value>> $types {
+        - invoiced: List<Money>
+        - collected: List<Money>
+        - outstanding: List<Money>
+        - overdue: List<Money>
+        - averageCollectionDays: Decimal
+        - expectedRecurringRevenue: List<Money>
+        - nextMonthForecast: List<Money>
+    }
+    class HealthSummary <<value>> $types {
+        - lastRecurringGeneration: DateTime [0..1]
+        - pendingDispatches: Integer
+        - recentIntegrationFailures: List<String>
+        - lastSuccessfulBackup: DateTime [0..1]
+    }
+    class TransactionEvidence <<value>> $core $types {
+        - eventId: String
+        - providerTransactionId: String
+        - amount: Money
+        - date: Date
+        - reference: String
+        - description: String [0..1]
+    }
+    class OutboundMessage <<value>> $types {
+        - subject: String
+        - body: String
+        - language: LanguageCode
+        - attachment: DocumentRef [0..1]
+    }
+    class DispatchReceipt <<value>> $types {
+        - providerMessageRef: String [0..1]
+        - status: DeliveryStatus
+        - failureReason: String [0..1]
+    }
+    class DocumentContent <<value>> $types {
+        - fileName: String
+        - mediaType: String
+        - bytes: Binary
+    }
+    class DocumentRef <<value>> $types {
+        - location: String
+        - checksum: String
+    }
+!if ($VIEW == "all" || $VIEW == "core")
+}
+!endif
+
+' ============================================================================
+' ENUMERATIONS: literals come from the requirements and contracts
+' ============================================================================
+!if ($VIEW == "all")
+package "Enumerations" {
+!endif
+    enum Role $types {
+        OPERATIONAL_USER
+        ADMINISTRATOR
+        SUPER_ADMINISTRATOR
+    }
+    enum Capability $types {
+        MANAGE_CUSTOMERS
+        IMPORT_CUSTOMERS
+        ASSIGN_CUSTOMERS
+        MANAGE_ACCOUNTS
+        MANAGE_SUBSCRIPTIONS
+        DECIDE_ANNUAL_REVIEWS
+        CANCEL_SUBSCRIPTIONS
+        CREATE_INVOICES
+        ISSUE_INVOICES
+        SEND_INVOICES
+        CORRECT_INVOICES
+        RECONCILE_PAYMENTS
+        REVERSE_RECONCILIATIONS
+        MANAGE_ISSUES
+        PAUSE_FOLLOW_UP
+        DECIDE_APPROVALS
+        VIEW_FINANCIAL_REPORTS
+        CLOSE_PERIODS
+        REOPEN_PERIODS
+        CONFIGURE_SYSTEM
+        EDIT_TEMPLATES
+        INSPECT_AUDIT
+        CREATE_BACKUPS
+        RESTORE_BACKUPS
+    }
+    enum CustomerStatus $types {
+        PENDING_ACTIVATION
+        ACTIVE
+        PAUSED
+        CANCELLATION_REQUESTED
+        INACTIVE
+        ADMINISTRATIVELY_BLOCKED
+    }
+    enum ContactRole $types {
+        PURCHASING
+        BILLING_ADMINISTRATION
+        COLLECTIONS
+    }
+    enum SubscriptionStatus $types {
+        PENDING_ACTIVATION
+        ACTIVE
+        PAUSED
+        CANCELLED
+    }
+    enum ExceptionType $types {
+        TIME_LIMITED_DISCOUNT
+        FREE_PERIOD
+        EXTRA_SERVICE
+    }
+    enum ExceptionStatus $types {
+        PROPOSED
+        APPROVED
+        REJECTED
+        EXPIRED
+    }
+    enum RevenueSource $types {
+        MANUAL_ENTRY
+        SIMULATED_SOURCE
+    }
+    enum ReviewStatus $types {
+        PENDING_DATA
+        PROPOSED
+        APPROVED
+        REJECTED
+        ACTIVE
+    }
+    enum CancellationOrigin $types {
+        INTERNAL
+        EXTERNAL_API
+    }
+    enum CancellationStatus $types {
+        PENDING
+        CONFIRMED
+        REJECTED
+    }
+    enum InvoiceType $types {
+        ONE_OFF
+        RECURRING
+        CORRECTIVE
+    }
+    enum InvoiceStatus $types {
+        DRAFT
+        PENDING_APPROVAL
+        ISSUED
+        SENT
+        OVERDUE
+        PAID
+        WITH_DISCREPANCY
+        DISPUTED
+        UNCOLLECTIBLE
+        RECTIFIED
+    }
+    enum DocumentStage $types {
+        NOT_STARTED
+        PDF_PENDING
+        PRESERVATION_PENDING
+        PRESERVED
+    }
+    enum DeliveryStatus $types {
+        QUEUED
+        SENT
+        DELIVERED
+        FAILED
+        RETRIED
+    }
+    enum Channel $types {
+        EMAIL
+        WHATSAPP
+    }
+    enum TemplateType $types {
+        INVOICE_EMAIL
+        REMINDER
+        OTHER_CUSTOMER_MESSAGE
+    }
+    enum PaymentSource $types {
+        PROVIDER_NOTIFICATION
+        PROVIDER_QUERY
+    }
+    enum PaymentStatus $types {
+        PENDING_REVIEW
+        PARTIALLY_ALLOCATED
+        ALLOCATED
+        WITH_DISCREPANCY
+    }
+    enum ReminderType $types {
+        DAY_THREE
+        DUE_DATE
+        OVERDUE
+    }
+    enum ReminderStatus $types {
+        SCHEDULED
+        DISPATCHED
+        SUPPRESSED
+        FAILED
+    }
+    enum IssueType $types {
+        INCORRECT_TAX_ID
+        DISPUTED_AMOUNT
+        EMAIL_NOT_RECEIVED
+        PAYMENT_NOT_LOCATED
+        OTHER
+    }
+    enum IssueStatus $types {
+        OPEN
+        IN_PROGRESS
+        CLOSED
+    }
+    enum Priority $types {
+        LOW
+        MEDIUM
+        HIGH
+    }
+    enum PeriodKind $types {
+        WEEK
+        MONTH
+        QUARTER
+        YEAR
+    }
+    enum PeriodStatus $types {
+        OPEN
+        CLOSED
+        REOPENED
+    }
+    enum ApprovalType $types {
+        MANUAL_AMOUNT_CHANGE
+        EXTRAORDINARY_DISCOUNT
+        UNUSUAL_DUE_DATE
+        HIGH_AMOUNT_ONE_OFF
+        CORRECTIVE_INVOICE
+        WRITE_OFF
+        PRICE_RANGE_CHANGE
+        COMMERCIAL_EXCEPTION
+    }
+    enum ApprovalStatus $types {
+        PENDING
+        APPROVED
+        REJECTED
+    }
+    enum TaskType $types {
+        CANCELLATION_FOLLOW_UP
+        ANNUAL_REVIEW
+        PAUSE_REVIEW
+        OTHER
+    }
+    enum TaskStatus $types {
+        PENDING
+        DONE
+    }
+    enum NotificationEvent $types {
+        INVOICE_PAID
+        FOLLOW_UP_SENT
+        INVOICE_OVERDUE
+        DELIVERY_BOUNCED
+        DISPUTE_OPENED
+        ANNUAL_REVIEW_PENDING
+        APPROVAL_REJECTED
+        MENTION
+        PAUSE_EXPIRING
+        AUTOMATION_FAILURE
+        ALERT_RULE_MATCHED
+    }
+    enum NotificationChannel $types {
+        IN_APP
+        EMAIL
+        DAILY_DIGEST
+    }
+    enum AlertCondition $types {
+        INVOICE_OVERDUE_DAYS
+        OUTSTANDING_BALANCE_ABOVE
+        SENDING_FAILED_TIMES
+    }
+    enum PolicyStatus $types {
+        INACTIVE
+        ACTIVE
+    }
+    enum JobType $types {
+        MONTHLY_INVOICING
+        PAYMENT_REMINDERS
+        PAYMENT_QUERY
+        BACKUP
+        ANNUAL_REVIEW_TASKS
+        FINANCIAL_SUMMARY
+        DAILY_DIGEST
+        ALERT_EVALUATION
+    }
+    enum RunStatus $types {
+        PENDING
+        PROCESSING
+        COMPLETED
+        COMPLETED_WITH_ERRORS
+    }
+    enum ItemOutcome $types {
+        CREATED
+        SKIPPED
+        FAILED
+    }
+    enum ReportType $types {
+        CSV_EXPORT
+        PDF_REPORT
+        ACCOUNTING_PACKAGE
+    }
+    enum ReportStatus $types {
+        PROCESSING
+        COMPLETED
+        FAILED
+        EXPIRED
+    }
+    enum SummaryFrequency $types {
+        WEEKLY
+        MONTHLY
+    }
+    enum BackupStatus $types {
+        IN_PROGRESS
+        VALID
+        INVALID
+        FAILED
+    }
+    enum RecoveryStatus $types {
+        IN_PROGRESS
+        INCOMPLETE
+        COMPLETED
+    }
+    enum WorkItemKind $types {
+        INVOICE_DUE
+        INVOICE_OVERDUE
+        RECONCILIATION
+        DELIVERY_PROBLEM
+        APPROVAL
+        ANNUAL_REVIEW
+        BILLING_ISSUE
+        INVOICE_DRAFT
+        ASSIGNED_TASK
+    }
+!if ($VIEW == "all")
+}
+!endif
+
+' ============================================================================
+' ASSOCIATIONS FROM THE APPROVED DOMAIN MODEL (same multiplicities)
+' ============================================================================
+User "1" -- "0..*" Customer : is responsible for
+Customer "1..*" -- "0..*" Contact : has
+Customer "1" -- "0..*" Subscription : contracts
+Subscription "0..*" -- "1..*" Concept : bills
+Subscription "1" -- "0..*" AnnualReview : reviewed in
+AnnualReview "0..*" -- "1" RateTier : proposes
+Subscription "0..*" -- "0..1" RateTier : priced by
+Subscription "1" -- "0..1" Cancellation : ended by
+Customer "1" -- "0..*" Invoice : is billed with
+Subscription "0..1" -- "0..*" Invoice : generates
+Invoice "1" *-- "1..*" InvoiceLine : contains
+InvoiceLine "0..*" -- "0..1" Concept : based on
+Invoice "0..1" -- "0..*" Invoice : corrected by
+Invoice "1" -- "0..*" Reminder : followed up by
+Invoice "0..1" -- "0..*" BillingIssue : about
+User "1" -- "0..*" ApprovalRequest : requests
+ApprovalRequest "0..*" -- "0..1" User : decided by
+ApprovalRequest "0..*" -- "0..1" Invoice : about
+AutomationRun "0..1" -- "0..*" Invoice : generates
+AutomationRun "0..1" -- "0..*" Reminder : sends
+
+' Refines the domain model's Invoice "0..*" -- "0..*" Payment : settled by
+' Reconciliation carries the allocated amount, its evidence and its reversal.
+Invoice "1" -- "0..*" Reconciliation : settled through
+Reconciliation "0..*" -- "1" Payment : allocates
+
+' ============================================================================
+' SUPPORTING ASSOCIATIONS
+' ============================================================================
+!if ($VIEW == "all" || $VIEW == "customers")
+(Customer, Contact) .. CustomerContact
+!endif
+CustomerImport "0..*" -- "1" User : run by
+CustomerImport "0..1" -- "0..*" Customer : creates or updates
+Subscription "1" *-- "0..*" SubscriptionPause : paused by
+Subscription "1" *-- "0..*" CommercialException : adjusted by
+
+Invoice "1" *-- "0..1" IssuedSnapshot : frozen as
+Invoice "1" *-- "0..1" InvoiceDocument : preserved as
+Invoice "0..*" -- "0..1" InvoiceSeries : numbered in
+InvoiceLine "0..*" -- "1" Tax : taxed with
+Concept "0..*" -- "0..1" Tax : default tax
+Invoice "1" -- "0..*" DeliveryAttempt : sent through
+Reminder "0..1" -- "0..*" DeliveryAttempt : dispatched through
+DeliveryAttempt "0..*" -- "1..*" Contact : sent to
+DeliveryAttempt "0..*" -- "0..1" MessageTemplate : uses
+!if ($VIEW != "core")
+Reconciliation "0..*" -- "0..1" User : allocated by
+!endif
+Invoice "0..*" -- "0..1" AccountingPeriod : belongs to
+Customer "1" -- "0..*" BillingIssue : concerns
+!if ($VIEW != "core")
+BillingIssue "0..*" -- "1" User : owned by
+!endif
+Customer ..|> AnnotationTarget
+Invoice ..|> AnnotationTarget
+BillingIssue ..|> AnnotationTarget
+Comment "0..*" -- "1" AnnotationTarget : written on
+Attachment "0..*" -- "1" AnnotationTarget : attached to
+!if ($VIEW != "core")
+Comment "0..*" -- "1" User : written by
+Comment "0..*" -- "0..*" User : mentions
+Attachment "0..*" -- "1" User : uploaded by
+!endif
+AlertRule "0..*" -- "1" User : configured by
+
+User "1" *-- "0..*" Session : opens
+User "1" -- "0..*" Delegation : delegates
+Delegation "0..*" -- "1" User : to
+ApprovalRequest "1" *-- "1" ProposalSnapshot : decides exactly
+ApprovalRequest "0..*" -- "0..1" CommercialException : about
+ApprovalRequest "0..*" -- "0..1" AnnualReview : about
+Invoice ..|> ApprovalSubject
+CommercialException ..|> ApprovalSubject
+AnnualReview ..|> ApprovalSubject
+WorkTask "0..*" -- "1" User : assigned to
+WorkTask "0..*" -- "0..1" Customer : concerns
+User "1" -- "0..*" Notification : receives
+User "0..1" -- "0..*" AuditEntry : performs
+ApiClient "0..1" -- "0..*" AuditEntry : performs
+AutomationRun "1" *-- "0..*" AutomationItem : records
+AutomationRun "0..1" -- "0..*" Backup : creates
+BillingPolicy "1" -- "0..*" AutomationRun : governs
+User "1" -- "0..*" ReportOutput : requests
+ReportOutput "0..*" -- "0..1" AccountingPeriod : packages
+SummarySchedule "0..*" -- "1..*" User : sent to
+Backup "0..*" -- "0..1" User : requested by
+Backup "1" -- "0..*" RecoveryExecution : restored by
+RecoveryExecution "0..*" -- "1" User : confirmed by
+
+' ============================================================================
+' INTERFACE REALISATIONS AND KEY DEPENDENCIES
+' ============================================================================
+PaymentProviderAdapter ..|> PaymentGateway
+EmailAdapter ..|> CommunicationService
+WhatsAppAdapter ..|> CommunicationService
+DocumentStorageAdapter ..|> DocumentStorage
+PdfGeneratorAdapter ..|> PdfRenderer
+SystemTimer ..> Scheduler : triggers
+Scheduler ..> InvoicingController : UC-06
+Scheduler ..> CollectionsController : UC-07, UC-08
+Scheduler ..> CustomerSubscriptionController : UC-04 tasks
+Scheduler ..> ReportingOperationsController : UC-09, UC-12
+Scheduler ..> AuditBackupController : UC-21
+Scheduler ..> ExecutionContext : system identity
+
+' Controller-to-port dependencies are drawn only in the application view, because
+' they would hide the domain associations in the other views.
+!if ($VIEW == "application")
+AccessController ..> UserRepository
+AccessController ..> PasswordHasher
+CustomerSubscriptionController ..> CustomerRepository
+CustomerSubscriptionController ..> SubscriptionRepository
+CustomerSubscriptionController ..> AnnualRevenueProvider
+InvoicingController ..> InvoiceRepository
+InvoicingController ..> ConfigurationRepository
+InvoicingController ..> PdfRenderer
+InvoicingController ..> DocumentStorage
+InvoicingController ..> CommunicationService
+InvoicingController ..> ApprovalController
+CollectionsController ..> PaymentGateway
+CollectionsController ..> PaymentRepository
+CollectionsController ..> InvoiceRepository
+CollectionsController ..> IssueRepository
+CollectionsController ..> DocumentStorage
+CollectionsController ..> CommunicationService
+ApprovalController ..> ApprovalRepository
+ReportingOperationsController ..> WorkRepository
+ReportingOperationsController ..> ReportRepository
+ReportingOperationsController ..> AccountingPeriodRepository
+ReportingOperationsController ..> PdfRenderer
+ConfigurationController ..> ConfigurationRepository
+AuditBackupController ..> AuditRepository
+AuditBackupController ..> AutomationRunRepository
+AuditBackupController ..> BackupRepository
+AuditBackupController ..> BackupEngine
+!endif
+
+' ============================================================================
+' LAYOUT ONLY: hidden links arrange the classes in columns; they are not relations
+' ============================================================================
+!if ($VIEW != "core")
+AccessController -[hidden]down- ApprovalController
+ApprovalController -[hidden]down- CustomerSubscriptionController
+CustomerSubscriptionController -[hidden]down- CollectionsController
+ConfigurationController -[hidden]down- AuditBackupController
+AuditBackupController -[hidden]down- InvoicingController
+InvoicingController -[hidden]down- ReportingOperationsController
+PaymentGateway -[hidden]down- AnnualRevenueProvider
+AnnualRevenueProvider -[hidden]down- PaymentRepository
+PaymentRepository -[hidden]down- AuditRepository
+AuditRepository -[hidden]down- BackupRepository
+CommunicationService -[hidden]down- BackupEngine
+BackupEngine -[hidden]down- ApprovalRepository
+ApprovalRepository -[hidden]down- ConfigurationRepository
+DocumentStorage -[hidden]down- CustomerRepository
+CustomerRepository -[hidden]down- UserRepository
+UserRepository -[hidden]down- AccountingPeriodRepository
+PdfRenderer -[hidden]down- SubscriptionRepository
+SubscriptionRepository -[hidden]down- IssueRepository
+IssueRepository -[hidden]down- ReportRepository
+PasswordHasher -[hidden]down- InvoiceRepository
+InvoiceRepository -[hidden]down- WorkRepository
+WorkRepository -[hidden]down- AutomationRunRepository
+Money -[hidden]down- CustomerData
+CustomerData -[hidden]down- SearchFilters
+SearchFilters -[hidden]down- DeliveryEvidence
+DeliveryEvidence -[hidden]down- TransactionEvidence
+TransactionEvidence -[hidden]down- DocumentRef
+ValidationResult -[hidden]down- SubscriptionTerms
+SubscriptionTerms -[hidden]down- SavedView
+SavedView -[hidden]down- ReportFilters
+ReportFilters -[hidden]down- OutboundMessage
+Preview -[hidden]down- DebtSnapshot
+DebtSnapshot -[hidden]down- NotificationPreference
+NotificationPreference -[hidden]down- FinancialIndicators
+FinancialIndicators -[hidden]down- DispatchReceipt
+InvoiceProposal -[hidden]down- WorkItem
+WorkItem -[hidden]down- DownloadLink
+DownloadLink -[hidden]down- HealthSummary
+HealthSummary -[hidden]down- DocumentContent
+Role -[hidden]down- ReviewStatus
+ReviewStatus -[hidden]down- TemplateType
+TemplateType -[hidden]down- PeriodKind
+PeriodKind -[hidden]down- AlertCondition
+AlertCondition -[hidden]down- BackupStatus
+Capability -[hidden]down- CancellationOrigin
+CancellationOrigin -[hidden]down- PaymentSource
+PaymentSource -[hidden]down- PeriodStatus
+PeriodStatus -[hidden]down- PolicyStatus
+PolicyStatus -[hidden]down- RecoveryStatus
+CustomerStatus -[hidden]down- CancellationStatus
+CancellationStatus -[hidden]down- PaymentStatus
+PaymentStatus -[hidden]down- ApprovalType
+ApprovalType -[hidden]down- JobType
+JobType -[hidden]down- WorkItemKind
+ContactRole -[hidden]down- InvoiceType
+InvoiceType -[hidden]down- ReminderType
+ReminderType -[hidden]down- ApprovalStatus
+ApprovalStatus -[hidden]down- RunStatus
+SubscriptionStatus -[hidden]down- InvoiceStatus
+InvoiceStatus -[hidden]down- ReminderStatus
+ReminderStatus -[hidden]down- TaskType
+TaskType -[hidden]down- ItemOutcome
+ExceptionType -[hidden]down- DocumentStage
+DocumentStage -[hidden]down- IssueType
+IssueType -[hidden]down- TaskStatus
+TaskStatus -[hidden]down- ReportType
+ExceptionStatus -[hidden]down- DeliveryStatus
+DeliveryStatus -[hidden]down- IssueStatus
+IssueStatus -[hidden]down- NotificationEvent
+NotificationEvent -[hidden]down- ReportStatus
+RevenueSource -[hidden]down- Channel
+Channel -[hidden]down- Priority
+Priority -[hidden]down- NotificationChannel
+NotificationChannel -[hidden]down- SummaryFrequency
+!endif
+
+' Stacks the groups vertically in the complete view.
+!if ($VIEW == "all")
+MessageTemplate -[hidden]down- AccessController
+ReportingOperationsController -[hidden]down- PaymentGateway
+BackupRepository -[hidden]down- Money
+DocumentRef -[hidden]down- Role
+Scheduler -[hidden]down- PaymentProviderAdapter
+!endif
+
+' Core view only: each label names real operations, so the members can stay hidden.
+!if ($VIEW == "core")
+hide members
+show Invoice fields
+show AnnualReview fields
+skinparam nodesep 90
+skinparam ranksep 110
+CustomerSubscriptionController ..> Subscription : confirmSubscription, confirmCancellation
+InvoicingController ..> Invoice : prepareDraft, issueInvoice, correctInvoice
+InvoicingController ..> DeliveryAttempt : sendInvoice, receiveDeliveryReport
+CollectionsController ..> Payment : receivePaymentNotification
+CollectionsController ..> Reconciliation : allocateManually, reverseReconciliation
+CollectionsController ..> BillingIssue : openIssue, resolveIssue
+CollectionsController ..> AnnotationTarget : addComment, addAttachment
+ApprovalController ..> ApprovalRequest : decide
+InvoicingController ..> InvoiceRepository : save
+InvoicingController ..> PdfRenderer : renderInvoice
+InvoicingController ..> DocumentStorage : store
+InvoicingController ..> CommunicationService : send, verifyDeliveryReport
+CollectionsController ..> PaymentGateway : queryTransactions, verifyNotification
+Payment -[hidden]down- PaymentGateway
+DeliveryAttempt -[hidden]down- CommunicationService
+Cancellation -[hidden]down- InvoiceRepository
+PaymentGateway -[hidden]down- Money
+CommunicationService -[hidden]down- DeliveryEvidence
+!endif
+
+!if ($VIEW == "all" || $VIEW == "core")
+legend top right
+  |<#FFF3C9> Main entity |
+  |<#FFFFFF> Supporting entity or contract |
+  |<#D9E4F7> Controller |
+  |<#DDF0E0> Port |
+  |<#F0F0F0> Value object |
+  |<#E2E2E2> Infrastructure |
+endlegend
+!endif
+
+' ============================================================================
+' DESIGN NOTES (shown only in the views that contain their class)
+' ============================================================================
+!if ($VIEW == "all" || $VIEW == "invoicing")
+note right of Invoice
+  **Separate stages.** prepareDraft and saveDraft (UC-05)
+  never set a number. issue() (UC-19) is the only operation
+  that assigns one, once, and freezes IssuedSnapshot.
+  sendInvoice (UC-20) only adds DeliveryAttempt objects.
+  Retries reuse the same number and original PDF.
+  Corrections are new linked invoices (UC-15).
+end note
+
+note bottom of Reconciliation
+  **Replaces the simplified Invoice-Payment link.**
+  One allocation of a verified payment to one invoice.
+  Same currency as both. reverse() keeps the original
+  evidence. Paid status derives from active allocations.
+end note
+
+note left of Invoice
+  **Balance (FR2.8.2, UC-15).** Original and correction count once:
+  outstandingBalance = max(adjustedTotal - allocatedAmount, 0)
+  excessAmount = max(allocatedAmount - adjustedTotal, 0)
+  adjustedTotal adds issued corrections only; allocatedAmount adds
+  active allocations only. A corrective document reports 0 itself.
+  Excess is never a payment or a refund. calculateObligations sums
+  per currency and never converts. The signed form of a correction
+  is a proposal: see the traceability file, section 4.
+end note
+
+note bottom of DeliveryAttempt
+  **Only verified evidence changes the result.** A report enters through
+  receiveDeliveryReport: CommunicationService verifies its origin, the
+  provider reference selects the attempt, matches() checks the channel,
+  and an unverified or unmatched report changes nothing. No operation
+  accepts a status from a caller.
+end note
+
+note top of AnnotationTarget
+  **Exactly one target.** A comment or attachment has one customer,
+  invoice or issue. Scope and permissions come from the target, and
+  an issue's invoice must belong to the issue's customer. Restricted
+  notes are for administrators; mentions notify only users who can
+  see the comment. No operation sends these to a customer.
+end note
+!endif
+
+!if ($VIEW == "all" || $VIEW == "governance")
+note top of ApprovalRequest
+  Exactly one of invoice, commercial exception or annual
+  review is the subject {xor}. A decision applies only
+  to the stored ProposalSnapshot version; a changed
+  proposal makes it stale. canBeDecidedBy() checks the
+  threshold role and separation of duties (FR11.1).
+end note
+!endif
+
+!if ($VIEW == "all" || $VIEW == "customers")
+note bottom of Cancellation
+  **Independent of old debt (C4).** Has no link to Invoice
+  and no operation changes one. stopBillingFrom() only
+  stops future recurring billing.
+end note
+!endif
+
+!if ($VIEW == "all" || $VIEW == "application" || $VIEW == "core")
+note top of Scheduler
+  Internal application element, never an actor. It holds no
+  business rules: it calls the same controllers as users,
+  with a system ExecutionContext. Each run is an AutomationRun.
+end note
+
+!endif
+
+!if ($VIEW == "all" || $VIEW == "application")
+note bottom of PaymentGateway
+  Only checks payments. No charge or payment-link
+  operation: that is out of scope.
+end note
+
+note bottom of AuditRepository
+  Append-only: no update or delete operation exists.
+end note
+!endif
+
+!if ($VIEW == "all" || $VIEW == "types")
+note top of Money
+  All amounts use Decimal with an explicit currency.
+  Money never converts or adds across currencies.
+end note
+!endif
+
+' ============================================================================
+' VIEWS: filter the single definition above; nothing is redefined. Packages exist
+' only in the complete view, so the filtered views show no empty package boxes.
+' ============================================================================
+!if ($VIEW != "all")
+remove $application
+remove $customers
+remove $invoicing
+remove $governance
+remove $types
+!endif
+!if ($VIEW == "core")
+restore $core
+!elseif ($VIEW == "customers")
+restore $customers
+!elseif ($VIEW == "invoicing")
+restore $invoicing
+!elseif ($VIEW == "governance")
+restore $governance
+!elseif ($VIEW == "application")
+restore $application
+!elseif ($VIEW == "types")
+restore $types
+!endif
+
+@enduml
