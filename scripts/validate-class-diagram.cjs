@@ -134,6 +134,73 @@ for (const name of ['prepareDraft', 'issueInvoice', 'sendInvoice']) check(ops('I
 check(!diagramAssociations.some(a => [a.left, a.right].includes('Cancellation') && [a.left, a.right].includes('Invoice')), 'Cancellation must stay independent of Invoice.');
 check(/^!\$VIEW = "all"$/m.test(source), 'class-diagram.pu must be committed with the complete view selected.');
 
+// Comments and attachments: exactly one target, reached only through the shared contract.
+const targets = ['Customer', 'Invoice', 'BillingIssue'];
+for (const target of targets) {
+  check(new RegExp(`^${target} \\.\\.\\|> AnnotationTarget$`, 'm').test(source), `${target} must realise AnnotationTarget.`);
+}
+for (const item of ['Comment', 'Attachment']) {
+  check(diagramAssociations.some(a => a.left === item && a.right === 'AnnotationTarget' && a.rightMult === '1'), `${item} must have exactly one AnnotationTarget.`);
+  check(!diagramAssociations.some(a => [a.left, a.right].includes(item) && targets.some(t => [a.left, a.right].includes(t))), `${item} must not link directly to a target class.`);
+  for (const [name, operation] of ops('CommunicationService')) {
+    check(!typeNames(operation.params).includes(item), `CommunicationService.${name} must not send a ${item}.`);
+  }
+}
+for (const name of ['addComment', 'addAttachment']) {
+  check(/target: AnnotationTarget/.test(ops('CollectionsController').get(name)?.params || ''), `CollectionsController.${name} must take an AnnotationTarget.`);
+}
+check(diagramAssociations.some(a => a.left === 'Comment' && a.right === 'User' && a.label === 'mentions'), 'Comment must keep its mentions.');
+
+// Delivery results: only verified evidence can change an attempt.
+for (const [name, operation] of ops('InvoicingController')) {
+  check(!typeNames(operation.params).includes('DeliveryStatus'), `InvoicingController.${name} must not accept a delivery status.`);
+}
+check(/evidence: DeliveryEvidence/.test(ops('DeliveryAttempt').get('recordObservedResult')?.params || ''), 'DeliveryAttempt.recordObservedResult must take DeliveryEvidence.');
+check(/DeliveryEvidence/.test(ops('CommunicationService').get('verifyDeliveryReport')?.type || ''), 'CommunicationService.verifyDeliveryReport must return DeliveryEvidence.');
+check(ops('InvoicingController').has('receiveDeliveryReport'), 'InvoicingController.receiveDeliveryReport is required.');
+
+// Balances: the operations the design note relies on, and no invented cash movement.
+for (const name of ['adjustedTotal', 'allocatedAmount', 'outstandingBalance', 'excessAmount']) {
+  check(ops('Invoice').get(name)?.type === 'Money', `Invoice.${name} must return Money.`);
+}
+check(ops('Invoice').get('createCorrection')?.type === 'Invoice', 'Invoice.createCorrection must return a new Invoice.');
+for (const field of ['outstandingByCurrency', 'overdueByCurrency']) {
+  check(classes.get('DebtSnapshot')?.attributes.get(field)?.type === 'List<Money>', `DebtSnapshot.${field} must stay a list per currency.`);
+}
+for (const entry of classes.values()) {
+  for (const name of entry.operations.keys()) check(!/refund/i.test(name), `${entry.name}.${name}: no refund operation is in scope.`);
+}
+
+// Functions that the traceability file reports as represented.
+for (const [owner, name] of [['ReportingOperationsController', 'saveNamedView'], ['ReportingOperationsController', 'listQuickAccess'],
+  ['ReportingOperationsController', 'setNotificationPreference'], ['ReportingOperationsController', 'saveAlertRule'], ['User', 'recordOpened'], ['User', 'channelFor']]) {
+  check(ops(owner).has(name), `${owner}.${name} is required.`);
+}
+check(/\[0\.\.10\]/.test(classes.get('User')?.attributes.get('recentCustomers')?.type || ''), 'User.recentCustomers must be limited to 10.');
+check(classes.get('AlertCondition')?.kind === 'enum', 'AlertCondition must be a closed enumeration.');
+
+// Views: each one is named in the header and has its image; core labels name real operations.
+const header = source.match(/set \$VIEW below to: (.+)/);
+const views = header ? header[1].split('|').map(view => view.trim()) : [];
+check(views.includes('core'), 'The core view must be listed in the file header.');
+for (const view of views) {
+  const file = view === 'all' ? 'class-diagram.png' : `class-diagram-${view}.png`;
+  check(fs.existsSync(path.join(root, 'doc/src/img', file)), `View ${view}: image ${file} is missing.`);
+  check(trace.includes(`img/${file}`), `View ${view}: image ${file} is not linked from the traceability file.`);
+}
+check([...classes.values()].some(entry => entry.tags.includes('$core')), 'No class carries the $core tag.');
+const coreBlock = source.match(/^!if \(\$VIEW == "core"\)\nhide members\n([\s\S]*?)^!endif/m);
+check(!!coreBlock, 'The core view block is missing.');
+let coreLabels = 0;
+if (coreBlock) {
+  for (const link of coreBlock[1].matchAll(/^(\w+) \.\.> (\w+) : (.+)$/gm)) {
+    for (const op of link[3].split(',').map(name => name.trim())) {
+      coreLabels += 1;
+      check(ops(link[1]).has(op) || ops(link[2]).has(op), `Core view label ${op} is not an operation of ${link[1]} or ${link[2]}.`);
+    }
+  }
+}
+
 // Traceability: one row per contract, and every cited operation must exist.
 const contracts = fs.readdirSync(path.join(root, 'doc/src/use-cases')).filter(name => /^UC-\d{2}\.md$/.test(name)).map(name => name.slice(0, -3)).sort();
 const rows = trace.split('\n').filter(line => /^\| UC-\d{2} \|/.test(line));
@@ -156,4 +223,5 @@ const count = kind => [...classes.values()].filter(entry => entry.kind === kind)
 console.log(`PASS: ${count('class')} classes, ${count('interface')} interfaces and ${count('enum')} enumerations; each defined once, with every type declared.`);
 console.log(`PASS: ${domain.size} domain concepts keep their attributes; ${domainAssociations.length - 1} domain associations keep their multiplicities; Invoice-Payment is refined through Reconciliation.`);
 console.log(`PASS: ${rows.length} contracts traced; all ${cited} cited operations exist with the same name.`);
-console.log('NOTE: this checks consistency only. PlantUML syntax and layout need a real render.');
+console.log(`PASS: annotation targets, delivery evidence, balance operations and ${views.length} views have the expected structure; ${coreLabels} core view labels name real operations.`);
+console.log('NOTE: this checks consistency only. It does not prove the design is functionally correct, and PlantUML syntax and layout need a real render.');
