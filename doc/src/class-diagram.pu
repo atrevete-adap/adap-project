@@ -6,7 +6,7 @@
 ' This is a design model, not the SQL schema of #44: no keys or column types.
 '
 ' SINGLE DEFINITION. Every class is defined once in this file. To render a view,
-' set $VIEW below to: all | customers | invoicing | governance | application | types
+' set $VIEW below to: all | core | customers | invoicing | governance | application | types
 ' Traceability and review notes: class-diagram-traceability.md
 
 !$VIEW = "all"
@@ -24,9 +24,10 @@ skinparam class {
     BackgroundColor #FFFFFF
     BorderColor #2B3E6A
     FontColor #000000
-    BackgroundColor<<control>> #E8EEF9
-    BackgroundColor<<value>> #F4F4F4
-    BackgroundColor<<infrastructure>> #EFEFEF
+    BackgroundColor<<control>> #D9E4F7
+    BackgroundColor<<port>> #DDF0E0
+    BackgroundColor<<value>> #F0F0F0
+    BackgroundColor<<infrastructure>> #E2E2E2
 }
 skinparam package {
     BorderColor #2B3E6A
@@ -44,7 +45,7 @@ skinparam arrow {
 ' ============================================================================
 ' APPLICATION LAYER: controllers coordinate; they hold no business rules
 ' ============================================================================
-!if ($VIEW == "all")
+!if ($VIEW == "all" || $VIEW == "core")
 package "Application" {
 !endif
     class AccessController <<control>> $application {
@@ -60,7 +61,7 @@ package "Application" {
         + delegateCustomers(ctx: ExecutionContext, from: User, to: User, startDate: Date, endDate: Date): Delegation
     }
 
-    class CustomerSubscriptionController <<control>> $application {
+    class CustomerSubscriptionController <<control>> $core $application {
         ' UC-02, UC-04, UC-10
         + searchCustomers(ctx: ExecutionContext, query: String): List<Customer>
         + previewCustomerChange(ctx: ExecutionContext, customer: Customer, data: CustomerData): Preview
@@ -80,7 +81,7 @@ package "Application" {
         + confirmCancellation(ctx: ExecutionContext, cancellation: Cancellation, effectiveDate: Date): Cancellation
     }
 
-    class InvoicingController <<control>> $application {
+    class InvoicingController <<control>> $core $application {
         ' UC-05 preparation
         + offerDraftDefaults(ctx: ExecutionContext, customer: Customer, type: InvoiceType): InvoiceProposal
         + prepareDraft(ctx: ExecutionContext, proposal: InvoiceProposal): Invoice
@@ -95,14 +96,15 @@ package "Application" {
         ' UC-20 sending
         + sendInvoice(ctx: ExecutionContext, invoice: Invoice): DeliveryAttempt
         + resendInvoice(ctx: ExecutionContext, invoice: Invoice, recipients: List<Contact>): DeliveryAttempt
-        + recordDeliveryResult(attempt: DeliveryAttempt, status: DeliveryStatus): DeliveryAttempt
+        + receiveDeliveryReport(channel: Channel, rawReport: String): DeliveryAttempt [0..1]
+        + refreshDeliveryStatus(ctx: ExecutionContext, attempt: DeliveryAttempt): DeliveryAttempt
         ' UC-06 and UC-15
         + generateMonthlyInvoices(ctx: ExecutionContext, period: YearMonth): AutomationRun
         + previewCorrection(ctx: ExecutionContext, original: Invoice, reason: String, proposal: InvoiceProposal): Preview
         + correctInvoice(ctx: ExecutionContext, original: Invoice, reason: String, proposal: InvoiceProposal): Invoice
     }
 
-    class CollectionsController <<control>> $application {
+    class CollectionsController <<control>> $core $application {
         ' UC-07
         + synchronizePayments(ctx: ExecutionContext): AutomationRun
         + receivePaymentNotification(rawEvent: String): Payment
@@ -113,13 +115,15 @@ package "Application" {
         + runReminders(ctx: ExecutionContext, now: DateTime): AutomationRun
         ' UC-16
         + openIssue(ctx: ExecutionContext, customer: Customer, invoice: Invoice [0..1], type: IssueType, description: String, priority: Priority, owner: User): BillingIssue
-        + addIssueComment(ctx: ExecutionContext, issue: BillingIssue, text: String, restricted: Boolean): Comment
-        + addAttachment(ctx: ExecutionContext, issue: BillingIssue, file: DocumentContent, documentType: String, description: String): Attachment
+        + addComment(ctx: ExecutionContext, target: AnnotationTarget, text: String, restricted: Boolean, mentioned: List<User>): Comment
+        + addAttachment(ctx: ExecutionContext, target: AnnotationTarget, file: DocumentContent, documentType: String, description: String): Attachment
+        + createAttachmentLink(ctx: ExecutionContext, attachment: Attachment): DownloadLink
+        + openAttachmentLink(ctx: ExecutionContext, link: DownloadLink): DocumentContent
         + pauseFollowUp(ctx: ExecutionContext, invoice: Invoice, reason: String, reviewDate: Date): Invoice
         + resolveIssue(ctx: ExecutionContext, issue: BillingIssue, resolution: String): BillingIssue
     }
 
-    class ApprovalController <<control>> $application {
+    class ApprovalController <<control>> $core $application {
         ' UC-17
         + requestApproval(ctx: ExecutionContext, type: ApprovalType, subject: ApprovalSubject): ApprovalRequest
         + listPending(ctx: ExecutionContext): List<ApprovalRequest>
@@ -131,7 +135,14 @@ package "Application" {
     class ReportingOperationsController <<control>> $application {
         ' UC-09
         + loadWorkQueue(ctx: ExecutionContext): List<WorkItem>
-        + searchWork(ctx: ExecutionContext, query: String): List<WorkItem>
+        + searchWork(ctx: ExecutionContext, query: String, filters: SearchFilters): List<WorkItem>
+        + saveNamedView(ctx: ExecutionContext, name: String, query: String, filters: SearchFilters): SavedView
+        + setFavourite(ctx: ExecutionContext, customer: Customer, favourite: Boolean): void
+        + listQuickAccess(ctx: ExecutionContext): List<Customer>
+        + setNotificationPreference(ctx: ExecutionContext, eventType: NotificationEvent, channel: NotificationChannel): void
+        + sendDailyDigests(ctx: ExecutionContext, now: DateTime): AutomationRun
+        + saveAlertRule(ctx: ExecutionContext, condition: AlertCondition, threshold: Decimal, currency: CurrencyCode [0..1]): AlertRule
+        + evaluateAlertRules(ctx: ExecutionContext, now: DateTime): AutomationRun
         + openWorkItem(ctx: ExecutionContext, item: WorkItem): WorkItem
         + markNotification(ctx: ExecutionContext, notification: Notification, handled: Boolean): Notification
         ' UC-11
@@ -173,7 +184,7 @@ package "Application" {
         + confirmRestore(ctx: ExecutionContext, backup: Backup, target: String): RecoveryExecution
     }
 
-    class Scheduler <<control>> $application {
+    class Scheduler <<control>> $core $application {
         + onTick(now: DateTime): void
         + resumeInterruptedJobs(now: DateTime): void
         - systemContext(job: JobType): ExecutionContext
@@ -186,7 +197,7 @@ package "Application" {
         + authorize(capability: Capability, customer: Customer [0..1]): void
         + isSystem(): Boolean
     }
-!if ($VIEW == "all")
+!if ($VIEW == "all" || $VIEW == "core")
 }
 !endif
 
@@ -195,8 +206,10 @@ package "Application" {
 ' ============================================================================
 !if ($VIEW == "all")
 package "Domain: customers and subscriptions" {
+!elseif ($VIEW == "core")
+package "Domain entities" {
 !endif
-    class Customer <<entity>> $customers $invoicing {
+    class Customer <<entity>> $core $customers $invoicing #FFF3C9 {
         - tradingName: String
         - legalName: String
         - taxId: String
@@ -204,6 +217,7 @@ package "Domain: customers and subscriptions" {
         - country: CountryCode
         - workingCurrency: CurrencyCode
         - status: CustomerStatus
+        - businessArea: String [0..1]
         - tags: Set<String>
         - version: Integer
         + validateForInvoicing(): ValidationResult
@@ -215,9 +229,11 @@ package "Domain: customers and subscriptions" {
         + assignResponsible(user: User): void
         + billingContacts(): List<Contact>
         + calculateObligations(invoices: List<Invoice>, now: DateTime): DebtSnapshot
+        + scopeCustomer(): Customer
+        + scopeInvoice(): Invoice [0..1]
     }
 
-    class Contact <<entity>> $customers $invoicing {
+    class Contact <<entity>> $core $customers $invoicing #FFF3C9 {
         - name: String
         - email: String
         - phone: String [0..1]
@@ -244,7 +260,7 @@ package "Domain: customers and subscriptions" {
         + applyValidRows(): List<Customer>
     }
 
-    class Subscription <<entity>> $customers {
+    class Subscription <<entity>> $core $customers #FFF3C9 {
         - startDate: Date
         - billingStartDate: Date
         - status: SubscriptionStatus
@@ -282,14 +298,14 @@ package "Domain: customers and subscriptions" {
         + currentProposal(): ProposalSnapshot
     }
 
-    class RateTier <<entity>> $customers {
+    class RateTier <<entity>> $customers #FFF3C9 {
         - minAnnualRevenue: Money
         - maxAnnualRevenue: Money
         - monthlyPrice: Money
         + covers(annualRevenue: Money): Boolean
     }
 
-    class AnnualReview <<entity>> $customers $governance {
+    class AnnualReview <<entity>> $core $customers $governance #FFF3C9 {
         - year: Integer
         - annualRevenue: Money [0..1]
         - revenueSource: RevenueSource [0..1]
@@ -306,7 +322,7 @@ package "Domain: customers and subscriptions" {
         + currentProposal(): ProposalSnapshot
     }
 
-    class Cancellation <<entity>> $customers {
+    class Cancellation <<entity>> $core $customers #FFF3C9 {
         - requestDate: Date
         - effectiveDate: Date
         - reason: String
@@ -315,7 +331,7 @@ package "Domain: customers and subscriptions" {
         + confirm(effectiveDate: Date): void
         + reject(reason: String): void
     }
-!if ($VIEW == "all")
+!if ($VIEW == "all" || $VIEW == "core")
 }
 !endif
 
@@ -324,8 +340,10 @@ package "Domain: customers and subscriptions" {
 ' ============================================================================
 !if ($VIEW == "all")
 package "Domain: invoicing and collection" {
+!elseif ($VIEW == "core")
+package "Domain entities" {
 !endif
-    class Invoice <<entity>> $customers $invoicing $governance {
+    class Invoice <<entity>> $core $customers $invoicing $governance #FFF3C9 {
         - type: InvoiceType
         - number: String [0..1]
         - status: InvoiceStatus
@@ -358,14 +376,20 @@ package "Domain: invoicing and collection" {
         + isNotified(): Boolean
         + createCorrection(reason: String, proposal: InvoiceProposal): Invoice
         + linkCorrection(correction: Invoice): void
+        + isCorrective(): Boolean
+        + adjustedTotal(): Money
+        + allocatedAmount(): Money
         + outstandingBalance(): Money
+        + excessAmount(): Money
         + refreshPaymentStatus(now: DateTime): void
         + pauseFollowUp(reason: String, reviewDate: Date): void
         + resumeFollowUp(): void
         + markUncollectible(reason: String, approval: ApprovalRequest): void
+        + scopeCustomer(): Customer
+        + scopeInvoice(): Invoice [0..1]
     }
 
-    class InvoiceLine <<entity>> $invoicing {
+    class InvoiceLine <<entity>> $core $invoicing #FFF3C9 {
         - description: String
         - quantity: Decimal
         - unitPrice: Money
@@ -374,7 +398,7 @@ package "Domain: invoicing and collection" {
         + taxAmount(): Money
     }
 
-    class IssuedSnapshot <<value>> $invoicing {
+    class IssuedSnapshot <<value>> $core $invoicing {
         - issuerTaxData: String {readOnly}
         - customerTaxData: String {readOnly}
         - lineData: String {readOnly}
@@ -397,7 +421,7 @@ package "Domain: invoicing and collection" {
         + nextNumber(): String
     }
 
-    class Concept <<entity>> $invoicing $customers {
+    class Concept <<entity>> $invoicing $customers #FFF3C9 {
         - name: String
         - defaultPrice: Money
         - active: Boolean
@@ -411,7 +435,7 @@ package "Domain: invoicing and collection" {
         + applyTo(base: Money): Money
     }
 
-    class DeliveryAttempt <<entity>> $invoicing {
+    class DeliveryAttempt <<entity>> $core $invoicing {
         - channel: Channel
         - requestedAt: DateTime
         - status: DeliveryStatus
@@ -419,8 +443,11 @@ package "Domain: invoicing and collection" {
         - templateVersion: Integer
         - providerMessageRef: String [0..1]
         - failureReason: String [0..1]
+        - processedEventIds: Set<String>
         + {static} queue(channel: Channel, recipients: List<Contact>, template: MessageTemplate): DeliveryAttempt
-        + recordObservedResult(status: DeliveryStatus, reason: String [0..1]): void
+        + recordDispatch(receipt: DispatchReceipt): void
+        + matches(evidence: DeliveryEvidence): Boolean
+        + recordObservedResult(evidence: DeliveryEvidence): void
     }
 
     class MessageTemplate <<entity>> $invoicing $governance {
@@ -434,7 +461,7 @@ package "Domain: invoicing and collection" {
         + render(variables: Map<String, String>): OutboundMessage
     }
 
-    class Payment <<entity>> $invoicing {
+    class Payment <<entity>> $core $invoicing #FFF3C9 {
         - amount: Money
         - date: Date
         - reference: String
@@ -452,7 +479,7 @@ package "Domain: invoicing and collection" {
         + recordDiscrepancy(difference: Money): void
     }
 
-    class Reconciliation <<entity>> $invoicing {
+    class Reconciliation <<entity>> $core $invoicing #FFF3C9 {
         - allocatedAmount: Money
         - reconciledAt: DateTime
         - automatic: Boolean
@@ -465,7 +492,7 @@ package "Domain: invoicing and collection" {
         + isActive(): Boolean
     }
 
-    class Reminder <<entity>> $invoicing {
+    class Reminder <<entity>> $core $invoicing #FFF3C9 {
         - type: ReminderType
         - sentAt: DateTime [0..1]
         - scheduledDate: Date
@@ -478,30 +505,40 @@ package "Domain: invoicing and collection" {
         + suppress(reason: String): void
     }
 
-    class BillingIssue <<entity>> $invoicing {
+    class BillingIssue <<entity>> $core $invoicing #FFF3C9 {
         - type: IssueType
         - status: IssueStatus
         - description: String
         - priority: Priority
         - resolution: String [0..1]
         - closedAt: DateTime [0..1]
-        + addComment(author: User, text: String, restricted: Boolean): Comment
         + close(resolution: String): void
+        + scopeCustomer(): Customer
+        + scopeInvoice(): Invoice [0..1]
     }
 
-    class Comment <<entity>> $invoicing {
+    interface AnnotationTarget $core $invoicing {
+        + scopeCustomer(): Customer
+        + scopeInvoice(): Invoice [0..1]
+    }
+
+    class Comment <<entity>> $core $invoicing $governance {
         - text: String
         - restricted: Boolean
         - createdAt: DateTime
+        + {static} create(target: AnnotationTarget, author: User, text: String, restricted: Boolean, mentioned: List<User>): Comment
         + isVisibleTo(user: User): Boolean
+        + notifiableMentions(): List<User>
     }
 
-    class Attachment <<entity>> $invoicing {
+    class Attachment <<entity>> $core $invoicing $governance {
         - documentType: String
         - description: String
         - documentRef: DocumentRef
         - uploadedAt: DateTime
-        + checkLimits(policy: BillingPolicy): ValidationResult
+        + {static} checkLimits(file: DocumentContent, policy: BillingPolicy): ValidationResult
+        + {static} create(target: AnnotationTarget, uploadedBy: User, documentType: String, description: String, documentRef: DocumentRef): Attachment
+        + createDownloadLink(now: DateTime, policy: BillingPolicy): DownloadLink
     }
 
     class AccountingPeriod <<entity>> $invoicing $governance {
@@ -515,7 +552,7 @@ package "Domain: invoicing and collection" {
         + allowsFinancialChange(hasExceptionalAuthority: Boolean): Boolean
         + blockingExceptions(): List<String>
     }
-!if ($VIEW == "all")
+!if ($VIEW == "all" || $VIEW == "core")
 }
 !endif
 
@@ -524,8 +561,10 @@ package "Domain: invoicing and collection" {
 ' ============================================================================
 !if ($VIEW == "all")
 package "Domain: governance and automation" {
+!elseif ($VIEW == "core")
+package "Domain entities" {
 !endif
-    class User <<entity>> $customers $governance {
+    class User <<entity>> $core $customers $governance #FFF3C9 {
         - corporateEmail: String
         - role: Role
         - capabilities: Set<Capability>
@@ -534,6 +573,16 @@ package "Domain: governance and automation" {
         - verified: Boolean
         - failedAttempts: Integer
         - lockedUntil: DateTime [0..1]
+        - savedViews: List<SavedView>
+        - favouriteCustomers: Set<Customer>
+        - recentCustomers: List<Customer> [0..10]
+        - notificationPreferences: List<NotificationPreference>
+        + saveView(view: SavedView): void
+        + setFavourite(customer: Customer, favourite: Boolean): void
+        + recordOpened(customer: Customer): void
+        + setNotificationPreference(eventType: NotificationEvent, channel: NotificationChannel): void
+        + channelFor(eventType: NotificationEvent): NotificationChannel
+        + isAdministrator(): Boolean
         + canLogin(now: DateTime): Boolean
         + verifyPassword(password: String, hasher: PasswordHasher): Boolean
         + registerFailedAttempt(policy: BillingPolicy): void
@@ -573,7 +622,7 @@ package "Domain: governance and automation" {
         + currentProposal(): ProposalSnapshot
     }
 
-    class ApprovalRequest <<entity>> $governance {
+    class ApprovalRequest <<entity>> $core $governance #FFF3C9 {
         - type: ApprovalType
         - status: ApprovalStatus
         - reason: String
@@ -586,7 +635,7 @@ package "Domain: governance and automation" {
         + reassign(substitute: User, reason: String): void
     }
 
-    class ProposalSnapshot <<value>> $governance {
+    class ProposalSnapshot <<value>> $core $governance {
         - version: Integer {readOnly}
         - operation: String {readOnly}
         - values: String {readOnly}
@@ -612,6 +661,15 @@ package "Domain: governance and automation" {
         + {static} create(recipient: User, eventType: NotificationEvent, priority: Priority): Notification
         + markRead(): void
         + markHandled(): void
+    }
+
+    class AlertRule <<entity>> $governance {
+        - condition: AlertCondition
+        - threshold: Decimal
+        - currency: CurrencyCode [0..1]
+        - active: Boolean
+        + validate(): ValidationResult
+        + matches(invoice: Invoice, now: DateTime): Boolean
     }
 
     class AuditEntry <<entity>> $governance {
@@ -640,6 +698,9 @@ package "Domain: governance and automation" {
         - superAdminApprovalThreshold: Money
         - oneOffApprovalThreshold: Money
         - deviationWarningPercent: Decimal
+        - attachmentMaxMegabytes: Integer
+        - attachmentFormats: Set<String>
+        - downloadLinkMinutes: Integer
         - backgroundThreshold: Integer
         - backupIntervalHours: Integer
         + isAuthorisedDomain(email: String): Boolean
@@ -650,7 +711,7 @@ package "Domain: governance and automation" {
         + dueJobs(now: DateTime): List<JobType>
     }
 
-    class AutomationRun <<entity>> $governance {
+    class AutomationRun <<entity>> $core $governance #FFF3C9 {
         - job: JobType
         - startedAt: DateTime
         - itemsProcessed: Integer
@@ -710,117 +771,126 @@ package "Domain: governance and automation" {
         + complete(now: DateTime): void
         + withinRecoveryTarget(): Boolean
     }
-!if ($VIEW == "all")
+!if ($VIEW == "all" || $VIEW == "core")
 }
 !endif
 
 ' ============================================================================
 ' DOMAIN LAYER: ports declared by the domain, implemented by infrastructure
 ' ============================================================================
-!if ($VIEW == "all")
+!if ($VIEW == "all" || $VIEW == "core")
 package "Domain: ports" {
 !endif
-    interface PaymentGateway $application {
+    interface PaymentGateway <<port>> $core $application {
         + queryTransactions(since: DateTime): List<TransactionEvidence>
         + verifyNotification(rawEvent: String): TransactionEvidence
     }
-    interface CommunicationService $application {
+    interface CommunicationService <<port>> $core $application {
         + send(message: OutboundMessage, recipients: List<Contact>, channel: Channel): DispatchReceipt
-        + queryStatus(providerMessageRef: String): DeliveryStatus
+        + verifyDeliveryReport(channel: Channel, rawReport: String): DeliveryEvidence [0..1]
+        + queryStatus(channel: Channel, providerMessageRef: String): DeliveryEvidence [0..1]
     }
-    interface DocumentStorage $application {
+    interface DocumentStorage <<port>> $core $application {
         + store(content: DocumentContent): DocumentRef
         + retrieve(ref: DocumentRef): DocumentContent
         + exists(ref: DocumentRef): Boolean
     }
-    interface PdfRenderer $application {
+    interface PdfRenderer <<port>> $core $application {
         + renderInvoice(snapshot: IssuedSnapshot, number: String): DocumentContent
         + renderReport(output: ReportOutput): DocumentContent
     }
-    interface PasswordHasher $application {
+    interface PasswordHasher <<port>> $application {
         + hash(secret: String): String
         + matches(secret: String, hash: String): Boolean
     }
-    interface AnnualRevenueProvider $application {
+    interface AnnualRevenueProvider <<port>> $application {
         + fetchAnnualRevenue(customer: Customer, year: Integer): Money [0..1]
     }
-    interface BackupEngine $application {
+    interface BackupEngine <<port>> $application {
         + createArchive(scope: String): DocumentRef
         + verifyArchive(ref: DocumentRef): Boolean
         + restoreArchive(ref: DocumentRef, target: String): void
     }
 
-    interface CustomerRepository $application {
+    interface CustomerRepository <<port>> $application {
         + search(query: String, user: User): List<Customer>
         + findByTaxId(taxId: String): List<Customer>
         + findByReference(reference: String): Customer [0..1]
         + save(customer: Customer): Customer
     }
-    interface SubscriptionRepository $application {
+    interface SubscriptionRepository <<port>> $application {
         + findBillable(period: YearMonth): List<Subscription>
         + findDueForReview(year: Integer): List<Subscription>
         + save(subscription: Subscription): Subscription
     }
-    interface InvoiceRepository $application {
+    interface InvoiceRepository <<port>> $core $application {
         + findOpenByReference(reference: String): List<Invoice>
         + findForSubscriptionPeriod(subscription: Subscription, period: YearMonth): Invoice [0..1]
         + findOutstanding(customer: Customer): List<Invoice>
         + findDueForFollowUp(now: DateTime): List<Reminder>
+        + findAttemptByProviderRef(providerMessageRef: String): DeliveryAttempt [0..1]
         + findMatching(filters: ReportFilters): List<Invoice>
         + save(invoice: Invoice): Invoice
     }
-    interface PaymentRepository $application {
+    interface PaymentRepository <<port>> $application {
         + findByProviderTransaction(providerTransactionId: String): Payment [0..1]
         + isEventProcessed(eventId: String): Boolean
         + save(payment: Payment): Payment
     }
-    interface ApprovalRepository $application {
+    interface ApprovalRepository <<port>> $application {
         + findPendingFor(approver: User): List<ApprovalRequest>
         + save(request: ApprovalRequest): ApprovalRequest
     }
-    interface UserRepository $application {
+    interface UserRepository <<port>> $application {
         + findByEmail(corporateEmail: String): User [0..1]
         + findApiClient(credential: String): ApiClient [0..1]
         + save(user: User): User
     }
-    interface IssueRepository $application {
+    interface IssueRepository <<port>> $application {
         + save(issue: BillingIssue): BillingIssue
+        + saveComment(comment: Comment): Comment
+        + saveAttachment(attachment: Attachment): Attachment
+        + findComments(target: AnnotationTarget, viewer: User): List<Comment>
+        + findAttachments(target: AnnotationTarget): List<Attachment>
     }
-    interface WorkRepository $application {
+    interface WorkRepository <<port>> $application {
         + findWorkFor(user: User): List<WorkItem>
+        + searchWork(query: String, filters: SearchFilters, user: User): List<WorkItem>
         + saveTask(task: WorkTask): WorkTask
         + saveNotification(notification: Notification): Notification
+        + saveAlertRule(rule: AlertRule): AlertRule
+        + findActiveAlertRules(): List<AlertRule>
     }
-    interface AuditRepository $application {
+    interface AuditRepository <<port>> $application {
         + append(entry: AuditEntry): void
         + search(action: String, from: DateTime, to: DateTime): List<AuditEntry>
     }
-    interface ConfigurationRepository $application {
+    interface ConfigurationRepository <<port>> $application {
         + currentPolicy(): BillingPolicy
         + savePolicy(policy: BillingPolicy): BillingPolicy
         + activeSeries(type: InvoiceType): InvoiceSeries
         + currentTemplate(type: TemplateType, language: LanguageCode): MessageTemplate
         + saveTemplate(template: MessageTemplate): MessageTemplate
     }
-    interface AccountingPeriodRepository $application {
+    interface AccountingPeriodRepository <<port>> $application {
         + findCovering(date: Date): AccountingPeriod [0..1]
         + save(period: AccountingPeriod): AccountingPeriod
     }
-    interface ReportRepository $application {
+    interface ReportRepository <<port>> $application {
         + saveOutput(output: ReportOutput): ReportOutput
         + saveSchedule(schedule: SummarySchedule): SummarySchedule
     }
-    interface AutomationRunRepository $application {
+    interface AutomationRunRepository <<port>> $application {
         + save(run: AutomationRun): AutomationRun
         + findInterrupted(): List<AutomationRun>
         + latestByJob(): List<AutomationRun>
     }
-    interface BackupRepository $application {
+    interface BackupRepository <<port>> $application {
         + save(backup: Backup): Backup
         + latestValid(): Backup [0..1]
         + saveRecovery(recovery: RecoveryExecution): RecoveryExecution
     }
-!if ($VIEW == "all")
+!if ($VIEW == "all" || $VIEW == "core")
 }
 !endif
 
@@ -845,10 +915,10 @@ package "Infrastructure" {
 ' ============================================================================
 ' SUPPORTING VALUE OBJECTS
 ' ============================================================================
-!if ($VIEW == "all")
+!if ($VIEW == "all" || $VIEW == "core")
 package "Value objects" {
 !endif
-    class Money <<value>> $types {
+    class Money <<value>> $core $types {
         - amount: Decimal
         - currency: CurrencyCode
         + add(other: Money): Money
@@ -865,7 +935,7 @@ package "Value objects" {
         - financialImpact: Money [0..1]
         - version: Integer
     }
-    class InvoiceProposal <<value>> $types {
+    class InvoiceProposal <<value>> $core $types {
         - customer: Customer
         - type: InvoiceType
         - currency: CurrencyCode
@@ -890,7 +960,7 @@ package "Value objects" {
         - paymentTermDays: Integer
         - prorationRequested: Boolean
     }
-    class DebtSnapshot <<value>> $types {
+    class DebtSnapshot <<value>> $core $types {
         - hasObligations: Boolean
         - outstandingByCurrency: List<Money>
         - overdueByCurrency: List<Money>
@@ -902,6 +972,38 @@ package "Value objects" {
         - reference: String
         - summary: String
         - dueDate: Date [0..1]
+    }
+    class SearchFilters <<value>> $types {
+        - location: String [0..1]
+        - businessArea: String [0..1]
+        - tags: Set<String>
+        - status: InvoiceStatus [0..1]
+        - type: InvoiceType [0..1]
+        - from: Date [0..1]
+        - to: Date [0..1]
+    }
+    class SavedView <<value>> $types {
+        - name: String
+        - query: String
+        - filters: SearchFilters
+    }
+    class NotificationPreference <<value>> $types {
+        - eventType: NotificationEvent
+        - channel: NotificationChannel
+    }
+    class DownloadLink <<value>> $types {
+        - token: String
+        - documentRef: DocumentRef
+        - expiresAt: DateTime
+        + isValid(now: DateTime): Boolean
+    }
+    class DeliveryEvidence <<value>> $core $types {
+        - eventId: String
+        - channel: Channel
+        - providerMessageRef: String
+        - status: DeliveryStatus
+        - observedAt: DateTime
+        - failureReason: String [0..1]
     }
     class ReportFilters <<value>> $types {
         - periodKind: PeriodKind
@@ -930,7 +1032,7 @@ package "Value objects" {
         - recentIntegrationFailures: List<String>
         - lastSuccessfulBackup: DateTime [0..1]
     }
-    class TransactionEvidence <<value>> $types {
+    class TransactionEvidence <<value>> $core $types {
         - eventId: String
         - providerTransactionId: String
         - amount: Money
@@ -958,7 +1060,7 @@ package "Value objects" {
         - location: String
         - checksum: String
     }
-!if ($VIEW == "all")
+!if ($VIEW == "all" || $VIEW == "core")
 }
 !endif
 
@@ -1173,6 +1275,17 @@ package "Enumerations" {
         MENTION
         PAUSE_EXPIRING
         AUTOMATION_FAILURE
+        ALERT_RULE_MATCHED
+    }
+    enum NotificationChannel $types {
+        IN_APP
+        EMAIL
+        DAILY_DIGEST
+    }
+    enum AlertCondition $types {
+        INVOICE_OVERDUE_DAYS
+        OUTSTANDING_BALANCE_ABOVE
+        SENDING_FAILED_TIMES
     }
     enum PolicyStatus $types {
         INACTIVE
@@ -1185,6 +1298,8 @@ package "Enumerations" {
         BACKUP
         ANNUAL_REVIEW_TASKS
         FINANCIAL_SUMMARY
+        DAILY_DIGEST
+        ALERT_EVALUATION
     }
     enum RunStatus $types {
         PENDING
@@ -1287,15 +1402,25 @@ Invoice "1" -- "0..*" DeliveryAttempt : sent through
 Reminder "0..1" -- "0..*" DeliveryAttempt : dispatched through
 DeliveryAttempt "0..*" -- "1..*" Contact : sent to
 DeliveryAttempt "0..*" -- "0..1" MessageTemplate : uses
+!if ($VIEW != "core")
 Reconciliation "0..*" -- "0..1" User : allocated by
+!endif
 Invoice "0..*" -- "0..1" AccountingPeriod : belongs to
 Customer "1" -- "0..*" BillingIssue : concerns
+!if ($VIEW != "core")
 BillingIssue "0..*" -- "1" User : owned by
-BillingIssue "1" *-- "0..*" Comment : discussed in
+!endif
+Customer ..|> AnnotationTarget
+Invoice ..|> AnnotationTarget
+BillingIssue ..|> AnnotationTarget
+Comment "0..*" -- "1" AnnotationTarget : written on
+Attachment "0..*" -- "1" AnnotationTarget : attached to
+!if ($VIEW != "core")
 Comment "0..*" -- "1" User : written by
-BillingIssue "0..1" -- "0..*" Attachment : documents
-Customer "0..1" -- "0..*" Attachment : documents
-Invoice "0..1" -- "0..*" Attachment : documents
+Comment "0..*" -- "0..*" User : mentions
+Attachment "0..*" -- "1" User : uploaded by
+!endif
+AlertRule "0..*" -- "1" User : configured by
 
 User "1" *-- "0..*" Session : opens
 User "1" -- "0..*" Delegation : delegates
@@ -1333,7 +1458,7 @@ SystemTimer ..> Scheduler : triggers
 Scheduler ..> InvoicingController : UC-06
 Scheduler ..> CollectionsController : UC-07, UC-08
 Scheduler ..> CustomerSubscriptionController : UC-04 tasks
-Scheduler ..> ReportingOperationsController : UC-12 summaries
+Scheduler ..> ReportingOperationsController : UC-09, UC-12
 Scheduler ..> AuditBackupController : UC-21
 Scheduler ..> ExecutionContext : system identity
 
@@ -1355,6 +1480,7 @@ CollectionsController ..> PaymentGateway
 CollectionsController ..> PaymentRepository
 CollectionsController ..> InvoiceRepository
 CollectionsController ..> IssueRepository
+CollectionsController ..> DocumentStorage
 CollectionsController ..> CommunicationService
 ApprovalController ..> ApprovalRepository
 ReportingOperationsController ..> WorkRepository
@@ -1371,6 +1497,7 @@ AuditBackupController ..> BackupEngine
 ' ============================================================================
 ' LAYOUT ONLY: hidden links arrange the classes in columns; they are not relations
 ' ============================================================================
+!if ($VIEW != "core")
 AccessController -[hidden]down- ApprovalController
 ApprovalController -[hidden]down- CustomerSubscriptionController
 CustomerSubscriptionController -[hidden]down- CollectionsController
@@ -1394,50 +1521,58 @@ PasswordHasher -[hidden]down- InvoiceRepository
 InvoiceRepository -[hidden]down- WorkRepository
 WorkRepository -[hidden]down- AutomationRunRepository
 Money -[hidden]down- CustomerData
-CustomerData -[hidden]down- ReportFilters
-ReportFilters -[hidden]down- OutboundMessage
-ValidationResult -[hidden]down- SubscriptionTerms
-SubscriptionTerms -[hidden]down- FinancialIndicators
-FinancialIndicators -[hidden]down- DispatchReceipt
-Preview -[hidden]down- DebtSnapshot
-DebtSnapshot -[hidden]down- HealthSummary
-HealthSummary -[hidden]down- DocumentContent
-InvoiceProposal -[hidden]down- WorkItem
-WorkItem -[hidden]down- TransactionEvidence
+CustomerData -[hidden]down- SearchFilters
+SearchFilters -[hidden]down- DeliveryEvidence
+DeliveryEvidence -[hidden]down- TransactionEvidence
 TransactionEvidence -[hidden]down- DocumentRef
+ValidationResult -[hidden]down- SubscriptionTerms
+SubscriptionTerms -[hidden]down- SavedView
+SavedView -[hidden]down- ReportFilters
+ReportFilters -[hidden]down- OutboundMessage
+Preview -[hidden]down- DebtSnapshot
+DebtSnapshot -[hidden]down- NotificationPreference
+NotificationPreference -[hidden]down- FinancialIndicators
+FinancialIndicators -[hidden]down- DispatchReceipt
+InvoiceProposal -[hidden]down- WorkItem
+WorkItem -[hidden]down- DownloadLink
+DownloadLink -[hidden]down- HealthSummary
+HealthSummary -[hidden]down- DocumentContent
 Role -[hidden]down- ReviewStatus
 ReviewStatus -[hidden]down- TemplateType
 TemplateType -[hidden]down- PeriodKind
-PeriodKind -[hidden]down- JobType
-JobType -[hidden]down- WorkItemKind
+PeriodKind -[hidden]down- AlertCondition
+AlertCondition -[hidden]down- BackupStatus
 Capability -[hidden]down- CancellationOrigin
 CancellationOrigin -[hidden]down- PaymentSource
 PaymentSource -[hidden]down- PeriodStatus
-PeriodStatus -[hidden]down- RunStatus
+PeriodStatus -[hidden]down- PolicyStatus
+PolicyStatus -[hidden]down- RecoveryStatus
 CustomerStatus -[hidden]down- CancellationStatus
 CancellationStatus -[hidden]down- PaymentStatus
 PaymentStatus -[hidden]down- ApprovalType
-ApprovalType -[hidden]down- ItemOutcome
+ApprovalType -[hidden]down- JobType
+JobType -[hidden]down- WorkItemKind
 ContactRole -[hidden]down- InvoiceType
 InvoiceType -[hidden]down- ReminderType
 ReminderType -[hidden]down- ApprovalStatus
-ApprovalStatus -[hidden]down- ReportType
+ApprovalStatus -[hidden]down- RunStatus
 SubscriptionStatus -[hidden]down- InvoiceStatus
 InvoiceStatus -[hidden]down- ReminderStatus
 ReminderStatus -[hidden]down- TaskType
-TaskType -[hidden]down- ReportStatus
+TaskType -[hidden]down- ItemOutcome
 ExceptionType -[hidden]down- DocumentStage
 DocumentStage -[hidden]down- IssueType
 IssueType -[hidden]down- TaskStatus
-TaskStatus -[hidden]down- SummaryFrequency
+TaskStatus -[hidden]down- ReportType
 ExceptionStatus -[hidden]down- DeliveryStatus
 DeliveryStatus -[hidden]down- IssueStatus
 IssueStatus -[hidden]down- NotificationEvent
-NotificationEvent -[hidden]down- BackupStatus
+NotificationEvent -[hidden]down- ReportStatus
 RevenueSource -[hidden]down- Channel
 Channel -[hidden]down- Priority
-Priority -[hidden]down- PolicyStatus
-PolicyStatus -[hidden]down- RecoveryStatus
+Priority -[hidden]down- NotificationChannel
+NotificationChannel -[hidden]down- SummaryFrequency
+!endif
 
 ' Stacks the groups vertically in the complete view.
 !if ($VIEW == "all")
@@ -1446,6 +1581,44 @@ ReportingOperationsController -[hidden]down- PaymentGateway
 BackupRepository -[hidden]down- Money
 DocumentRef -[hidden]down- Role
 Scheduler -[hidden]down- PaymentProviderAdapter
+!endif
+
+' Core view only: each label names real operations, so the members can stay hidden.
+!if ($VIEW == "core")
+hide members
+show Invoice fields
+show AnnualReview fields
+skinparam nodesep 90
+skinparam ranksep 110
+CustomerSubscriptionController ..> Subscription : confirmSubscription, confirmCancellation
+InvoicingController ..> Invoice : prepareDraft, issueInvoice, correctInvoice
+InvoicingController ..> DeliveryAttempt : sendInvoice, receiveDeliveryReport
+CollectionsController ..> Payment : receivePaymentNotification
+CollectionsController ..> Reconciliation : allocateManually, reverseReconciliation
+CollectionsController ..> BillingIssue : openIssue, resolveIssue
+CollectionsController ..> AnnotationTarget : addComment, addAttachment
+ApprovalController ..> ApprovalRequest : decide
+InvoicingController ..> InvoiceRepository : save
+InvoicingController ..> PdfRenderer : renderInvoice
+InvoicingController ..> DocumentStorage : store
+InvoicingController ..> CommunicationService : send, verifyDeliveryReport
+CollectionsController ..> PaymentGateway : queryTransactions, verifyNotification
+Payment -[hidden]down- PaymentGateway
+DeliveryAttempt -[hidden]down- CommunicationService
+Cancellation -[hidden]down- InvoiceRepository
+PaymentGateway -[hidden]down- Money
+CommunicationService -[hidden]down- DeliveryEvidence
+!endif
+
+!if ($VIEW == "all" || $VIEW == "core")
+legend top right
+  |<#FFF3C9> Main entity |
+  |<#FFFFFF> Supporting entity or contract |
+  |<#D9E4F7> Controller |
+  |<#DDF0E0> Port |
+  |<#F0F0F0> Value object |
+  |<#E2E2E2> Infrastructure |
+endlegend
 !endif
 
 ' ============================================================================
@@ -1467,6 +1640,33 @@ note bottom of Reconciliation
   Same currency as both. reverse() keeps the original
   evidence. Paid status derives from active allocations.
 end note
+
+note left of Invoice
+  **Balance (FR2.8.2, UC-15).** Original and correction count once:
+  outstandingBalance = max(adjustedTotal - allocatedAmount, 0)
+  excessAmount = max(allocatedAmount - adjustedTotal, 0)
+  adjustedTotal adds issued corrections only; allocatedAmount adds
+  active allocations only. A corrective document reports 0 itself.
+  Excess is never a payment or a refund. calculateObligations sums
+  per currency and never converts. The signed form of a correction
+  is a proposal: see the traceability file, section 4.
+end note
+
+note bottom of DeliveryAttempt
+  **Only verified evidence changes the result.** A report enters through
+  receiveDeliveryReport: CommunicationService verifies its origin, the
+  provider reference selects the attempt, matches() checks the channel,
+  and an unverified or unmatched report changes nothing. No operation
+  accepts a status from a caller.
+end note
+
+note top of AnnotationTarget
+  **Exactly one target.** A comment or attachment has one customer,
+  invoice or issue. Scope and permissions come from the target, and
+  an issue's invoice must belong to the issue's customer. Restricted
+  notes are for administrators; mentions notify only users who can
+  see the comment. No operation sends these to a customer.
+end note
 !endif
 
 !if ($VIEW == "all" || $VIEW == "governance")
@@ -1487,13 +1687,16 @@ note bottom of Cancellation
 end note
 !endif
 
-!if ($VIEW == "all" || $VIEW == "application")
+!if ($VIEW == "all" || $VIEW == "application" || $VIEW == "core")
 note top of Scheduler
   Internal application element, never an actor. It holds no
   business rules: it calls the same controllers as users,
   with a system ExecutionContext. Each run is an AutomationRun.
 end note
 
+!endif
+
+!if ($VIEW == "all" || $VIEW == "application")
 note bottom of PaymentGateway
   Only checks payments. No charge or payment-link
   operation: that is out of scope.
@@ -1522,7 +1725,9 @@ remove $invoicing
 remove $governance
 remove $types
 !endif
-!if ($VIEW == "customers")
+!if ($VIEW == "core")
+restore $core
+!elseif ($VIEW == "customers")
 restore $customers
 !elseif ($VIEW == "invoicing")
 restore $invoicing
