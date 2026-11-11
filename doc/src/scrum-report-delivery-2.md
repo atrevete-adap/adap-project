@@ -64,7 +64,7 @@ Responsibilities in Sprint 3 follow the authorship of each Submission 1 artifact
 * **Topic:** Progress of the Sprint 4 design work on its planned end date.
 * **Results:** Only part of the Sprint Goal was done: the domain model (#42, PR #62) and the FR priorities (#38, PR #63) were merged, the architecture (#43, PR #64) was approved but not merged, the class diagram (#45, PR #66) was a draft under review, and the ER diagram (#44) and component diagram (#46) were not started. Instead of carrying the design core over, the team decided to extend Sprint 4 until its goal is met and to close it with the review and retrospective then. The extension lasted the rest of the day: by the evening the design core was merged or approved (see Sprint 4 below), and Sprint 5 was opened. During the meeting the architecture (PR #64) and the use case review follow-ups (PR #65) were merged, and the class diagram (PR #66) was reviewed. Adam opened the component diagram (PR #67) and Víctor and Héctor started the ER diagram. The Sprint 5 goal was proposed: finish and submit Submission 2 once the design core is merged.
 
-**11/11/2026 – [TODO: start and end time]** (Sprint 4 review and retrospective / Sprint 5 planning, Discord call)
+**11/11/2026 – 12:00 to 14:20** (Sprint 4 review and retrospective / Sprint 5 planning, Discord call; it continued the work started in the in-class progress check)
 
 * **Participants:** [TODO: confirm]
 * **Absent:** [TODO: confirm]
@@ -165,7 +165,7 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 ### Sprint 5
 
 * **Start date:** 11/11/2026
-* **End date:** [TODO: delivery date, week of 17/11/2026]
+* **End date:** 17/11/2026 (Submission 2 delivery date)
 * **Sprint Goal:** Finish and submit Submission 2: complete the remaining sequence diagrams, check that all design artifacts are consistent, and deliver the PDFs, Scrum Report, peer evaluation, presentation and submission.
 * **Planned tasks:** #49 reconcile a payment (in review, PR #72), #50 cancellation with debt query, #51 final consistency check, #52 balls method peer evaluation, #53 Scrum Report (closed in this sprint), #54 PDFs in `doc/`, #55 README, #56 slides, #57 rehearsal and #58 submission.
 * **Completed tasks:** [TODO: update at the end of the sprint]
@@ -214,7 +214,7 @@ The Product Backlog table above shows the board after Sprint 4 was closed and Sp
   * **Solution:** The merges were tested locally (no conflicts), and the pull requests were merged once the service recovered, on 04/11/2026 between 11:22 and 11:23.
   * **Status:** Resolved.
 * **Design work not started in Sprint 3.**
-  * **Impact:** About two weeks remain before the delivery (week of 17/11) and no design artifact was in progress at the end of Sprint 3.
+  * **Impact:** About two weeks remain before the delivery (17/11) and no design artifact was in progress at the end of Sprint 3.
   * **Solution:** The design core (domain model, architecture, ER, class and component diagrams) is planned for Sprint 4, and a first draft of the domain model (#42) was prepared on 04/11 so that the ER and class diagrams can start. The whole design core was merged or approved in Sprint 4 after a one-day extension (see Sprint 4).
   * **Status:** Resolved.
 
