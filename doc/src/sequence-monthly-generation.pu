@@ -3,7 +3,8 @@
 ' Sequence diagram for UC-06 "Generate monthly recurring invoices".
 ' Professor's answer in #27: Time is not an actor; the scenario starts from the
 ' Scheduler component of the architecture (architecture.md, component diagram).
-' Lifelines and operations follow the class diagram (PR #66).
+' Lifelines and operations follow the class diagram (PR #66). Kept short on
+' purpose: paused/inactive subscriptions are filtered by findBillable().
 
 skinparam boxPadding 10
 skinparam participantPadding 10
@@ -26,11 +27,7 @@ skinparam note {
     FontColor #000000
 }
 
-title Sequence Diagram - Monthly Invoice Generation (UC-06; FR2.1, FR14, FR14.3)
-
-box "Infrastructure Layer" #F5F7FA
-    participant Timer as "timer : SystemTimer" <<infrastructure>>
-end box
+title Sequence Diagram - Monthly Invoice Generation (UC-06; FR2.1, FR14.3)
 
 box "Application Layer" #EBF0F5
     participant Sched as "scheduler : Scheduler" <<control>>
@@ -43,7 +40,6 @@ box "Domain Layer" #FFFFFF
     participant Sub as "sub : Subscription"
     participant InvRepo as "invoiceRepo : InvoiceRepository" <<interface>>
     participant Inv as "invoice : Invoice"
-    participant Config as "configRepo : ConfigurationRepository" <<interface>>
     participant Pdf as "pdfRenderer : PdfRenderer" <<interface>>
     participant Storage as "storage : DocumentStorage" <<interface>>
     participant Comm as "communication : CommunicationService" <<interface>>
@@ -51,142 +47,78 @@ end box
 
 autonumber "<b>[00]"
 
-== Trigger: first day of the month under the billing policy (UC-13) ==
-
-Timer -> Sched : onTick(now)
+[-> Sched : onTick(now)
 activate Sched
-Sched -> Sched : systemContext(MONTHLY_INVOICING)
 note right of Sched
-  System identity: no interactive
-  staff session is needed.
+  Started by the system timer on the first
+  day of the month (UC-13 policy). Runs with
+  a system identity, not a staff session.
 end note
-Sched -> Ctrl : generateMonthlyInvoices(ctx, period)
+Sched -> Ctrl : generateMonthlyInvoices(period)
 activate Ctrl
 
 create Run
-Ctrl -> Run : <<create>> open(MONTHLY_INVOICING, now)
+Ctrl -> Run : <<create>> open(MONTHLY_INVOICING)
 
 Ctrl -> SubRepo : findBillable(period)
 activate SubRepo
-SubRepo --> Ctrl : return List<Subscription>
+SubRepo --> Ctrl : subscriptions
 deactivate SubRepo
 
 loop for each subscription
-    Ctrl -> Sub : isBillableIn(period)
-    activate Sub
-    Sub --> Ctrl : return Boolean
-    deactivate Sub
+    Ctrl -> InvRepo : findForSubscriptionPeriod(sub, period)
+    activate InvRepo
+    InvRepo --> Ctrl : invoice [0..1]
+    deactivate InvRepo
 
-    alt paused, not yet active or effectively cancelled (2a, 2b, 2c)
-        Ctrl -> Run : recordItem(ref, "selection", SKIPPED, reason)
-        note right of Run
-          Previous debt is not changed.
+    alt already invoiced (FR14.3, no duplicates)
+        Ctrl -> Run : recordItem(sub, SKIPPED)
+    else not invoiced yet
+        Ctrl -> Sub : buildRecurringProposal(period)
+        activate Sub
+        Sub --> Ctrl : proposal
+        deactivate Sub
+
+        create Inv
+        Ctrl -> Inv : <<create>> createDraft(proposal)
+        Ctrl -> Inv : issue(now)
+        activate Inv
+        note right of Inv
+          Validates the draft, assigns the
+          next number and freezes the data.
         end note
-    else billable
-        Ctrl -> InvRepo : findForSubscriptionPeriod(sub, period)
-        activate InvRepo
-        InvRepo --> Ctrl : return Invoice [0..1]
-        deactivate InvRepo
+        Inv --> Ctrl : snapshot
+        deactivate Inv
 
-        alt invoice already exists for this subscription-period (3a, recovery)
-            Ctrl -> Run : recordItem(ref, "issuance", SKIPPED, "already invoiced")
-            note right of Run
-              FR14.3: no duplicate invoice;
-              only missing work is resumed.
-            end note
-        else no invoice yet
-            Ctrl -> Sub : buildRecurringProposal(period)
-            activate Sub
-            Sub --> Ctrl : return InvoiceProposal
-            deactivate Sub
-
-            == UC-05: prepare the draft ==
-            create Inv
-            Ctrl -> Inv : <<create>> createDraft(proposal)
-            Ctrl -> Inv : validateForIssuance()
-            activate Inv
-            Inv --> Ctrl : return ValidationResult
-            deactivate Inv
-
-            alt draft is not valid (3b)
-                Ctrl -> Run : recordItem(ref, "draft", FAILED, messages)
-            else draft is valid
-                == UC-19: issue the invoice ==
-                Ctrl -> Config : activeSeries(RECURRING)
-                activate Config
-                Config --> Ctrl : return InvoiceSeries
-                deactivate Config
-
-                Ctrl -> Inv : issue(series, now)
-                activate Inv
-                note right of Inv
-                  Assigns the next unique number
-                  and freezes the issued data.
-                end note
-                Inv --> Ctrl : return IssuedSnapshot
-                deactivate Inv
-
-                Ctrl -> Pdf : renderInvoice(snapshot, number)
-                activate Pdf
-                Pdf --> Ctrl : return DocumentContent
-                deactivate Pdf
-
-                Ctrl -> Storage : store(content)
-                activate Storage
-                Storage --> Ctrl : return DocumentRef
-                deactivate Storage
-
-                Ctrl -> Inv : attachOriginalDocument(document)
-                Ctrl -> InvRepo : save(invoice)
-
-                == UC-20: send the issued invoice ==
-                Ctrl -> Ctrl : sendInvoice(ctx, invoice)
-                activate Ctrl
-                Ctrl -> Inv : eligibleRecipients(EMAIL)
-                activate Inv
-                Inv --> Ctrl : return List<Contact>
-                deactivate Inv
-                Ctrl -> Comm : send(message, recipients, EMAIL)
-                activate Comm
-                Comm --> Ctrl : return DispatchReceipt
-                deactivate Comm
-                deactivate Ctrl
-
-                Ctrl -> Run : recordItem(ref, "delivery", CREATED)
-            end
+        alt draft not valid
+            Ctrl -> Run : recordItem(sub, FAILED)
+        else issued
+            Ctrl -> Pdf : renderInvoice(snapshot)
+            activate Pdf
+            Pdf --> Ctrl : pdf
+            deactivate Pdf
+            Ctrl -> Storage : store(pdf)
+            activate Storage
+            Storage --> Ctrl : documentRef
+            deactivate Storage
+            Ctrl -> InvRepo : save(invoice)
+            Ctrl -> Comm : send(invoice, pdf, EMAIL)
+            Ctrl -> Run : recordItem(sub, CREATED)
         end
     end
 end
 
-Ctrl -> Run : finish(now)
-note right of Run
-  Status COMPLETED or
-  COMPLETED_WITH_ERRORS,
-  with totals (UC-14).
-end note
-
-opt some items failed
-    Ctrl -> Ctrl : notify responsible staff\n(Notification AUTOMATION_FAILURE, HIGH)
-end
-
-Ctrl --> Sched : return run
+Ctrl -> Run : finish()
+Ctrl --> Sched : run
 deactivate Ctrl
 deactivate Sched
 
-== Recovery after an outage or missed run (1a, FR14.3) ==
-
-Timer -> Sched : resumeInterruptedJobs(now)
-activate Sched
-Sched -> Ctrl : generateMonthlyInvoices(ctx, missedPeriod)
-activate Ctrl
-note over Ctrl, InvRepo
-  Same flow as above. Because each subscription-period is
-  checked with findForSubscriptionPeriod() before creating
-  a draft, invoices already issued are skipped and only the
-  missing ones are generated.
+note over Sched, InvRepo
+  Recovery (1a): after an outage the Scheduler calls
+  generateMonthlyInvoices() again for the missed period.
+  Step [06] skips invoices already issued, so only the
+  missing ones are created. If any item failed, staff
+  are notified (UC-14).
 end note
-Ctrl --> Sched : return run
-deactivate Ctrl
-deactivate Sched
 
 @enduml
