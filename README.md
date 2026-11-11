@@ -49,6 +49,7 @@ This project models and designs an **independent, internal responsive web applic
   - `architecture.md` — Architectural pattern (layered, client-server) and its rationale, the Scheduler, and the components per layer.
   - `class-diagram.pu` and `class-diagram-traceability.md` — UML class diagram (one source, seven views) and its traceability to the use cases.
   - `component-diagram.pu` — UML component diagram of the layered architecture.
+  - `sequence-*.pu` — UML sequence diagrams of the main use case scenarios.
   - `scrum-report.md` — Scrum Report of Submission 1.
   - `img/` — Exported diagram images and GitHub Projects board screenshots.
 - `notes/` — Coordination and review notes; not part of the deliverables.
@@ -70,7 +71,8 @@ Status as of 11/11/2026. Each artifact is tracked as an issue on the project boa
 | Physical Entity-Relationship diagram | `er-diagram.pu` | #44 | In progress |
 | UML class diagram | `class-diagram.pu`, `class-diagram-traceability.md` | #45 | Done |
 | UML component diagram | `component-diagram.pu` | #46 | Done |
-| UML sequence diagrams (issue an invoice, monthly invoice generation, reconcile a payment, cancellation with debt query) | `sequence-*.pu` | #47–#50 | Planned (Sprint 5) |
+| UML sequence diagram: monthly invoice generation | `sequence-monthly-generation.pu` | #48 | Done |
+| UML sequence diagrams: issue an invoice, reconcile a payment, cancellation with debt query | `sequence-*.pu` | #47, #49, #50 | Planned (Sprint 5) |
 | Consistency check across the design artifacts | — | #51 | Planned (Sprint 5) |
 | Scrum Report (Markdown + PDF) | `scrum-report-delivery-2.md` | #53 | In progress (PR #39) |
 
