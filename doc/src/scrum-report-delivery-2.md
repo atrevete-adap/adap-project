@@ -66,8 +66,8 @@ Responsibilities in Sprint 3 follow the authorship of each Submission 1 artifact
 
 **11/11/2026 – 12:00 to 14:20** (Sprint 4 review and retrospective / Sprint 5 planning, Discord call; it continued the work started in the in-class progress check)
 
-* **Participants:** [TODO: confirm]
-* **Absent:** [TODO: confirm]
+* **Participants:** Deniz, Adam, Héctor, Víctor
+* **Absent:** Pablo (his sequence diagram, #47, was taken over by Deniz)
 * **Topic:** Review of the design work merged during the Sprint 4 extension, retrospective, and planning of Sprint 5.
 * **Results:** The Sprint Goal was met: the domain model, architecture, class, component and ER diagrams were merged or approved, and two sequence diagrams (#47, #48) and the first consistency pass (#51) were pulled forward from Sprint 5. The seven design decisions were accepted through the review of PR #70. Sprint 5 was planned with the goal of finishing and submitting Submission 2 (see Section 3).
 
