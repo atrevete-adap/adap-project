@@ -39,6 +39,9 @@ dm = open(os.path.join(src, 'domain-model.pu')).read()
 for c in re.findall(r'^\s*class\s+(\w+)', dm, re.M):
     if c not in types: problems.append(f"[domain] concept {c} missing in class diagram")
 
+# --- component names (a sequence lifeline may be a component of #46)
+comp_names = set(re.findall(r'^\s*component\s+"([^"]+)"', open(os.path.join(src, 'component-diagram.pu')).read(), re.M))
+
 # --- sequence diagrams
 def split_args(s):
     s = s.strip()
@@ -62,7 +65,9 @@ for f in sorted(glob.glob(os.path.join(src, 'sequence-*.pu'))):
         parts[alias] = typ
     for m in re.finditer(r'^\s*(participant|actor)\s+"([^"]+)"\s+as\s+(\w+)', txt, re.M):
         label = m.group(2); parts[m.group(3)] = label.split(':')[-1].strip()
+    actors = set(re.findall(r'^\s*actor\s+(\w+)', txt, re.M))
     for a, t in parts.items():
+        if a in actors or t in comp_names: continue
         if t not in types and not t.endswith('(User)'):
             problems.append(f"[{name}] lifeline {a} : {t} is not a class/interface in the class diagram")
     for ln, line in enumerate(txt.splitlines(), 1):
@@ -72,6 +77,8 @@ for f in sorted(glob.glob(os.path.join(src, 'sequence-*.pu'))):
         t = parts.get(tgt)
         if t is None or t not in types: continue
         ops = types[t]['ops']
+        if op == t:
+            continue  # constructor
         if op not in ops:
             problems.append(f"[{name}:{ln}] {t}.{op} does not exist in the class diagram")
         elif len(split_args(args)) not in ops[op]:
