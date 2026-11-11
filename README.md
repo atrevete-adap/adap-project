@@ -4,7 +4,7 @@
 > **Institution:** E.T.S. de Ingeniería Informática — Universidad de Málaga (UMA)  
 > **Academic Year:** 2026/2027  
 > **Team:** Atrévete  
-> **Current submission:** Submission 2 — System Design (approximate date: week of November 17, 2026, per the Operations Guide; exact date to be confirmed)  
+> **Current submission:** Submission 2 — System Design (delivery date: November 17, 2026)  
 > **Previous submission:** Submission 1 — Requirements Analysis and Use Cases (delivered, week of October 20, 2026)  
 
 ---
@@ -55,12 +55,13 @@ This project models and designs an **independent, internal responsive web applic
 - `notes/` — Coordination and review notes; not part of the deliverables.
 - `scripts/validate-use-cases.cjs` — `node scripts/validate-use-cases.cjs` checks the use case contracts' structure, links and traceability against the requirements.
 - `scripts/validate-class-diagram.cjs` — `node scripts/validate-class-diagram.cjs` checks the class diagram's consistency with the domain model and the use cases.
+- `scripts/check-design-consistency.py` — `python3 scripts/check-design-consistency.py` checks that the class, component and sequence diagrams use the same classes, operations, dependencies and ports.
 - `README.md` — Project overview and documentation index.
 - `.gitignore` — Git ignore rules.
 
 ---
 
-## 4. Submission 2 — System Design (approximate date: week of November 17, 2026)
+## 4. Submission 2 — System Design (delivery date: November 17, 2026)
 
 Status as of 11/11/2026. Each artifact is tracked as an issue on the project board.
 
@@ -68,12 +69,14 @@ Status as of 11/11/2026. Each artifact is tracked as an issue on the project boa
 | :--- | :--- | :--- | :--- |
 | Domain model | `domain-model.pu` | #42 | Done |
 | Architecture pattern and rationale | `architecture.md` | #43 | Done |
-| Physical Entity-Relationship diagram | `er-diagram.pu` | #44 | In progress |
+| Physical Entity-Relationship diagram | `er-diagram.pu` | #44 | In review (PR #73) |
 | UML class diagram | `class-diagram.pu`, `class-diagram-traceability.md` | #45 | Done |
 | UML component diagram | `component-diagram.pu` | #46 | Done |
 | UML sequence diagram: monthly invoice generation | `sequence-monthly-generation.pu` | #48 | Done |
-| UML sequence diagrams: issue an invoice, reconcile a payment, cancellation with debt query | `sequence-*.pu` | #47, #49, #50 | Planned (Sprint 5) |
-| Consistency check across the design artifacts | — | #51 | Planned (Sprint 5) |
+| UML sequence diagram: prepare, issue and send an invoice | `sequence-issue-invoice.pu` | #47 | Done |
+| UML sequence diagram: reconcile a payment | `sequence-reconcile-payment.pu` | #49 | Done |
+| UML sequence diagram: cancellation with debt query | `sequence-*.pu` | #50 | Planned (Sprint 5) |
+| Consistency check across the design artifacts | `scripts/check-design-consistency.py`, decisions in `class-diagram-traceability.md` (section 9) | #51 | In progress |
 | Scrum Report (Markdown + PDF) | `scrum-report-delivery-2.md` | #53 | In progress (PR #39) |
 
 The feedback on Submission 1 that affects the design was applied first, in Sprint 3 (#27–#38): Functional Requirements consolidated into 80 parent FRs with sub-requirements and MoSCoW priorities on the parents, User Requirements in standard format with UR → FR traceability, measurable NFRs, use case diagram notation fixes, and the Time actor replaced by the system Scheduler.
@@ -81,8 +84,8 @@ The feedback on Submission 1 that affects the design was applied first, in Sprin
 | Sprint | Dates | Goal |
 | :--- | :--- | :--- |
 | Sprint 3 | 28/10 – 04/11 | Apply the Submission 1 feedback that the design builds on. |
-| Sprint 4 | 04/11 – TBD (extended on 11/11) | Complete the design core: domain model, architecture, ER, class and component diagrams. |
-| Sprint 5 | TBD | Sequence diagrams, consistency check, PDFs, presentation and submission. |
+| Sprint 4 | 04/11 – 11/11 (extended during 11/11) | Complete the design core: domain model, architecture, ER, class and component diagrams. |
+| Sprint 5 | 11/11 – 17/11 | Sequence diagrams, consistency check, PDFs, presentation and submission. |
 
 ---
 
