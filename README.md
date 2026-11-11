@@ -1,4 +1,4 @@
-# Turbine — Internal Invoicing & Payment Tracking System
+# TurbineH — Internal Invoicing & Payment Tracking System
 
 > **Course:** Application Analysis and Design (Grado en Ingeniería Informática, Plan 2023)  
 > **Institution:** E.T.S. de Ingeniería Informática — Universidad de Málaga (UMA)  
@@ -9,9 +9,9 @@
 ---
 
 ## 1. Project Overview (Case Study)
-**Turbine** is an early-stage Artificial Intelligence startup developing the *Brain Operative System*, an intelligence orchestration platform for enterprises. Currently, Turbine manages its B2B customer subscriptions, one-off services, invoice generation, and payment collection manually.
+**TurbineH** is an early-stage Artificial Intelligence startup developing the *Brain Operative System*, an intelligence orchestration platform for enterprises. Currently, TurbineH manages its B2B customer subscriptions, one-off services, invoice generation, and payment collection manually.
 
-This project models and designs an **independent, internal responsive web application** for Turbine's administrative staff to:
+This project models and designs an **independent, internal responsive web application** for TurbineH's administrative staff to:
 - Register and manage corporate customers and their contact persons (via manual entry or CSV import) with logical deletion policies.
 - Generate and issue standard corporate **PDF invoices** (both **one-off** and **monthly recurring** subscriptions tiered by customer annual revenue) in under one minute.
 - Automate **payment tracking and reconciliation** by querying a payment source and receiving its payment events (Stripe, simulated), with other sources such as Revolut or a bank account addable later.
@@ -44,10 +44,11 @@ This project models and designs an **independent, internal responsive web applic
 - `doc/src/` — Editable source files:
   - `doc/src/requirements.md` (Business, User, Functional & Non-Functional Requirements, plus contradictions and out-of-scope items)
   - `doc/src/use-case-diagram.pu` (PlantUML source for the Use Case Diagram)
-  - `doc/src/use-case-specification.md` (18 Cockburn-style contracts; grouped from 24 and renumbered UC-01 to UC-18, with full FR coverage)
+  - [`doc/src/use-cases/README.md`](doc/src/use-cases/README.md) (contract inventory, shared rules and traceability; one Cockburn-style contract per file). `doc/src/use-case-specification.md` redirects to this index
   - `doc/src/scrum-report.md` (Sprint planning, meetings, board snapshots & risk log)
   - `doc/src/img/` (Board screenshots and exported use case diagram views)
-- `notes/` — Historical coordination and review notes; excluded from the four Submission 1 PDFs.
+- `notes/` — Coordination and review notes, including the [Submission 2 handoff to Adam](notes/delivery2-use-case-handoff.md); excluded from the four Submission 1 PDFs.
+- `scripts/validate-use-cases.cjs` — Run with `node scripts/validate-use-cases.cjs` to check contract structure, links and traceability against the current requirement definitions.
 - `README.md` — Project overview and documentation index.
 - `.gitignore` — Git ignore rules.
 
@@ -60,5 +61,5 @@ This project models and designs an **independent, internal responsive web applic
 | **Milestone 1** | **Environment Setup & Project Management Kickoff:** Designate Scrum Master, initialize public GitHub repo (`doc/` & `doc/src/`), configure GitHub Projects board, and hold Sprint Planning. |
 | **Milestone 2** | **Requirements Elicitation & Documentation:** Analyze client interview notes and document `BR`, `UR`, `FR` (with dependencies), and `NFR` (with quantifiable metrics & verification tests) in `requirements.md`. |
 | **Milestone 3** | **UML Use Case Diagram Modeling:** Identify primary/secondary actors, system boundaries, core use cases, and `<<include>>`/`<<extend>>` relationships in `use-case-diagram.pu`. |
-| **Milestone 4** | **Use Case Specifications & Behavioral Contracts:** Document full Cockburn specifications in `use-case-specification.md` with strict traceability to `FR` and `NFR`. |
+| **Milestone 4** | **Use Case Specifications & Behavioral Contracts:** Document full Cockburn specifications in [`doc/src/use-cases/`](doc/src/use-cases/README.md) with strict traceability to `FR` and `NFR`. |
 | **Milestone 5** | **Sprint Review, Scrum Report & Peer Evaluation:** Hold Sprint Retrospective, compile `scrum-report.md` and all PDFs into `doc/`, complete Balls Method evaluation, and submit `.zip` + Repo URL. |
