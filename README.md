@@ -4,7 +4,7 @@
 > **Institution:** E.T.S. de Ingeniería Informática — Universidad de Málaga (UMA)  
 > **Academic Year:** 2026/2027  
 > **Team:** Atrévete  
-> **Current submission:** Submission 2 — System Design (week of November 17, 2026)  
+> **Current submission:** Submission 2 — System Design (approximate date: week of November 17, 2026, per the Operations Guide; exact date to be confirmed)  
 > **Previous submission:** Submission 1 — Requirements Analysis and Use Cases (delivered, week of October 20, 2026)  
 
 ---
@@ -60,7 +60,7 @@ This project models and designs an **independent, internal responsive web applic
 
 ---
 
-## 4. Submission 2 — System Design (Deadline: Week of November 17, 2026)
+## 4. Submission 2 — System Design (approximate date: week of November 17, 2026)
 
 Status as of 11/11/2026. Each artifact is tracked as an issue on the project board.
 
@@ -76,13 +76,13 @@ Status as of 11/11/2026. Each artifact is tracked as an issue on the project boa
 | Consistency check across the design artifacts | — | #51 | Planned (Sprint 5) |
 | Scrum Report (Markdown + PDF) | `scrum-report-delivery-2.md` | #53 | In progress (PR #39) |
 
-The feedback on Submission 1 that affects the design was applied first, in Sprint 3 (#27–#38): Functional Requirements reduced to sub-requirements with MoSCoW priorities, User Requirements in standard format with UR → FR traceability, measurable NFRs, use case diagram notation fixes, and the Time actor replaced by the system Scheduler.
+The feedback on Submission 1 that affects the design was applied first, in Sprint 3 (#27–#38): Functional Requirements consolidated into 80 parent FRs with sub-requirements and MoSCoW priorities on the parents, User Requirements in standard format with UR → FR traceability, measurable NFRs, use case diagram notation fixes, and the Time actor replaced by the system Scheduler.
 
 | Sprint | Dates | Goal |
 | :--- | :--- | :--- |
 | Sprint 3 | 28/10 – 04/11 | Apply the Submission 1 feedback that the design builds on. |
-| Sprint 4 | 04/11 – extended | Complete the design core: domain model, architecture, ER, class and component diagrams. |
-| Sprint 5 | after Sprint 4 – delivery | Sequence diagrams, consistency check, PDFs, presentation and submission. |
+| Sprint 4 | 04/11 – TBD (extended on 11/11) | Complete the design core: domain model, architecture, ER, class and component diagrams. |
+| Sprint 5 | TBD | Sequence diagrams, consistency check, PDFs, presentation and submission. |
 
 ---
 
