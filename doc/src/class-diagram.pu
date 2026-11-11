@@ -1503,6 +1503,8 @@ CollectionsController ..> InvoiceRepository
 CollectionsController ..> IssueRepository
 CollectionsController ..> DocumentStorage
 CollectionsController ..> CommunicationService
+CollectionsController ..> AuditRepository
+CollectionsController ..> WorkRepository
 ApprovalController ..> ApprovalRepository
 ReportingOperationsController ..> WorkRepository
 ReportingOperationsController ..> ReportRepository
