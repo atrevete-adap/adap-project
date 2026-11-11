@@ -1,0 +1,175 @@
+@startuml sequence-cancellation
+' TurbineH — Internal Invoicing & Payment Tracking System (Submission 2, task #50)
+' Sequence diagram: Recording a subscription cancellation (UC-10), including
+' the outstanding-obligations query (UC-11) and the effects of FR4.1 (C4).
+' Traceability: UC-10.md, UC-11.md, class-diagram.pu (#45) and component-diagram.pu (#46).
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam maxMessageSize 240
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 12
+
+skinparam participant {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam actor {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam sequence {
+    ArrowColor #2B3E6A
+    LifeLineBorderColor #2B3E6A
+    LifeLineBackgroundColor #F5F7FA
+    GroupBorderColor #2B3E6A
+    GroupBackgroundColor #EBF0F5
+    GroupHeaderFontColor #000000
+    ReferenceBorderColor #2B3E6A
+    ReferenceBackgroundColor #FFFFFF
+    ReferenceHeaderBackgroundColor #EBF0F5
+}
+
+title Sequence Diagram — Record Subscription Cancellation (UC-10 with <<include>> UC-11 and FR4.1 / C4)
+
+actor "Administrator" as Admin
+actor "External Application\n(Brain / API client)" as ExtApp
+participant "ctx:ExecutionContext" as Ctx
+participant "custCtrl:CustomerSubscriptionController" as CustCtrl
+participant "repCtrl:ReportingOperationsController" as RepCtrl
+participant "customer:Customer" as Customer
+participant "subscription:Subscription" as Sub
+participant "cancellation:Cancellation" as Canc
+participant "custRepo:CustomerRepository" as CustRepo
+participant "subRepo:SubscriptionRepository" as SubRepo
+
+' ============================================================================
+' 1. CANCELLATION REQUEST INTAKE (UC-10 steps 1-3 & Ext. 1a / FR4, FR4.3)
+' ============================================================================
+group 1. Cancellation Intake (Manual by Admin or Controlled API Intake — UC-10 steps 1-3, Ext. 1a)
+    alt Main Scenario: Manual request by Administrator
+        Admin -> CustCtrl : requestCancellation(ctx, subscription, reason, effectiveDate, CancellationOrigin.INTERNAL)
+    else Extension 1a: Controlled API request by External Application
+        ExtApp -> CustCtrl : requestCancellation(ctx, subscription, reason, effectiveDate, CancellationOrigin.EXTERNAL_API)
+    end
+    activate CustCtrl
+
+    CustCtrl -> Ctx : authorize(Capability.CANCEL_SUBSCRIPTIONS, customer)
+    activate Ctx
+    Ctx --> CustCtrl : void
+    deactivate Ctx
+
+    create Canc
+    CustCtrl -> Canc : <<create>>(requestDate, effectiveDate, reason, origin, CancellationStatus.PENDING)
+
+    CustCtrl -> Customer : changeStatus(CustomerStatus.CANCELLATION_REQUESTED)
+    activate Customer
+    Customer --> CustCtrl : void
+    deactivate Customer
+
+    CustCtrl -> CustRepo : save(customer)
+    activate CustRepo
+    CustRepo --> CustCtrl : customer
+    deactivate CustRepo
+
+    CustCtrl -> SubRepo : save(subscription)
+    activate SubRepo
+    SubRepo --> CustCtrl : subscription
+    deactivate SubRepo
+
+    note right of CustCtrl
+      **FR4.3 & UC-10 step 3:**
+      Intake registers pending cancellation
+      and schedules follow-up for the
+      responsible user.
+    end note
+
+    CustCtrl --> Admin : cancellation
+    deactivate CustCtrl
+end
+
+' ============================================================================
+' 2. INCLUDED USE CASE: UC-11 QUERY OUTSTANDING OBLIGATIONS (UC-10 steps 4-5)
+' ============================================================================
+ref over Admin, RepCtrl, Customer
+  **<<include>> UC-11: Query outstanding obligations through the API**
+  UC-10 Extension 1a (Internal Include): uses authorised internal workflow context.
+end ref
+
+group 2. Execution of <<include>> UC-11 (UC-10 steps 4-5, UC-11 Ext. 1a & 5a)
+    Admin -> RepCtrl : queryObligations(ctx, customer)
+    activate RepCtrl
+
+    RepCtrl -> Ctx : authorize(Capability.CANCEL_SUBSCRIPTIONS, customer)
+    activate Ctx
+    Ctx --> RepCtrl : void
+    deactivate Ctx
+
+    RepCtrl -> Customer : calculateObligations(invoices, now)
+    activate Customer
+    note right of Customer
+      **UC-11 steps 4-5:**
+      Calculates open debt per currency from
+      issued invoices and active reconciliations.
+      Never changes billing or cancellation state.
+    end note
+    Customer --> RepCtrl : debtSnapshot
+    deactivate Customer
+
+    RepCtrl --> Admin : debtSnapshot
+
+    note over Admin
+      **UC-10 step 5 & Ext. 5a (Decision C4):**
+      Administrator inspects obligations and consequences:
+      existing debt does NOT block commercial cancellation.
+    end note
+    deactivate RepCtrl
+end
+
+' ============================================================================
+' 3. CONFIRMATION & BILLING TERMINATION (UC-10 steps 6-9 / FR4.1)
+' ============================================================================
+group 3. Cancellation Confirmation & Effects of FR4.1 (UC-10 steps 6-9, Decision C4)
+    Admin -> CustCtrl : confirmCancellation(ctx, cancellation, effectiveDate)
+    activate CustCtrl
+
+    CustCtrl -> Ctx : authorize(Capability.CANCEL_SUBSCRIPTIONS, customer)
+    activate Ctx
+    Ctx --> CustCtrl : void
+    deactivate Ctx
+
+    CustCtrl -> Canc : confirm(effectiveDate)
+    activate Canc
+    Canc --> CustCtrl : void
+    deactivate Canc
+
+    CustCtrl -> Sub : stopBillingFrom(effectiveDate)
+    activate Sub
+    note right of Sub
+      **FR4.1.1 & FR4.1.2 (Decision C4):**
+      - Sets status so isBillableIn(period) = false
+        from effectiveDate (no new recurring invoices).
+      - Previous invoices and debt are preserved in
+        collection (UC-07, UC-08) until settled.
+    end note
+    Sub --> CustCtrl : void
+    deactivate Sub
+
+    CustCtrl -> SubRepo : save(subscription)
+    activate SubRepo
+    SubRepo --> CustCtrl : subscription
+    deactivate SubRepo
+
+    CustCtrl --> Admin : cancellation
+    deactivate CustCtrl
+end
+
+@enduml
