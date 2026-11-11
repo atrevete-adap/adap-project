@@ -1,0 +1,163 @@
+@startuml domain-model
+' TurbineH — Internal Invoicing & Payment Tracking System (Submission 2, task #42)
+' Domain model: only the core business concepts, their key attributes and
+' associations, derived from the Functional Requirements and the 22 use cases.
+' Supporting data (audit trail, backups, templates, imports, settings,
+' notifications, comments, attachments...) is detailed in the ER diagram (#44)
+' and the class diagram (#45). No types or operations here.
+
+top to bottom direction
+hide circle
+skinparam classAttributeIconSize 0
+hide empty members
+
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam arrow {
+    Color #2B3E6A
+}
+
+class User {
+    corporateEmail
+    role
+}
+
+class Customer {
+    legalName
+    taxId
+    country
+    status
+}
+
+class Contact {
+    name
+    email
+    whatsAppConsent
+}
+
+class Subscription {
+    startDate
+    status
+    agreedRate
+}
+
+class RateTier {
+    minAnnualRevenue
+    maxAnnualRevenue
+    monthlyPrice
+}
+
+class AnnualReview {
+    year
+    annualRevenue
+    status
+}
+
+class Cancellation {
+    requestDate
+    effectiveDate
+}
+
+class Invoice {
+    type
+    number
+    status
+    dueDate
+    total
+}
+
+class InvoiceLine {
+    description
+    quantity
+    unitPrice
+}
+
+class Concept {
+    name
+    defaultPrice
+}
+
+class Payment {
+    amount
+    date
+    reference
+}
+
+class Reminder {
+    type
+    sentAt
+}
+
+class ApprovalRequest {
+    type
+    status
+}
+
+class BillingIssue {
+    type
+    status
+}
+
+class AutomationRun {
+    job
+    startedAt
+    itemsProcessed
+    failures
+}
+
+' --- customers and subscriptions
+User "1" -- "0..*" Customer : is responsible for
+Customer "1..*" -- "0..*" Contact : has
+Customer "1" -- "0..*" Subscription : contracts
+Subscription "0..*" -- "1..*" Concept : bills
+Subscription "1" -- "0..*" AnnualReview : reviewed in
+AnnualReview "0..*" -- "1" RateTier : proposes
+Subscription "0..*" -- "0..1" RateTier : priced by
+Subscription "1" -- "0..1" Cancellation : ended by
+
+' --- invoicing and collection
+Customer "1" -- "0..*" Invoice : is billed with
+Subscription "0..1" -- "0..*" Invoice : generates
+Invoice "1" *-- "1..*" InvoiceLine : contains
+InvoiceLine "0..*" -- "0..1" Concept : based on
+Invoice "0..1" -- "0..*" Invoice : corrected by
+Invoice "0..*" -- "0..*" Payment : settled by
+Invoice "1" -- "0..*" Reminder : followed up by
+Invoice "0..1" -- "0..*" BillingIssue : about
+
+' --- governance
+User "1" -- "0..*" ApprovalRequest : requests
+ApprovalRequest "0..*" -- "0..1" User : decided by
+ApprovalRequest "0..*" -- "0..1" Invoice : about
+
+' --- automation (FR9.2)
+AutomationRun "0..1" -- "0..*" Invoice : generates
+AutomationRun "0..1" -- "0..*" Reminder : sends
+
+note right of Cancellation
+  **FR4.1**: no new invoices from the
+  effective date; previous invoices
+  stay in collection (C4).
+end note
+
+note right of Payment
+  **FR3.1**: an invoice is paid only
+  through the payments reconciled
+  with it.
+end note
+
+note bottom of AutomationRun
+  **FR9.2.1**: each run of the system
+  scheduler (monthly invoices, reminders)
+  is recorded. Time is not an actor (#27).
+end note
+
+@enduml
