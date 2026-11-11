@@ -66,7 +66,7 @@ Status as of 11/11/2026. Each artifact is tracked as an issue on the project boa
 | Architecture pattern and rationale | `architecture.md` | #43 | Done |
 | Physical Entity-Relationship diagram | `er-diagram.pu` | #44 | In progress |
 | UML class diagram | `class-diagram.pu`, `class-diagram-traceability.md` | #45 | In review (PR #66) |
-| UML component diagram | `component-diagram.pu` | #46 | In review (PR #67) |
+| UML component diagram | `component-diagram.pu` | #46 | Done |
 | UML sequence diagrams (issue an invoice, monthly invoice generation, reconcile a payment, cancellation with debt query) | `sequence-*.pu` | #47–#50 | Planned (Sprint 5) |
 | Consistency check across the design artifacts | — | #51 | Planned (Sprint 5) |
 | Scrum Report (Markdown + PDF) | `scrum-report-delivery-2.md` | #53 | In progress (PR #39) |
