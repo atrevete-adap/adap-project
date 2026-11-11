@@ -172,6 +172,8 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 
 ![Sprint 5 planning: Product Backlog table](img/sprint5-planning-product-backlog.png)
 
+The Product Backlog table above shows the board after Sprint 4 was closed and Sprint 5 was planned on 11/11, so it is the same view as the Sprint 4 retrospective table.
+
 ## 4. Issues and Risks
 
 **Sprint 3**
