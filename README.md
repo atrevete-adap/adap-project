@@ -47,10 +47,13 @@ This project models and designs an **independent, internal responsive web applic
   - [`use-cases/`](doc/src/use-cases/README.md) — one Cockburn-style contract per use case (UC-01 to UC-22) with an index and traceability; `use-case-specification.md` redirects to this index.
   - `domain-model.pu` — Domain model: the main concepts of the problem domain, their attributes and associations.
   - `architecture.md` — Architectural pattern (layered, client-server) and its rationale, the Scheduler, and the components per layer.
+  - `class-diagram.pu` and `class-diagram-traceability.md` — UML class diagram (one source, seven views) and its traceability to the use cases.
+  - `component-diagram.pu` — UML component diagram of the layered architecture.
   - `scrum-report.md` — Scrum Report of Submission 1.
   - `img/` — Exported diagram images and GitHub Projects board screenshots.
 - `notes/` — Coordination and review notes; not part of the deliverables.
 - `scripts/validate-use-cases.cjs` — `node scripts/validate-use-cases.cjs` checks the use case contracts' structure, links and traceability against the requirements.
+- `scripts/validate-class-diagram.cjs` — `node scripts/validate-class-diagram.cjs` checks the class diagram's consistency with the domain model and the use cases.
 - `README.md` — Project overview and documentation index.
 - `.gitignore` — Git ignore rules.
 
@@ -65,7 +68,7 @@ Status as of 11/11/2026. Each artifact is tracked as an issue on the project boa
 | Domain model | `domain-model.pu` | #42 | Done |
 | Architecture pattern and rationale | `architecture.md` | #43 | Done |
 | Physical Entity-Relationship diagram | `er-diagram.pu` | #44 | In progress |
-| UML class diagram | `class-diagram.pu`, `class-diagram-traceability.md` | #45 | In review (PR #66) |
+| UML class diagram | `class-diagram.pu`, `class-diagram-traceability.md` | #45 | Done |
 | UML component diagram | `component-diagram.pu` | #46 | Done |
 | UML sequence diagrams (issue an invoice, monthly invoice generation, reconcile a payment, cancellation with debt query) | `sequence-*.pu` | #47–#50 | Planned (Sprint 5) |
 | Consistency check across the design artifacts | — | #51 | Planned (Sprint 5) |
