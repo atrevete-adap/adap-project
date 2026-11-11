@@ -1,0 +1,164 @@
+@startuml sequence-reconcile-payment
+' TurbineH - Submission 2 - Issue #49
+' Scenario: UC-07, validated notification from the simulated payment provider.
+' Based on class-diagram.pu (#45), component-diagram.pu (#46),
+' architecture.md (#43) and use-cases/UC-07.md.
+
+title UC-07 - Reconcile a payment with an invoice
+
+autonumber
+hide footbox
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 18
+skinparam BoxPadding 12
+skinparam responseMessageBelowArrow true
+
+skinparam sequence {
+  ArrowColor #2B3E6A
+  LifeLineBorderColor #2B3E6A
+  ParticipantBorderColor #2B3E6A
+  ParticipantBackgroundColor #FFFFFF
+  GroupBorderColor #2B3E6A
+  GroupBackgroundColor #F5F7FA
+}
+
+actor "Payment Provider\n(simulated)" as Provider
+boundary "REST API\n(notification endpoint)" as API
+control "CollectionsController" as Collections
+participant "PaymentGateway\n(PaymentProviderAdapter)" as Gateway
+database "PaymentRepository" as Payments
+database "InvoiceRepository" as Invoices
+entity "Payment" as PaymentEntity
+entity "Invoice" as InvoiceEntity
+database "AuditRepository" as Audit
+database "WorkRepository" as Work
+
+Provider -> API: send payment notification (rawEvent)
+API -> Collections: receivePaymentNotification(rawEvent)
+activate Collections
+
+Collections -> Gateway: verifyNotification(rawEvent)
+
+alt Invalid, unverified or unsettled notification
+
+  Gateway --> Collections: validation fails
+  Collections --> API: reject (no Payment created)
+  API --> Provider: rejected
+
+else Verified settled transaction evidence
+
+  Gateway --> Collections: evidence: TransactionEvidence
+
+  Collections -> Payments: isEventProcessed(evidence.eventId)
+  Payments --> Collections: processed?
+
+  alt Event already processed
+
+    Collections -> Payments: findByProviderTransaction(evidence.providerTransactionId)
+    Payments --> Collections: previously recorded Payment
+
+    note over Collections,Payments
+      Return the previously recorded outcome;
+      never allocate the same event twice.
+    end note
+
+  else New event
+
+    Collections -> Payments: findByProviderTransaction(evidence.providerTransactionId)
+    Payments --> Collections: existing Payment or none
+
+    alt Transaction already recorded
+
+      note over Collections,Payments
+        A new event for an existing transaction
+        must not create another allocation.
+      end note
+
+    else New transaction
+
+      Collections -> PaymentEntity: fromEvidence(evidence)
+      PaymentEntity --> Collections: payment: Payment
+
+      Collections -> Collections: reconcileAutomatically(systemCtx, payment)
+
+      Collections -> Invoices: findOpenByReference(evidence.reference)
+      Invoices --> Collections: eligible open invoice candidates
+
+      opt Exactly one candidate
+
+        Collections -> PaymentEntity: matchesExactly(invoice)
+        PaymentEntity --> Collections: exactMatch: Boolean
+
+      end
+
+      alt One candidate AND matching reference, amount and currency
+
+        group Atomic allocation and persistence
+
+          Collections -> PaymentEntity: allocateTo(invoice, evidence.amount, true, null, null)
+          PaymentEntity --> Collections: reconciliation: Reconciliation
+
+          Collections -> InvoiceEntity: outstandingBalance()
+          InvoiceEntity --> Collections: remaining balance
+
+          Collections -> InvoiceEntity: refreshPaymentStatus(now)
+
+          Collections -> Payments: save(payment)
+
+          note right of Payments
+            Persist the payment and its Reconciliation
+            together; enforce provider-transaction uniqueness.
+          end note
+
+          Collections -> Invoices: save(invoice)
+
+          Collections -> Audit: append(AuditEntry.record(...))
+
+        end
+
+        note over PaymentEntity,InvoiceEntity
+          Mark PAID only when verified active
+          allocations settle the invoice balance.
+        end note
+
+        Collections -> Work: saveNotification(Notification.create(...))
+
+        note right of Collections: Outcome: automatically reconciled
+
+      else Missing/ambiguous reference or amount/currency mismatch
+
+        opt One candidate, same currency, different amount
+
+          Collections -> PaymentEntity: recordDiscrepancy(difference)
+
+        end
+
+        Collections -> Payments: save(payment)
+
+        note over Payments,Invoices
+          Payment stays PENDING_REVIEW.
+          No invoice is automatically marked PAID.
+          Underpayment/overpayment is retained for review.
+        end note
+
+        Collections -> Audit: append(AuditEntry.record(...))
+
+        Collections -> Work: saveNotification(Notification.create(...))
+
+        note right of Collections: Outcome: pending manual reconciliation
+
+      end
+
+    end
+
+  end
+
+  Collections --> API: recorded Payment / prior outcome
+  API --> Provider: acknowledged
+
+end
+
+deactivate Collections
+
+@enduml
