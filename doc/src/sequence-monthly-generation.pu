@@ -40,9 +40,11 @@ box "Domain Layer" #FFFFFF
     participant Sub as "sub : Subscription"
     participant InvRepo as "invoiceRepo : InvoiceRepository" <<interface>>
     participant Inv as "invoice : Invoice"
+    participant Config as "configRepo : ConfigurationRepository" <<interface>>
     participant Pdf as "pdfRenderer : PdfRenderer" <<interface>>
     participant Storage as "storage : DocumentStorage" <<interface>>
-    participant Comm as "communication : CommunicationService" <<interface>>
+    participant Notif as "alert : Notification"
+    participant RunRepo as "runRepo : AutomationRunRepository" <<interface>>
 end box
 
 autonumber "<b>[00]"
@@ -51,14 +53,14 @@ autonumber "<b>[00]"
 activate Sched
 note right of Sched
   Started by the system timer on the first
-  day of the month (UC-13 policy). Runs with
-  a system identity, not a staff session.
+  day of the month (UC-13 policy). ctx is the
+  system ExecutionContext: no staff session.
 end note
-Sched -> Ctrl : generateMonthlyInvoices(period)
+Sched -> Ctrl : generateMonthlyInvoices(ctx, period)
 activate Ctrl
 
 create Run
-Ctrl -> Run : <<create>> open(MONTHLY_INVOICING)
+Ctrl -> Run : <<create>> open(MONTHLY_INVOICING, now)
 
 Ctrl -> SubRepo : findBillable(period)
 activate SubRepo
@@ -72,7 +74,7 @@ loop for each subscription
     deactivate InvRepo
 
     alt already invoiced (FR14.3, no duplicates)
-        Ctrl -> Run : recordItem(sub, SKIPPED)
+        Ctrl -> Run : recordItem(ref, "issuance", SKIPPED, "already invoiced")
     else not invoiced yet
         Ctrl -> Sub : buildRecurringProposal(period)
         activate Sub
@@ -81,34 +83,54 @@ loop for each subscription
 
         create Inv
         Ctrl -> Inv : <<create>> createDraft(proposal)
-        Ctrl -> Inv : issue(now)
+        Ctrl -> Inv : validateForIssuance()
         activate Inv
-        note right of Inv
-          Validates the draft, assigns the
-          next number and freezes the data.
-        end note
-        Inv --> Ctrl : snapshot
+        Inv --> Ctrl : validation
         deactivate Inv
 
         alt draft not valid
-            Ctrl -> Run : recordItem(sub, FAILED)
-        else issued
-            Ctrl -> Pdf : renderInvoice(snapshot)
+            Ctrl -> Run : recordItem(ref, "draft", FAILED, messages)
+        else draft valid
+            Ctrl -> Config : activeSeries(RECURRING)
+            activate Config
+            Config --> Ctrl : series
+            deactivate Config
+            Ctrl -> Inv : issue(series, now)
+            activate Inv
+            note right of Inv
+              number = series.nextNumber()
+              (FR2.4); issued data is frozen.
+            end note
+            Inv --> Ctrl : snapshot
+            deactivate Inv
+
+            Ctrl -> Pdf : renderInvoice(snapshot, number)
             activate Pdf
-            Pdf --> Ctrl : pdf
+            Pdf --> Ctrl : content
             deactivate Pdf
-            Ctrl -> Storage : store(pdf)
+            Ctrl -> Storage : store(content)
             activate Storage
             Storage --> Ctrl : documentRef
             deactivate Storage
+            Ctrl -> Inv : attachOriginalDocument(document)
             Ctrl -> InvRepo : save(invoice)
-            Ctrl -> Comm : send(invoice, pdf, EMAIL)
-            Ctrl -> Run : recordItem(sub, CREATED)
+            Ctrl -> Ctrl : sendInvoice(ctx, invoice)
+            note right of Ctrl
+              UC-20: email to the
+              eligible recipients.
+            end note
+            Ctrl -> Run : recordItem(ref, "delivery", CREATED)
         end
     end
 end
 
-Ctrl -> Run : finish()
+opt any item failed
+    create Notif
+    Ctrl -> Notif : <<create>> create(staff, AUTOMATION_FAILURE, HIGH)
+end
+
+Ctrl -> Run : finish(now)
+Ctrl -> RunRepo : save(run)
 Ctrl --> Sched : run
 deactivate Ctrl
 deactivate Sched
@@ -117,8 +139,7 @@ note over Sched, InvRepo
   Recovery (1a): after an outage the Scheduler calls
   generateMonthlyInvoices() again for the missed period.
   Step [06] skips invoices already issued, so only the
-  missing ones are created. If any item failed, staff
-  are notified (UC-14).
+  missing ones are created.
 end note
 
 @enduml
