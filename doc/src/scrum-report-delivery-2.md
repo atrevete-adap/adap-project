@@ -62,7 +62,7 @@ Responsibilities in Sprint 3 follow the authorship of each Submission 1 artifact
 * **Participants:** Deniz, Adam, Héctor, Víctor
 * **Absent:** Pablo (informed of the decisions through the team's WhatsApp group)
 * **Topic:** Progress of the Sprint 4 design work on its planned end date.
-* **Results:** Only part of the Sprint Goal was done: the domain model (#42, PR #62) and the FR priorities (#38, PR #63) were merged, the architecture (#43, PR #64) was approved but not merged, the class diagram (#45, PR #66) was a draft under review, and the ER diagram (#44) and component diagram (#46) were not started. Instead of carrying the design core over, the team decided to extend Sprint 4 until its goal is met and to close it with the review and retrospective then. During the meeting the architecture (PR #64) and the use case review follow-ups (PR #65) were merged, and the class diagram (PR #66) was reviewed. Adam opened the component diagram (PR #67) and Víctor and Héctor started the ER diagram. The Sprint 5 goal was proposed: finish and submit Submission 2 once the design core is merged.
+* **Results:** Only part of the Sprint Goal was done: the domain model (#42, PR #62) and the FR priorities (#38, PR #63) were merged, the architecture (#43, PR #64) was approved but not merged, the class diagram (#45, PR #66) was a draft under review, and the ER diagram (#44) and component diagram (#46) were not started. Instead of carrying the design core over, the team decided to extend Sprint 4 until its goal is met and to close it with the review and retrospective then. The extension lasted the rest of the day: by the evening the design core was merged or approved (see Sprint 4 below), and Sprint 5 was opened. During the meeting the architecture (PR #64) and the use case review follow-ups (PR #65) were merged, and the class diagram (PR #66) was reviewed. Adam opened the component diagram (PR #67) and Víctor and Héctor started the ER diagram. The Sprint 5 goal was proposed: finish and submit Submission 2 once the design core is merged.
 
 ### Product Backlog
 
@@ -91,21 +91,21 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | #42 | Design: domain model | Deniz, Héctor | High | design | Sprint 4 | Done (PR #62) | – |
 | #43 | Design: architecture pattern and rationale | Adam | High | design | Sprint 4 | Done (PR #64, merged 11/11) | – |
-| #44 | Design: physical ER diagram | Víctor, Héctor | High | design | Sprint 4 | Todo | #42 |
-| #45 | Design: UML class diagram | Pablo, Deniz | High | design | Sprint 4 | Todo | #42 |
-| #46 | Design: UML component diagram | Adam | High | design | Sprint 4 | Todo | #43 |
-| #47 | Design: sequence diagram – issue an invoice | Pablo | Medium | design | Sprint 5 (planned) | Todo | #45, #46 |
-| #48 | Design: sequence diagram – monthly invoice generation | Adam | Medium | design | Sprint 5 (planned) | Todo | #43, #45, #46 |
-| #49 | Design: sequence diagram – reconcile a payment | Víctor | Medium | design | Sprint 5 (planned) | Todo | #45, #46 |
-| #50 | Design: sequence diagram – cancellation with debt query | Héctor | Medium | design | Sprint 5 (planned) | Todo | #45, #46 |
-| #51 | Design: consistency check across design artifacts | Deniz | Medium | design, review | Sprint 5 (planned) | Todo | #44–#50 |
-| #52 | Balls method peer evaluation – Submission 2 | All members | High | scrum | Sprint 5 (planned) | Todo | – |
+| #44 | Design: physical ER diagram | Víctor, Héctor | High | design | Sprint 4 | In review (PR #73, approved; image pending) | #42 |
+| #45 | Design: UML class diagram | Pablo, Deniz | High | design | Sprint 4 | Done (PR #66) | #42 |
+| #46 | Design: UML component diagram | Adam | High | design | Sprint 4 | Done (PR #67) | #43 |
+| #47 | Design: sequence diagram – issue an invoice | Deniz (taken over from Pablo) | Medium | design | Sprint 4 (pulled forward) | Done (PR #71) | #45, #46 |
+| #48 | Design: sequence diagram – monthly invoice generation | Adam | Medium | design | Sprint 4 (pulled forward) | Done (PR #69) | #43, #45, #46 |
+| #49 | Design: sequence diagram – reconcile a payment | Víctor | Medium | design | Sprint 5 | In review (PR #72) | #45, #46 |
+| #50 | Design: sequence diagram – cancellation with debt query | Héctor | Medium | design | Sprint 5 | Todo | #45, #46 |
+| #51 | Design: consistency check across design artifacts | Deniz | Medium | design, review | Sprint 5 | In progress (first pass in PR #70) | #44–#50 |
+| #52 | Balls method peer evaluation – Submission 2 | All members | High | scrum | Sprint 5 | Todo | – |
 | #53 | Scrum Report – Submission 2 | Deniz | High | scrum | All sprints | In progress (PR #39) | – |
-| #54 | Export Submission 2 artifacts to PDF in doc/ | Adam | Medium | scrum | Sprint 5 (planned) | Todo | #51 |
-| #55 | Update README for Submission 2 | Deniz | Low | scrum | Sprint 5 (planned) | Todo | #54 |
-| #56 | Presentation – Submission 2 slides | All members | Medium | scrum | Sprint 5 (planned) | Todo | – |
-| #57 | Presentation – rehearsal with timer | All members | Medium | scrum | Sprint 5 (planned) | Todo | #56 |
-| #58 | Submit .zip + repo URL to Campus Virtual – Submission 2 | Deniz | High | scrum | Sprint 5 (planned) | Todo | #54, #55, #53 |
+| #54 | Export Submission 2 artifacts to PDF in doc/ | Adam | Medium | scrum | Sprint 5 | Todo | #51 |
+| #55 | Update README for Submission 2 | Deniz | Low | scrum | Sprint 5 | In progress (first update in PR #68) | #54 |
+| #56 | Presentation – Submission 2 slides | All members | Medium | scrum | Sprint 5 | Todo | – |
+| #57 | Presentation – rehearsal with timer | All members | Medium | scrum | Sprint 5 | Todo | #56 |
+| #58 | Submit .zip + repo URL to Campus Virtual – Submission 2 | Deniz | High | scrum | Sprint 5 | Todo | #54, #55, #53 |
 
 ## 3. Sprints Performed
 
@@ -135,13 +135,13 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 ### Sprint 4
 
 * **Start date:** 04/11/2026
-* **End date:** 11/11/2026 (planned), extended on 11/11 until the Sprint Goal is met: [TODO: actual end date]
+* **End date:** 11/11/2026 (planned date kept: the extension decided in the progress check lasted the rest of the day)
 * **Sprint Goal:** Complete the design core of Submission 2: domain model, architecture pattern, physical ER diagram, class diagram and component diagram.
 * **Planned tasks:** #42 domain model, #43 architecture pattern and rationale, #44 physical ER diagram, #45 class diagram, #46 component diagram, and #38 FR priorities (carried over from Sprint 3). The Scrum Report (#53) continues across all sprints.
-* **Completed tasks:** [TODO: update at the end of the sprint]
-* **Meetings held:** 04/11/2026 (11:15 to 11:30, planning) and 11/11/2026 (12:00 to 12:15, progress check). [TODO: + closing meeting]. See Section 2.
-* **Issues encountered:** By the planned end date (11/11) only two of the six planned tasks were merged and nothing had reached `main` since 04/11. The architecture pull request (#64) had been approved on 04/11 but not merged, which kept the component diagram (#46) waiting; the ER diagram (#44) had no pull request; PR #65 had no reviewer assigned. [TODO: complete at the end of the sprint]
-* **Solutions applied:** In the 11/11 progress check the team extended Sprint 4 until the design core is merged, instead of starting Sprint 5 with unfinished work. [TODO: complete at the end of the sprint]
+* **Completed tasks:** #38 FR priorities (PR #63), #42 domain model (PR #62), #43 architecture (PR #64), #45 class diagram (PR #66), #46 component diagram (PR #67) and #44 physical ER diagram (PR #73, approved; its image is added before merging). Pulled forward from Sprint 5 during the extension: #48 monthly generation sequence diagram (PR #69), #47 issue an invoice sequence diagram (PR #71, taken over by Deniz while Pablo was absent), the first pass of the consistency check #51 (PR #70: six cross-diagram fixes and the seven design decisions) and the first README update for Submission 2 (#55, PR #68).
+* **Meetings held:** 04/11/2026 (11:15 to 11:30, planning) and 11/11/2026 (12:00 to 12:15, progress check). [TODO: when and how the Sprint 4 review and retrospective were held]. See Section 2.
+* **Issues encountered:** By the planned end date (11/11) only two of the six planned tasks were merged and nothing had reached `main` since 04/11. The architecture pull request (#64) had been approved on 04/11 but not merged, which kept the component diagram (#46) waiting; the ER diagram (#44) had no pull request; PR #65 had no reviewer assigned. During the extension, the reviews found inconsistencies between diagrams made by different members (missing dependencies, adapters and ports, cardinalities that did not match nullable foreign keys), Pablo was absent, and not every member could render PlantUML images.
+* **Solutions applied:** In the 11/11 progress check the team extended Sprint 4 until the design core is merged, instead of starting Sprint 5 with unfinished work. Each pull request was reviewed against the class diagram before merging, and approved pull requests were merged at once. A consistency script (`scripts/check-design-consistency.py`) now checks lifelines, messages, dependencies and ports automatically. The open design questions were recorded as seven design decisions and accepted through the review of PR #70, which changed one of them (decision 4). Pablo's sequence diagram was taken over by Deniz, and Adam rendered the images for the members who could not.
 
 #### Board Status at Sprint Planning
 
@@ -151,7 +151,26 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 
 #### Board Status at Sprint Retrospective
 
-[TODO: insert board screenshots at the end of Sprint 4]
+![Sprint 4 retrospective: Sprint Backlog board](img/sprint4-retrospective-board.png)
+
+![Sprint 4 retrospective: Product Backlog table](img/sprint4-retrospective-product-backlog.png)
+
+### Sprint 5
+
+* **Start date:** 11/11/2026
+* **End date:** [TODO: delivery date, week of 17/11/2026]
+* **Sprint Goal:** Finish and submit Submission 2: complete the remaining sequence diagrams, check that all design artifacts are consistent, and deliver the PDFs, Scrum Report, peer evaluation, presentation and submission.
+* **Planned tasks:** #49 reconcile a payment (in review, PR #72), #50 cancellation with debt query, #51 final consistency check, #52 balls method peer evaluation, #53 Scrum Report (closed in this sprint), #54 PDFs in `doc/`, #55 README, #56 slides, #57 rehearsal and #58 submission.
+* **Completed tasks:** [TODO: update at the end of the sprint]
+* **Meetings held:** [TODO]. See Section 2.
+* **Issues encountered:** [TODO: complete during the sprint]
+* **Solutions applied:** [TODO: complete during the sprint]
+
+#### Board Status at Sprint Planning
+
+![Sprint 5 planning: Sprint Backlog board](img/sprint5-planning-board.png)
+
+![Sprint 5 planning: Product Backlog table](img/sprint5-planning-product-backlog.png)
 
 ## 4. Issues and Risks
 
@@ -187,8 +206,27 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
   * **Status:** Resolved.
 * **Design work not started in Sprint 3.**
   * **Impact:** About two weeks remain before the delivery (week of 17/11) and no design artifact was in progress at the end of Sprint 3.
-  * **Solution:** The design core (domain model, architecture, ER, class and component diagrams) is planned for Sprint 4, and a first draft of the domain model (#42) was prepared on 04/11 so that the ER and class diagrams can start.
-  * **Status:** Pending.
+  * **Solution:** The design core (domain model, architecture, ER, class and component diagrams) is planned for Sprint 4, and a first draft of the domain model (#42) was prepared on 04/11 so that the ER and class diagrams can start. The whole design core was merged or approved in Sprint 4 after a one-day extension (see Sprint 4).
+  * **Status:** Resolved.
+
+**Sprint 4**
+
+* **Sprint Goal not met on the planned date.**
+  * **Impact:** On 11/11 only two of the six planned tasks were merged; the ER (#44) and component (#46) diagrams had not started and the architecture (#64) was approved but not merged.
+  * **Solution:** Sprint 4 was extended for the rest of the day; approved pull requests were merged at once and the remaining diagrams were reviewed as soon as they were opened.
+  * **Status:** Resolved.
+* **Inconsistencies between diagrams made by different members.**
+  * **Impact:** The sequence, component and ER diagrams used dependencies, ports and cardinalities that did not match the class diagram, which the teaching staff checks (Operations Guide 2.2).
+  * **Solution:** Consistency check #51 with `scripts/check-design-consistency.py`, run on every design pull request; the open design questions recorded as seven decisions in `class-diagram-traceability.md`.
+  * **Status:** Mitigated (final check in Sprint 5).
+* **Absence of a member during the extension.**
+  * **Impact:** Pablo's sequence diagram (#47) was blocking Sprint 5.
+  * **Solution:** Deniz took it over (PR #71) so that Sprint 5 could start on time.
+  * **Status:** Resolved.
+* **Not every member can render PlantUML.**
+  * **Impact:** Pull requests without images cannot be reviewed visually or exported to PDF.
+  * **Solution:** Adam renders the images on request; the PDF export (#54) is prepared as a script.
+  * **Status:** Mitigated.
 
 ## 5. Final Assessment
 
