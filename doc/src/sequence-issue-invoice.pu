@@ -1,0 +1,249 @@
+@startuml sequence-issue-invoice
+' TurbineH — Internal Invoicing & Payment Tracking System (Submission 2, task #47)
+' Sequence diagram for preparing, issuing and sending a one-off invoice:
+' UC-05 (prepare the draft) -> UC-19 (issue) -> UC-20 (send).
+' Lifelines are the Web UI component (#46) and classes of the class diagram (#45);
+' every message is an operation of its target with the same parameters.
+' Follows the course examples: actor + <<boundary>> view + <<control>> controller,
+' layer boxes and "== Step ==" separators.
+
+skinparam boxPadding 10
+skinparam participantPadding 8
+skinparam shadowing false
+hide footbox
+
+skinparam participant {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam actor {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+}
+skinparam ArrowColor #2B3E6A
+skinparam sequence {
+    LifeLineBorderColor #2B3E6A
+    GroupBorderColor #2B3E6A
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+
+title Sequence Diagram - Prepare, Issue and Send an Invoice (UC-05, UC-19, UC-20; FR2.3, FR2.4, FR2.6, FR2.7)
+
+actor User as "Operational User"
+
+box "Presentation Layer" #F5F7FA
+    participant UI as "webUI : Web UI" <<boundary>>
+end box
+
+box "Application Layer" #EBF0F5
+    participant Ctrl as "invoicingCtrl : InvoicingController" <<control>>
+end box
+
+box "Domain Layer" #FFFFFF
+    participant Inv as "invoice : Invoice"
+    participant Series as "series : InvoiceSeries"
+    participant Period as "period : AccountingPeriod"
+    participant Doc as "document : InvoiceDocument"
+    participant Tpl as "template : MessageTemplate"
+    participant Att as "attempt : DeliveryAttempt"
+    participant InvRepo as "invoiceRepo : InvoiceRepository" <<interface>>
+    participant Config as "configRepo : ConfigurationRepository" <<interface>>
+    participant PeriodRepo as "periodRepo : AccountingPeriodRepository" <<interface>>
+    participant AuditRepo as "auditRepo : AuditRepository" <<interface>>
+    participant Pdf as "pdfRenderer : PdfRenderer" <<interface>>
+    participant Storage as "storage : DocumentStorage" <<interface>>
+    participant Comm as "communication : CommunicationService" <<interface>>
+end box
+
+autonumber "<b>[00]"
+
+== Step 1: Prepare the draft (UC-05) ==
+
+User -> UI : selects customer and one-off invoice
+activate UI
+UI -> Ctrl : offerDraftDefaults(ctx, customer, ONE_OFF)
+activate Ctrl
+note right of Ctrl
+  Every controller operation first runs
+  ctx.authorize(capability, customer):
+  role, customer scope and separation
+  of duties (FR6.2, BR-04).
+end note
+Ctrl --> UI : proposal
+deactivate Ctrl
+
+User -> UI : enters lines, quantities, prices, discounts and taxes
+UI -> Ctrl : prepareDraft(ctx, proposal)
+activate Ctrl
+create Inv
+Ctrl -> Inv : <<create>> createDraft(proposal)
+Ctrl -> Inv : recalculateTotal()
+activate Inv
+Inv --> Ctrl : total
+deactivate Inv
+Ctrl -> Inv : calculateDueDate(paymentTermDays)
+activate Inv
+Inv --> Ctrl : dueDate
+deactivate Inv
+Ctrl --> UI : draft
+deactivate Ctrl
+
+UI -> Ctrl : previewDraft(ctx, draft)
+activate Ctrl
+Ctrl --> UI : preview
+deactivate Ctrl
+UI --> User : shows totals, taxes and due date
+
+User -> UI : confirms the draft
+UI -> Ctrl : saveDraft(ctx, draft, expectedVersion)
+activate Ctrl
+Ctrl -> InvRepo : save(invoice)
+activate InvRepo
+InvRepo --> Ctrl : invoice
+deactivate InvRepo
+note right of Ctrl
+  expectedVersion rejects conflicting
+  edits. A draft has no number yet.
+end note
+Ctrl --> UI : draft
+deactivate Ctrl
+
+== Step 2: Issue the invoice (UC-19) ==
+
+User -> UI : requests issuance
+UI -> Ctrl : previewIssuance(ctx, draft)
+activate Ctrl
+Ctrl -> Inv : validateForIssuance()
+activate Inv
+Inv --> Ctrl : validation
+deactivate Inv
+Ctrl -> Config : currentPolicy()
+activate Config
+Config --> Ctrl : policy
+deactivate Config
+Ctrl -> Inv : requiresApproval(policy)
+activate Inv
+Inv --> Ctrl : approvalRequired
+deactivate Inv
+opt approvalRequired
+    Ctrl -> Inv : hasCurrentApproval()
+    activate Inv
+    Inv --> Ctrl : approved
+    deactivate Inv
+end
+Ctrl -> PeriodRepo : findCovering(issueDate)
+activate PeriodRepo
+PeriodRepo --> Ctrl : period
+deactivate PeriodRepo
+Ctrl -> Period : allowsFinancialChange(false)
+activate Period
+Period --> Ctrl : open
+deactivate Period
+Ctrl --> UI : preview
+deactivate Ctrl
+
+alt invalid data, missing approval or closed period
+    UI --> User : shows why issuance is blocked
+    note right of User
+      Missing approval -> UC-17.
+      Closed period -> UC-18.
+      The draft stays unnumbered.
+    end note
+else ready to issue
+    User -> UI : confirms issuance
+    UI -> Ctrl : issueInvoice(ctx, draft, draftVersion)
+    activate Ctrl
+    Ctrl -> Inv : isCurrentDraft(draftVersion)
+    activate Inv
+    Inv --> Ctrl : true
+    deactivate Inv
+    Ctrl -> Config : activeSeries(ONE_OFF)
+    activate Config
+    Config --> Ctrl : series
+    deactivate Config
+    Ctrl -> Inv : issue(series, now)
+    activate Inv
+    Inv -> Series : nextNumber()
+    activate Series
+    Series --> Inv : number
+    deactivate Series
+    note right of Inv
+      The only operation that assigns
+      a number (FR2.4). The issued data
+      is frozen in the snapshot.
+    end note
+    Inv --> Ctrl : snapshot
+    deactivate Inv
+
+    Ctrl -> Pdf : renderInvoice(snapshot, number)
+    activate Pdf
+    Pdf --> Ctrl : content
+    deactivate Pdf
+    Ctrl -> Storage : store(content)
+    activate Storage
+    Storage --> Ctrl : documentRef
+    deactivate Storage
+    create Doc
+    Ctrl -> Doc : <<create>> InvoiceDocument(documentRef)
+    Ctrl -> Inv : attachOriginalDocument(document)
+    Ctrl -> InvRepo : save(invoice)
+    activate InvRepo
+    InvRepo --> Ctrl : invoice
+    deactivate InvRepo
+    Ctrl -> AuditRepo : append(entry)
+    note right of AuditRepo
+      entry = AuditEntry.record(...):
+      who issued which number (NFR-05).
+    end note
+
+    == Step 3: Send the invoice (UC-20) ==
+
+    Ctrl -> Ctrl : sendInvoice(ctx, invoice)
+    activate Ctrl
+    Ctrl -> Storage : exists(documentRef)
+    activate Storage
+    Storage --> Ctrl : true
+    deactivate Storage
+    Ctrl -> Inv : eligibleRecipients(EMAIL)
+    activate Inv
+    Inv --> Ctrl : recipients
+    deactivate Inv
+    Ctrl -> Config : currentTemplate(INVOICE_EMAIL, language)
+    activate Config
+    Config --> Ctrl : template
+    deactivate Config
+    Ctrl -> Tpl : render(variables)
+    activate Tpl
+    Tpl --> Ctrl : message
+    deactivate Tpl
+    create Att
+    Ctrl -> Att : <<create>> queue(EMAIL, recipients, template)
+    Ctrl -> Comm : send(message, recipients, EMAIL)
+    activate Comm
+    Comm --> Ctrl : receipt
+    deactivate Comm
+    Ctrl -> Att : recordDispatch(receipt)
+    Ctrl -> InvRepo : save(invoice)
+    activate InvRepo
+    InvRepo --> Ctrl : invoice
+    deactivate InvRepo
+    deactivate Ctrl
+
+    Ctrl --> UI : issued invoice
+    deactivate Ctrl
+    UI --> User : shows number, PDF and delivery status
+end
+deactivate UI
+
+note over Ctrl, Comm
+  The final result (delivered or failed) arrives later from the provider through
+  receiveDeliveryReport (UC-20 steps 7-8). A failed sending never changes the
+  issued invoice or its number (FR2.7.4); the invoice can be resent (FR2.7.5).
+end note
+
+@enduml
