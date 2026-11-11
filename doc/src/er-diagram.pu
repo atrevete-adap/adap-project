@@ -1,0 +1,728 @@
+@startuml er-diagram
+' TurbineH — Internal Invoicing & Payment Tracking System (Submission 2, task #44)
+' Physical Entity-Relationship Diagram: database schema representing physical
+' tables, exact SQL data types, primary keys [PK], foreign keys [FK], unique
+' constraints, Crow's Foot notation, and resolved N:M junction tables.
+' Derived from the Functional Requirements, the 22 use cases, and the approved
+' domain model (#42). Structural class definitions are in #45.
+
+top to bottom direction
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam arrow {
+    Color #2B3E6A
+}
+
+' ============================================================================
+' 1. USERS, ACCESS & DELEGATION (FR6)
+' ============================================================================
+
+entity "users" as users {
+    *user_id : INT [PK]
+    --
+    *corporate_email : VARCHAR[255] [UNIQUE]
+    *password_hash : VARCHAR[255]
+    *role : VARCHAR[30]
+    *active : BOOLEAN
+    *verified : BOOLEAN
+    *failed_attempts : INT
+    locked_until : TIMESTAMP
+}
+
+entity "sessions" as sessions {
+    *session_id : INT [PK]
+    --
+    *user_id : INT [FK]
+    *token_hash : VARCHAR[255] [UNIQUE]
+    *started_at : TIMESTAMP
+    *last_activity_at : TIMESTAMP
+    *invalidated : BOOLEAN
+}
+
+entity "delegations" as delegations {
+    *delegation_id : INT [PK]
+    --
+    *from_user_id : INT [FK]
+    *to_user_id : INT [FK]
+    *start_date : DATE
+    *end_date : DATE
+}
+
+entity "api_clients" as api_clients {
+    *api_client_id : INT [PK]
+    --
+    *name : VARCHAR[100]
+    *credential_hash : VARCHAR[255] [UNIQUE]
+    *scopes : VARCHAR[255]
+    *calls_per_minute : INT
+    *active : BOOLEAN
+}
+
+' ============================================================================
+' 2. CUSTOMERS & SUBSCRIPTIONS (FR1, FR4, FR5, FR10)
+' ============================================================================
+
+entity "customers" as customers {
+    *customer_id : INT [PK]
+    --
+    *responsible_user_id : INT [FK]
+    *trading_name : VARCHAR[200]
+    *legal_name : VARCHAR[200]
+    *tax_id : VARCHAR[50]
+    *tax_address : VARCHAR[300]
+    *country : CHAR[2]
+    *working_currency : CHAR[3]
+    *status : VARCHAR[40]
+    business_area : VARCHAR[100]
+    *version : INT
+}
+
+entity "customer_tags" as customer_tags {
+    *customer_id : INT [PK, FK]
+    *tag : VARCHAR[50] [PK]
+}
+
+entity "contacts" as contacts {
+    *contact_id : INT [PK]
+    --
+    *name : VARCHAR[150]
+    *email : VARCHAR[255]
+    phone : VARCHAR[30]
+    *whatsapp_consent : BOOLEAN
+    *preferred_language : CHAR[2]
+    *active : BOOLEAN
+}
+
+entity "customer_contacts" as customer_contacts {
+    *customer_id : INT [PK, FK]
+    *contact_id : INT [PK, FK]
+    --
+    *role : VARCHAR[40]
+}
+
+entity "customer_imports" as customer_imports {
+    *import_id : INT [PK]
+    --
+    *user_id : INT [FK]
+    *file_name : VARCHAR[255]
+    *imported_at : TIMESTAMP
+    *created_rows : INT
+    *updated_rows : INT
+    *rejected_rows : INT
+    *row_outcomes : TEXT
+}
+
+entity "rate_tiers" as rate_tiers {
+    *rate_tier_id : INT [PK]
+    --
+    *min_annual_revenue : DECIMAL[14,2]
+    *max_annual_revenue : DECIMAL[14,2]
+    *monthly_price : DECIMAL[12,2]
+    *currency : CHAR[3]
+}
+
+entity "subscriptions" as subscriptions {
+    *subscription_id : INT [PK]
+    --
+    *customer_id : INT [FK]
+    rate_tier_id : INT [FK]
+    *start_date : DATE
+    *billing_start_date : DATE
+    *status : VARCHAR[30]
+    *agreed_rate : DECIMAL[12,2]
+    *currency : CHAR[3]
+    *payment_term_days : INT
+    *proration_requested : BOOLEAN
+}
+
+entity "subscription_pauses" as subscription_pauses {
+    *pause_id : INT [PK]
+    --
+    *subscription_id : INT [FK]
+    *reason : VARCHAR[500]
+    *start_date : DATE
+    reactivation_date : DATE
+}
+
+entity "commercial_exceptions" as commercial_exceptions {
+    *exception_id : INT [PK]
+    --
+    *subscription_id : INT [FK]
+    *exception_type : VARCHAR[40]
+    *value : DECIMAL[10,2]
+    *start_date : DATE
+    *end_date : DATE
+    *status : VARCHAR[30]
+    *proposal_version : INT
+}
+
+entity "annual_reviews" as annual_reviews {
+    *annual_review_id : INT [PK]
+    --
+    *subscription_id : INT [FK]
+    *proposed_rate_tier_id : INT [FK]
+    *review_year : INT
+    annual_revenue : DECIMAL[14,2]
+    revenue_source : VARCHAR[30]
+    revenue_date : DATE
+    *status : VARCHAR[30]
+    effective_date : DATE
+    *previous_price : DECIMAL[12,2]
+    new_price : DECIMAL[12,2]
+    *proposal_version : INT
+}
+
+entity "cancellations" as cancellations {
+    *cancellation_id : INT [PK]
+    --
+    *subscription_id : INT [FK, UNIQUE]
+    *request_date : DATE
+    *effective_date : DATE
+    *reason : VARCHAR[500]
+    *origin : VARCHAR[30]
+    *status : VARCHAR[30]
+}
+
+' ============================================================================
+' 3. CATALOGUE, TAXES & INVOICING (FR2, FR13)
+' ============================================================================
+
+entity "taxes" as taxes {
+    *tax_id : INT [PK]
+    --
+    *name : VARCHAR[100]
+    *rate : DECIMAL[5,4]
+    *active : BOOLEAN
+}
+
+entity "concepts" as concepts {
+    *concept_id : INT [PK]
+    --
+    tax_id : INT [FK]
+    *name : VARCHAR[150]
+    *default_price : DECIMAL[12,2]
+    *currency : CHAR[3]
+    *active : BOOLEAN
+}
+
+entity "subscription_concepts" as subscription_concepts {
+    *subscription_id : INT [PK, FK]
+    *concept_id : INT [PK, FK]
+}
+
+entity "invoice_series" as invoice_series {
+    *series_id : INT [PK]
+    --
+    *code : VARCHAR[20] [UNIQUE]
+    *last_number : INT
+    *active : BOOLEAN
+}
+
+entity "accounting_periods" as accounting_periods {
+    *period_id : INT [PK]
+    --
+    closed_by_user_id : INT [FK]
+    *start_date : DATE
+    *end_date : DATE
+    *kind : VARCHAR[20]
+    *status : VARCHAR[20]
+    reason : VARCHAR[500]
+    closed_at : TIMESTAMP
+}
+
+entity "invoices" as invoices {
+    *invoice_id : INT [PK]
+    --
+    *customer_id : INT [FK]
+    subscription_id : INT [FK]
+    series_id : INT [FK]
+    corrected_invoice_id : INT [FK]
+    accounting_period_id : INT [FK]
+    automation_run_id : INT [FK]
+    *invoice_type : VARCHAR[20]
+    invoice_number : VARCHAR[50] [UNIQUE]
+    *status : VARCHAR[30]
+    issue_date : DATE
+    *due_date : DATE
+    billing_period : CHAR[7]
+    *total : DECIMAL[12,2]
+    *currency : CHAR[3]
+    *document_stage : VARCHAR[30]
+    *draft_version : INT
+    *follow_up_paused : BOOLEAN
+    follow_up_reason : VARCHAR[500]
+    review_date : DATE
+}
+
+note right of invoices
+  **Constraint (Decision 1):**
+  A corrective invoice cannot have
+  corrections of its own (no chains).
+  If corrected_invoice_id IS NOT NULL,
+  no other invoice may reference this
+  invoice_id as corrected_invoice_id.
+end note
+
+entity "invoice_lines" as invoice_lines {
+    *invoice_line_id : INT [PK]
+    --
+    *invoice_id : INT [FK]
+    concept_id : INT [FK]
+    *tax_id : INT [FK]
+    *description : VARCHAR[300]
+    *quantity : DECIMAL[10,2]
+    *unit_price : DECIMAL[12,2]
+    discount : DECIMAL[5,2]
+}
+
+entity "invoice_documents" as invoice_documents {
+    *document_id : INT [PK]
+    --
+    *invoice_id : INT [FK, UNIQUE]
+    *document_ref : VARCHAR[255]
+    *file_name : VARCHAR[255]
+    *checksum : VARCHAR[64]
+    *generated_at : TIMESTAMP
+}
+
+' ============================================================================
+' 4. DISPATCH, TEMPLATES & COLLECTIONS (FR2.7, FR3, FR13.1)
+' ============================================================================
+
+entity "message_templates" as message_templates {
+    *template_id : INT [PK]
+    --
+    *template_type : VARCHAR[40]
+    *language : CHAR[2]
+    *version : INT
+    *subject : VARCHAR[255]
+    *body : TEXT
+    *effective_from : DATE
+}
+
+entity "reminders" as reminders {
+    *reminder_id : INT [PK]
+    --
+    *invoice_id : INT [FK]
+    automation_run_id : INT [FK]
+    *reminder_type : VARCHAR[20]
+    *scheduled_date : DATE
+    sent_at : TIMESTAMP
+    *occurrence_key : VARCHAR[100] [UNIQUE]
+    *status : VARCHAR[20]
+}
+
+entity "delivery_attempts" as delivery_attempts {
+    *delivery_id : INT [PK]
+    --
+    *invoice_id : INT [FK]
+    reminder_id : INT [FK]
+    *template_id : INT [FK]
+    *channel : VARCHAR[20]
+    *requested_at : TIMESTAMP
+    *status : VARCHAR[20]
+    *idempotency_key : VARCHAR[100] [UNIQUE]
+    provider_message_ref : VARCHAR[100]
+    failure_reason : VARCHAR[500]
+}
+
+entity "delivery_events" as delivery_events {
+    *event_id : VARCHAR[100] [PK]
+    --
+    *delivery_id : INT [FK]
+    *processed_at : TIMESTAMP
+}
+
+entity "delivery_recipients" as delivery_recipients {
+    *delivery_id : INT [PK, FK]
+    *contact_id : INT [PK, FK]
+}
+
+entity "payments" as payments {
+    *payment_id : INT [PK]
+    --
+    *provider_transaction_id : VARCHAR[100] [UNIQUE]
+    *amount : DECIMAL[12,2]
+    *currency : CHAR[3]
+    *payment_date : DATE
+    *reference : VARCHAR[150]
+    *source : VARCHAR[30]
+    description : VARCHAR[300]
+    *evidence : TEXT
+    *status : VARCHAR[30]
+    discrepancy : DECIMAL[12,2]
+}
+
+entity "payment_events" as payment_events {
+    *event_id : VARCHAR[100] [PK]
+    --
+    *payment_id : INT [FK]
+    *processed_at : TIMESTAMP
+}
+
+entity "reconciliations" as reconciliations {
+    *reconciliation_id : INT [PK]
+    --
+    *invoice_id : INT [FK]
+    *payment_id : INT [FK]
+    allocated_by_user_id : INT [FK]
+    reversed_by_user_id : INT [FK]
+    *allocated_amount : DECIMAL[12,2]
+    *reconciled_at : TIMESTAMP
+    *automatic : BOOLEAN
+    *evidence : TEXT
+    reason : VARCHAR[500]
+    *reversed : BOOLEAN
+    reversal_reason : VARCHAR[500]
+    reversed_at : TIMESTAMP
+}
+
+' ============================================================================
+' 5. COLLABORATION, WORK & ISSUES (FR7, FR8.2, FR12)
+' ============================================================================
+
+entity "billing_issues" as billing_issues {
+    *billing_issue_id : INT [PK]
+    --
+    *customer_id : INT [FK]
+    invoice_id : INT [FK]
+    *owner_user_id : INT [FK]
+    *issue_type : VARCHAR[40]
+    *status : VARCHAR[20]
+    *priority : VARCHAR[20]
+    *description : TEXT
+    resolution : TEXT
+    closed_at : TIMESTAMP
+}
+
+entity "comments" as comments {
+    *comment_id : INT [PK]
+    --
+    *author_user_id : INT [FK]
+    customer_id : INT [FK]
+    invoice_id : INT [FK]
+    billing_issue_id : INT [FK]
+    *text : TEXT
+    *restricted : BOOLEAN
+    *created_at : TIMESTAMP
+}
+
+note right of comments
+  **Constraint (AnnotationTarget):**
+  Exactly one target is not null:
+  (customer_id IS NOT NULL)::int +
+  (invoice_id IS NOT NULL)::int +
+  (billing_issue_id IS NOT NULL)::int = 1.
+end note
+
+entity "comment_mentions" as comment_mentions {
+    *comment_id : INT [PK, FK]
+    *mentioned_user_id : INT [PK, FK]
+}
+
+entity "attachments" as attachments {
+    *attachment_id : INT [PK]
+    --
+    *uploaded_by_user_id : INT [FK]
+    customer_id : INT [FK]
+    invoice_id : INT [FK]
+    billing_issue_id : INT [FK]
+    *document_type : VARCHAR[50]
+    *description : VARCHAR[300]
+    *document_ref : VARCHAR[255]
+    *file_name : VARCHAR[255]
+    *uploaded_at : TIMESTAMP
+}
+
+note right of attachments
+  **Constraint (AnnotationTarget):**
+  Exactly one target is not null:
+  (customer_id IS NOT NULL)::int +
+  (invoice_id IS NOT NULL)::int +
+  (billing_issue_id IS NOT NULL)::int = 1.
+end note
+
+entity "work_tasks" as work_tasks {
+    *task_id : INT [PK]
+    --
+    *assigned_user_id : INT [FK]
+    customer_id : INT [FK]
+    *task_type : VARCHAR[40]
+    due_date : DATE
+    *status : VARCHAR[20]
+    *description : VARCHAR[500]
+}
+
+entity "notifications" as notifications {
+    *notification_id : INT [PK]
+    --
+    *user_id : INT [FK]
+    *event_type : VARCHAR[40]
+    *priority : VARCHAR[20]
+    *is_read : BOOLEAN
+    *is_handled : BOOLEAN
+    *created_at : TIMESTAMP
+}
+
+entity "alert_rules" as alert_rules {
+    *alert_rule_id : INT [PK]
+    --
+    *user_id : INT [FK]
+    *condition_type : VARCHAR[40]
+    *threshold : DECIMAL[12,2]
+    currency : CHAR[3]
+    *active : BOOLEAN
+}
+
+' ============================================================================
+' 6. GOVERNANCE, AUTOMATION, AUDIT & BACKUPS (FR8, FR9, FR11, FR13)
+' ============================================================================
+
+entity "approval_requests" as approval_requests {
+    *approval_request_id : INT [PK]
+    --
+    *requester_user_id : INT [FK]
+    decided_by_user_id : INT [FK]
+    invoice_id : INT [FK]
+    commercial_exception_id : INT [FK]
+    annual_review_id : INT [FK]
+    *approval_type : VARCHAR[40]
+    *status : VARCHAR[20]
+    *reason : VARCHAR[500]
+    *proposal_snapshot : TEXT
+    decision_comment : VARCHAR[500]
+    decided_at : TIMESTAMP
+}
+
+note right of approval_requests
+  **Constraint (ApprovalSubject {xor}):**
+  Exactly one subject is not null:
+  (invoice_id IS NOT NULL)::int +
+  (commercial_exception_id IS NOT NULL)::int +
+  (annual_review_id IS NOT NULL)::int = 1.
+end note
+
+entity "billing_policies" as billing_policies {
+    *policy_id : INT [PK]
+    --
+    *version : INT
+    *effective_from : DATE
+    *change_reason : VARCHAR[500]
+    *status : VARCHAR[20]
+    *default_payment_days : INT
+    *reminder_days_after_issue : INT
+    *overdue_reminder_interval_days : INT
+    *authorised_email_domain : VARCHAR[100]
+    *max_failed_logins : INT
+    *login_lock_minutes : INT
+    *issuer_tax_data : TEXT
+    *self_approval_threshold : DECIMAL[12,2]
+    *superadmin_approval_threshold : DECIMAL[12,2]
+    *one_off_approval_threshold : DECIMAL[12,2]
+    *deviation_warning_percent : DECIMAL[5,2]
+    *attachment_max_megabytes : INT
+    *download_link_minutes : INT
+    *background_threshold : INT
+    *backup_interval_hours : INT
+}
+
+entity "attachment_formats" as attachment_formats {
+    *policy_id : INT [PK, FK]
+    *format : VARCHAR[10] [PK]
+}
+
+entity "automation_runs" as automation_runs {
+    *automation_run_id : INT [PK]
+    --
+    *policy_id : INT [FK]
+    *job_type : VARCHAR[40]
+    *started_at : TIMESTAMP
+    finished_at : TIMESTAMP
+    *items_processed : INT
+    *failures : INT
+    *status : VARCHAR[30]
+}
+
+entity "automation_items" as automation_items {
+    *item_id : INT [PK]
+    --
+    *automation_run_id : INT [FK]
+    *item_reference : VARCHAR[100]
+    *stage : VARCHAR[50]
+    *outcome : VARCHAR[20]
+    reason : VARCHAR[500]
+}
+
+entity "audit_entries" as audit_entries {
+    *audit_id : INT [PK]
+    --
+    user_id : INT [FK]
+    api_client_id : INT [FK]
+    *action : VARCHAR[100]
+    *target : VARCHAR[150]
+    *occurred_at : TIMESTAMP
+    *actor_label : VARCHAR[150]
+    *outcome : VARCHAR[50]
+}
+
+entity "report_outputs" as report_outputs {
+    *report_id : INT [PK]
+    --
+    *requested_by_user_id : INT [FK]
+    accounting_period_id : INT [FK]
+    *report_type : VARCHAR[40]
+    *filters_json : TEXT
+    *generated_at : TIMESTAMP
+    version : INT
+    *status : VARCHAR[20]
+    document_ref : VARCHAR[255]
+    retained_until : DATE
+}
+
+entity "summary_schedules" as summary_schedules {
+    *schedule_id : INT [PK]
+    --
+    *frequency : VARCHAR[20]
+    *next_occurrence : TIMESTAMP
+    *active : BOOLEAN
+}
+
+entity "summary_recipients" as summary_recipients {
+    *schedule_id : INT [PK, FK]
+    *user_id : INT [PK, FK]
+}
+
+entity "backups" as backups {
+    *backup_id : INT [PK]
+    --
+    requested_by_user_id : INT [FK]
+    automation_run_id : INT [FK]
+    *created_at : TIMESTAMP
+    *scope : VARCHAR[100]
+    *status : VARCHAR[20]
+    archive_ref : VARCHAR[255]
+    failed_stage : VARCHAR[100]
+}
+
+entity "recovery_executions" as recovery_executions {
+    *recovery_id : INT [PK]
+    --
+    *backup_id : INT [FK]
+    *confirmed_by_user_id : INT [FK]
+    *target : VARCHAR[100]
+    *confirmed_at : TIMESTAMP
+    finished_at : TIMESTAMP
+    *status : VARCHAR[20]
+    failed_stage : VARCHAR[100]
+}
+
+' ============================================================================
+' RELATIONSHIPS & CARDINALITIES (Crow's Foot Notation)
+' ============================================================================
+
+' Access & Users
+users ||--o{ sessions : "opens"
+users ||--o{ delegations : "delegates (from)"
+users ||--o{ delegations : "receives (to)"
+users ||..o{ customers : "is responsible for"
+users ||..o{ customer_imports : "runs"
+users ||..o{ notifications : "receives"
+users ||..o{ alert_rules : "configures"
+users ||..o{ work_tasks : "assigned to"
+users ||..o{ audit_entries : "performs"
+api_clients ||..o{ audit_entries : "performs"
+
+' Customers, Contacts & Subscriptions
+customers ||--o{ customer_tags : "tagged with"
+customers ||--o{ customer_contacts : "has"
+contacts ||--|{ customer_contacts : "linked to"
+customers ||..o{ subscriptions : "contracts"
+customers |o..o{ work_tasks : "concerns"
+subscriptions ||--|{ subscription_concepts : "includes"
+concepts ||--o{ subscription_concepts : "billed in"
+subscriptions ||--o{ subscription_pauses : "paused by"
+subscriptions ||--o{ commercial_exceptions : "adjusted by"
+subscriptions ||..o{ annual_reviews : "reviewed in"
+rate_tiers ||..o{ annual_reviews : "proposes"
+rate_tiers |o..o{ subscriptions : "prices"
+subscriptions ||..o| cancellations : "ended by"
+
+' Invoicing, Taxes & Documents
+customers ||..o{ invoices : "is billed with"
+subscriptions |o..o{ invoices : "generates"
+invoice_series |o..o{ invoices : "numbered in"
+accounting_periods |o..o{ invoices : "belongs to"
+invoices ||--|{ invoice_lines : "contains"
+taxes ||..o{ invoice_lines : "taxed with"
+taxes |o..o{ concepts : "default tax"
+concepts |o..o{ invoice_lines : "based on"
+invoices |o..o{ invoices : "corrected by"
+invoices ||--o| invoice_documents : "preserved as"
+
+' Collections, Reconciliations & Reminders
+invoices ||..o{ reconciliations : "settled through"
+payments ||..o{ reconciliations : "allocates"
+payments ||--|{ payment_events : "recorded from"
+users |o..o{ reconciliations : "allocates / reverses"
+invoices ||..o{ reminders : "followed up by"
+
+' Dispatch & Delivery
+invoices ||..o{ delivery_attempts : "sent through"
+reminders |o..o{ delivery_attempts : "dispatched through"
+delivery_attempts ||--o{ delivery_events : "records"
+message_templates ||..o{ delivery_attempts : "uses"
+delivery_attempts ||--|{ delivery_recipients : "targets"
+contacts ||--o{ delivery_recipients : "receives"
+
+' Collaboration, Annotations & Issues
+customers ||..o{ billing_issues : "concerns"
+invoices |o..o{ billing_issues : "about"
+users ||..o{ billing_issues : "owns"
+users ||..o{ comments : "writes"
+customers |o..o{ comments : "written on"
+invoices |o..o{ comments : "written on"
+billing_issues |o..o{ comments : "written on"
+comments ||--o{ comment_mentions : "contains"
+users ||--o{ comment_mentions : "mentioned in"
+users ||..o{ attachments : "uploads"
+customers |o..o{ attachments : "attached to"
+invoices |o..o{ attachments : "attached to"
+billing_issues |o..o{ attachments : "attached to"
+
+' Governance & Approvals
+users ||..o{ approval_requests : "requests"
+users |o..o{ approval_requests : "decides"
+invoices |o..o{ approval_requests : "about"
+commercial_exceptions |o..o{ approval_requests : "about"
+annual_reviews |o..o{ approval_requests : "about"
+
+' Automation, System & Backups
+billing_policies ||..o{ automation_runs : "governs"
+billing_policies ||--|{ attachment_formats : "allows"
+automation_runs ||--o{ automation_items : "records"
+automation_runs |o..o{ invoices : "generates"
+automation_runs |o..o{ reminders : "sends"
+automation_runs |o..o{ backups : "creates"
+users ||..o{ report_outputs : "requests"
+accounting_periods |o..o{ report_outputs : "packages"
+summary_schedules ||--|{ summary_recipients : "sent to"
+users ||--o{ summary_recipients : "receives summary"
+users |o..o{ backups : "requests"
+backups ||..o{ recovery_executions : "restored by"
+users ||..o{ recovery_executions : "confirms"
+users |o..o{ accounting_periods : "closes"
+
+@enduml
