@@ -5,7 +5,7 @@ Companion to [class-diagram.pu](class-diagram.pu) (#45). The matrix shows which 
 ## 1. Reading the diagram
 
 - **Base.** The 15 concepts of [domain-model.pu](domain-model.pu) keep their names, attributes and association multiplicities. The domain model is not changed by this diagram.
-- **Layers.** Names follow the architecture proposal in PR #64: controllers coordinate and check permissions, entities hold the business rules, and the domain declares ports that infrastructure adapters implement.
+- **Layers.** Names follow the architecture in [architecture.md](architecture.md) (#43, merged in PR #64): controllers coordinate and check permissions, entities hold the business rules, and the domain declares ports that infrastructure adapters implement.
 - **`ctx: ExecutionContext`.** The caller's identity on every protected operation: a user, an API client or the system identity used by `Scheduler`. Automatic jobs therefore pass through the same controllers and checks as people.
 - **Views.** All classes are defined once in `class-diagram.pu`. The `$VIEW` line at the top selects `all`, `core`, `customers`, `invoicing`, `governance`, `application` or `types`; no view redefines a class. Controller-to-port dependencies appear only in the `application` and `core` views.
 - **Colours.** Yellow: main entities (the domain model concepts plus `Reconciliation`). White: supporting entities and domain contracts. Blue: controllers. Green: ports. Grey: value objects and infrastructure.
@@ -104,19 +104,19 @@ The examples below use the proposed signed convention (decision 1 in section 9).
 | FR12.1 Comments | Should | Covered | See section 3. |
 | FR12.2 Attachments | Could | Proposed | `CollectionsController.addAttachment`, `Attachment.checkLimits`, `Attachment.createDownloadLink`, `DownloadLink.isValid`, `CollectionsController.openAttachmentLink`. UC-16 4d-4g keep this function in the contracts; the same scope decision applies. |
 
-## 6. Coordination with PR #64
+## 6. Coordination with the architecture and component diagram
 
-PR #64 is still a proposal. The diagram uses its current names and does not modify that branch. These points need agreement before #46 and the sequence diagrams rely on them:
+The architecture ([architecture.md](architecture.md), PR #64) and the component diagram ([component-diagram.pu](component-diagram.pu), PR #67) are merged and use the same names as this diagram:
 
 1. **Names used as published:** `PaymentGateway`, `CommunicationService`, `DocumentStorage`, `PdfRenderer`, `InvoiceRepository` and `Scheduler`. The grouped application components become `AccessController`, `CustomerSubscriptionController`, `InvoicingController`, `CollectionsController`, `ApprovalController`, `ReportingOperationsController`, `ConfigurationController` and `AuditBackupController`.
 2. **`PaymentGateway` naming.** The contracts state that TurbineH does not operate a payment gateway. The port is kept with its published name but only queries and verifies transactions. The team may prefer to rename it in #64.
-3. **Ports added here, not listed in #64:** `PasswordHasher` (UC-01), `AnnualRevenueProvider` (FR5.3 simulated source) and `BackupEngine` (UC-21, UC-22). #64 stores backups through a storage interface, but creating and restoring a data backup needs more than storing a file.
+3. **Ports added here and adopted by the component diagram (#67):** `PasswordHasher` (UC-01), `AnnualRevenueProvider` (FR5.3 simulated source) and `BackupEngine` (UC-21, UC-22), because creating and restoring a data backup needs more than storing a file.
 4. **Repositories.** #64 asks for repositories per aggregate without naming them, apart from `InvoiceRepository`. The other repository names are proposed here and are implemented by the `Persistence` component of #64.
 5. **Adapters.** `DocumentStorageAdapter` and `PdfGeneratorAdapter` stand for the `Document Storage` and `PDF Generator` components of #64.
 
 ## 7. Handoff to the sequence diagram (#47)
 
-The description of #47 still places the whole flow in UC-05. The contracts now split it, so the sequence should follow these stages. #47 also depends on the component diagram (#46), which is still open; lifelines must be confirmed against it.
+The description of #47 still places the whole flow in UC-05. The contracts now split it, so the sequence should follow these stages. Lifelines follow the merged component diagram (#46, PR #67): controllers call the repositories and the ports.
 
 | Stage | Entry operation | Main collaborators |
 | --- | --- | --- |
