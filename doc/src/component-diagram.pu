@@ -177,6 +177,7 @@ InvoicingCtrl ..> IStorage : <<requires>>\noriginal PDFs
 InvoicingCtrl ..> IComm : <<requires>>\nsend invoices
 CollectionsCtrl ..> IPayment : <<requires>>\npayment evidence
 CollectionsCtrl ..> IComm : <<requires>>\nreminders
+CollectionsCtrl ..> IStorage : <<requires>>\nattachments
 ReportingCtrl ..> IPdf : <<requires>>\nreports
 AuditCtrl ..> IBackup : <<requires>>\ncreate / restore
 Timer .up.> ITrigger : <<requires>>\ndue occurrence

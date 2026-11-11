@@ -77,7 +77,7 @@ FR2.8.2 and UC-15 require balances to reflect both documents and verified alloca
 | `Invoice.excessAmount` | `max(allocatedAmount - adjustedTotal, 0)`. It only reports a difference; it creates no payment, refund or allocation. |
 | `Customer.calculateObligations` | Adds `outstandingBalance` per currency across issued invoices. It holds no balance rule of its own and never converts. |
 
-The examples below use the proposed signed convention (decision 1 in section 9). All are in EUR unless stated.
+The examples below use the signed-difference convention (decision 1 in section 9). All are in EUR unless stated.
 
 | Case | Original | Issued correction | Active allocations | Outstanding | Excess |
 | --- | --- | --- | --- | --- | --- |
@@ -100,9 +100,9 @@ The examples below use the proposed signed convention (decision 1 in section 9).
 | FR8.3.3 Named views | Must | Covered | `ReportingOperationsController.saveNamedView`, `User.saveView`, `SavedView`, `SearchFilters`. Reopening a view goes through `ReportingOperationsController.searchWork`, which applies current scope. |
 | FR8.3.4 Favourites and recents | Must | Covered | `ReportingOperationsController.setFavourite`, `ReportingOperationsController.listQuickAccess`, `User.setFavourite`, `User.recordOpened`, and the `recentCustomers` attribute of `User`, limited to 10. `listQuickAccess` rechecks scope (UC-09 2b). |
 | FR7.1.2 Notification preferences | Should | Covered | `ReportingOperationsController.setNotificationPreference`, `User.setNotificationPreference`, `User.channelFor`, `ReportingOperationsController.sendDailyDigests`. `Notification` is stored for every event, so in-app events are retained (UC-09 1b). |
-| FR7.2 Alert rules | Could | Proposed | `AlertRule`, `AlertCondition`, `ReportingOperationsController.saveAlertRule`, `ReportingOperationsController.evaluateAlertRules`, `AlertRule.matches`. UC-09 1c keeps this function in the contracts, so it is represented; the team has not recorded a decision to include or exclude it (decision 3 in section 9). |
+| FR7.2 Alert rules | Could | Covered | `AlertRule`, `AlertCondition`, `ReportingOperationsController.saveAlertRule`, `ReportingOperationsController.evaluateAlertRules`, `AlertRule.matches` (per invoice) and `AlertRule.matchesCustomer` (balance per customer, decision 4). UC-09 1c keeps this function in the contracts, so it is represented; the team decided to keep it in the design (decision 3 in section 9). |
 | FR12.1 Comments | Should | Covered | See section 3. |
-| FR12.2 Attachments | Could | Proposed | `CollectionsController.addAttachment`, `Attachment.checkLimits`, `Attachment.createDownloadLink`, `DownloadLink.isValid`, `CollectionsController.openAttachmentLink`. UC-16 4d-4g keep this function in the contracts; the same scope decision applies. |
+| FR12.2 Attachments | Could | Covered | `CollectionsController.addAttachment`, `Attachment.checkLimits`, `Attachment.createDownloadLink`, `DownloadLink.isValid`, `CollectionsController.openAttachmentLink`. UC-16 4d-4g keep this function in the contracts; kept in the design by decision 3 in section 9. |
 
 ## 6. Coordination with the architecture and component diagram
 
@@ -112,7 +112,7 @@ The architecture ([architecture.md](architecture.md), PR #64) and the component 
 2. **`PaymentGateway` naming.** The contracts state that TurbineH does not operate a payment gateway. The port is kept with its published name but only queries and verifies transactions. The team may prefer to rename it in #64.
 3. **Ports added here and adopted by the component diagram (#67):** `PasswordHasher` (UC-01), `AnnualRevenueProvider` (FR5.3 simulated source) and `BackupEngine` (UC-21, UC-22), because creating and restoring a data backup needs more than storing a file.
 4. **Repositories.** #64 asks for repositories per aggregate without naming them, apart from `InvoiceRepository`. The other repository names are proposed here and are implemented by the `Persistence` component of #64.
-5. **Adapters.** `DocumentStorageAdapter` and `PdfGeneratorAdapter` stand for the `Document Storage` and `PDF Generator` components of #64.
+5. **Adapters.** Each infrastructure component of the component diagram has an adapter class: `PaymentProviderAdapter`, `EmailAdapter`, `WhatsAppAdapter`, `DocumentStorageAdapter`, `PdfGeneratorAdapter`, `BackupAdapter`, `PasswordHasherAdapter`, `AnnualRevenueAdapter` and `PersistenceAdapter` (all repositories), plus `SystemTimer`.
 
 ## 7. Handoff to the sequence diagram (#47)
 
@@ -130,16 +130,16 @@ The description of #47 still places the whole flow in UC-05. The contracts now s
 - Roles are the `Role` enumeration plus `Capability` values rather than a class hierarchy, because the contracts require a specific capability check even for a Super Administrator.
 - The diagram does not define tables, keys or column types; those belong to the ER diagram (#44).
 
-## 9. Decisions pending from the team
+## 9. Design decisions
 
-The baseline does not settle these points. The proposals are design suggestions for the team to accept or change, not client statements.
+The client baseline does not settle these points, so the team decided them for the design (#51). They are design decisions, not client statements; the ER diagram (#44) and the sequence diagrams (#47 to #50) follow them. Points marked *to validate* are confirmed with TurbineH or its accounting firm before an implementation.
 
-| # | Decision | Proposal used in the diagram |
-| --- | --- | --- |
-| 1 | Does a corrective document hold a signed difference or the full replacement total? Can a correction itself be corrected? | Signed difference, always linked to the original invoice. A replacement total would change only `Invoice.adjustedTotal`. The fiscal form of a corrective document should be confirmed before this is fixed. |
-| 2 | Where does excess appear, and can it be applied to another invoice? | Visible on the invoice through `Invoice.excessAmount`. It is left out of `DebtSnapshot`, is not netted against other invoices, and is not moved automatically. |
-| 3 | Are the Could functions FR7.2 and FR12.2 implemented in this project? | Keep them represented as proposed until the team decides. Their contract extensions already exist in UC-09 and UC-16. |
-| 4 | Is "outstanding balance above X" (FR7.2) measured per invoice or per customer, and is the closed set only the three examples of FR7.2? | Per invoice, with the three conditions named in FR7.2 as `AlertCondition`. |
-| 5 | Which status does an invoice show when a correction leaves nothing to collect? | Keep `RECTIFIED`. The amounts come from the balance operations and never from the status. |
-| 6 | How does each provider or its simulation prove the origin of a delivery report? | The diagram fixes only the port, `CommunicationService.verifyDeliveryReport`. The mechanism belongs to the architecture work in #64 and #46. |
-| 7 | What are the attachment formats, maximum size and download link lifetime? | Configurable in `BillingPolicy` (`attachmentFormats`, `attachmentMaxMegabytes`, `downloadLinkMinutes`); the baseline gives no values. |
+| # | Question | Decision | Why |
+| --- | --- | --- | --- |
+| 1 | Does a corrective document hold a signed difference or the full replacement total? Can a correction itself be corrected? | **Signed difference**, always linked to the original invoice. A correction is never corrected: a further change is a new correction of the same original (constraint on the `corrected by` association; the ER diagram carries the same rule). | Keeps one chain per original, so `Invoice.adjustedTotal` and the balances of section 4 stay simple (FR2.8, FR2.8.2) and the original is never modified (FR2.3.4). Spanish invoicing allows corrections by difference or by substitution; the fiscal format is *to validate* with the accounting firm. |
+| 2 | Where does excess appear, and can it be applied to another invoice? | **Visible on the invoice** through `Invoice.excessAmount` and recorded as a discrepancy. It is not netted against other invoices, not moved and not refunded automatically. To use it elsewhere, a user reverses the reconciliation with a reason and reconciles the transaction manually (UC-07). A cash refund follows UC-15 extension 8a. | FR3.1.3 records over- and under-payments as discrepancies, FR3.1.2 forbids silent choices between invoices, and FR3.1.4 already allows reversal. |
+| 3 | Are the Could functions FR7.2 (alert rules) and FR12.2 (attachments) part of the design? | **Yes, kept in the design** with priority Could. They are built last and nothing in the core depends on them. | Their use case extensions already exist (UC-09 1c, UC-16 4d to 4g), so removing them would make the design inconsistent with the contracts. |
+| 4 | Is "outstanding balance above X" (FR7.2) measured per invoice or per customer, and is the closed set only the three examples? | **`OUTSTANDING_BALANCE_ABOVE` is per customer and per currency**, evaluated with `AlertRule.matchesCustomer(customer, debt, now)` on the `DebtSnapshot` that `Customer.calculateObligations` already computes; the rule's `currency` selects the amount, so nothing is converted. The other two conditions (`INVOICE_OVERDUE_DAYS`, `SENDING_FAILED_TIMES`) stay per invoice with `AlertRule.matches(invoice, now)`. The closed set is the three conditions of FR7.2 (`AlertCondition`). | The client's example is a customer who accumulates more than X euros outstanding; FR7.2's shorter wording lost the word "customer". A single invoice above X is already visible when it is issued, so the useful alert is debt that builds up across invoices. |
+| 5 | Which status does an invoice show after a correction? | **Nothing left to collect: `RECTIFIED`.** **An amount still to collect** (for example 1000, -200, nothing paid: 800 outstanding): the original **keeps its collection status** (`SENT` or `OVERDUE`), so reminders and follow-up continue. Amounts always come from the balance operations, never from the status. | FR2.3 lists "rectified" as a lifecycle state; an invoice with debt pending must keep being chased (FR3.2). |
+| 6 | How does each provider or its simulation prove the origin of a delivery report? | **Each adapter verifies it** with the provider's own mechanism (for example a signed callback). The simulated providers use a shared secret configured per environment. The design fixes only the port `CommunicationService.verifyDeliveryReport`. | It is an infrastructure detail (architecture.md, NFR-07): replacing a simulation with a real provider changes only the adapter. |
+| 7 | What are the attachment formats, maximum size and download link lifetime? | **Configurable in `BillingPolicy`**, with these initial values: PDF, PNG, JPG, XLSX, CSV and DOCX; 10 MB per file; download links valid for 15 minutes. | FR12.2 lists orders, quotations, receipts, screenshots and accounting documents, which these formats cover. The values are team defaults, *to validate* with TurbineH. |

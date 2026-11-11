@@ -2,7 +2,7 @@
 ' TurbineH - Internal Invoicing & Payment Tracking System (Submission 2, task #45)
 ' UML class diagram. Starts from the approved domain model (domain-model.pu, 15
 ' concepts) and adds types, operations and the supporting classes needed to run
-' the 22 use case contracts. Layer names follow the architecture proposal in PR #64.
+' the 22 use case contracts. Layer names follow architecture.md (#43) and the component diagram (#46).
 ' This is a design model, not the SQL schema of #44: no keys or column types.
 '
 ' SINGLE DEFINITION. Every class is defined once in this file. To render a view,
@@ -670,6 +670,7 @@ package "Domain entities" {
         - active: Boolean
         + validate(): ValidationResult
         + matches(invoice: Invoice, now: DateTime): Boolean
+        + matchesCustomer(customer: Customer, debt: DebtSnapshot, now: DateTime): Boolean
     }
 
     class AuditEntry <<entity>> $governance {
@@ -905,6 +906,10 @@ package "Infrastructure" {
     class WhatsAppAdapter <<infrastructure>> $application
     class DocumentStorageAdapter <<infrastructure>> $application
     class PdfGeneratorAdapter <<infrastructure>> $application
+    class BackupAdapter <<infrastructure>> $application
+    class PasswordHasherAdapter <<infrastructure>> $application
+    class AnnualRevenueAdapter <<infrastructure>> $application
+    class PersistenceAdapter <<infrastructure>> $application
     class SystemTimer <<infrastructure>> $application {
         + start(): void
     }
@@ -1369,6 +1374,11 @@ Subscription "0..1" -- "0..*" Invoice : generates
 Invoice "1" *-- "1..*" InvoiceLine : contains
 InvoiceLine "0..*" -- "0..1" Concept : based on
 Invoice "0..1" -- "0..*" Invoice : corrected by
+note on link
+  {a corrective invoice has no corrections
+  of its own: a further change corrects
+  the original (decision 1)}
+end note
 Invoice "1" -- "0..*" Reminder : followed up by
 Invoice "0..1" -- "0..*" BillingIssue : about
 User "1" -- "0..*" ApprovalRequest : requests
@@ -1454,6 +1464,15 @@ EmailAdapter ..|> CommunicationService
 WhatsAppAdapter ..|> CommunicationService
 DocumentStorageAdapter ..|> DocumentStorage
 PdfGeneratorAdapter ..|> PdfRenderer
+BackupAdapter ..|> BackupEngine
+PasswordHasherAdapter ..|> PasswordHasher
+AnnualRevenueAdapter ..|> AnnualRevenueProvider
+!if ($VIEW == "application")
+note bottom of PersistenceAdapter
+  Implements every *Repository port on the
+  relational database (Persistence component, #46).
+end note
+!endif
 SystemTimer ..> Scheduler : triggers
 Scheduler ..> InvoicingController : UC-06
 Scheduler ..> CollectionsController : UC-07, UC-08
@@ -1471,6 +1490,8 @@ CustomerSubscriptionController ..> CustomerRepository
 CustomerSubscriptionController ..> SubscriptionRepository
 CustomerSubscriptionController ..> AnnualRevenueProvider
 InvoicingController ..> InvoiceRepository
+InvoicingController ..> SubscriptionRepository
+InvoicingController ..> AutomationRunRepository
 InvoicingController ..> ConfigurationRepository
 InvoicingController ..> PdfRenderer
 InvoicingController ..> DocumentStorage
@@ -1482,6 +1503,8 @@ CollectionsController ..> InvoiceRepository
 CollectionsController ..> IssueRepository
 CollectionsController ..> DocumentStorage
 CollectionsController ..> CommunicationService
+CollectionsController ..> AuditRepository
+CollectionsController ..> WorkRepository
 ApprovalController ..> ApprovalRepository
 ReportingOperationsController ..> WorkRepository
 ReportingOperationsController ..> ReportRepository
@@ -1648,8 +1671,8 @@ note left of Invoice
   adjustedTotal adds issued corrections only; allocatedAmount adds
   active allocations only. A corrective document reports 0 itself.
   Excess is never a payment or a refund. calculateObligations sums
-  per currency and never converts. The signed form of a correction
-  is a proposal: see the traceability file, section 4.
+  per currency and never converts. Corrections are signed
+  differences (traceability file, section 9, decision 1).
 end note
 
 note bottom of DeliveryAttempt
