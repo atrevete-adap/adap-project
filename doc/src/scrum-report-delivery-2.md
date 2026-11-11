@@ -62,7 +62,7 @@ Responsibilities in Sprint 3 follow the authorship of each Submission 1 artifact
 * **Participants:** [TODO: confirm]
 * **Absent:** [TODO: confirm]
 * **Topic:** Progress of the Sprint 4 design work on its planned end date.
-* **Results:** Only part of the Sprint Goal was done: the domain model (#42, PR #62) and the FR priorities (#38, PR #63) were merged, the architecture (#43, PR #64) was approved but not merged, the class diagram (#45, PR #66) was a draft under review, and the ER diagram (#44) and component diagram (#46) were not started. Instead of carrying the design core over, the team decided to extend Sprint 4 until its goal is met and to close it with the review and retrospective then. [TODO: other decisions taken in the meeting.]
+* **Results:** Only part of the Sprint Goal was done: the domain model (#42, PR #62) and the FR priorities (#38, PR #63) were merged, the architecture (#43, PR #64) was approved but not merged, the class diagram (#45, PR #66) was a draft under review, and the ER diagram (#44) and component diagram (#46) were not started. Instead of carrying the design core over, the team decided to extend Sprint 4 until its goal is met and to close it with the review and retrospective then. During the meeting the architecture (PR #64) and the use case review follow-ups (PR #65) were merged. [TODO: other decisions taken in the meeting.]
 
 ### Product Backlog
 
@@ -89,8 +89,8 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 
 | # | Task | Assignee | Priority | Label | Sprint | Status | Depends on |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| #42 | Design: domain model | Deniz, Héctor | High | design | Sprint 4 | In progress (first draft) | – |
-| #43 | Design: architecture pattern and rationale | Adam | High | design | Sprint 4 | In progress (PR #64) | – |
+| #42 | Design: domain model | Deniz, Héctor | High | design | Sprint 4 | Done (PR #62) | – |
+| #43 | Design: architecture pattern and rationale | Adam | High | design | Sprint 4 | Done (PR #64, merged 11/11) | – |
 | #44 | Design: physical ER diagram | Víctor, Héctor | High | design | Sprint 4 | Todo | #42 |
 | #45 | Design: UML class diagram | Pablo, Deniz | High | design | Sprint 4 | Todo | #42 |
 | #46 | Design: UML component diagram | Adam | High | design | Sprint 4 | Todo | #43 |
