@@ -1,0 +1,232 @@
+@startuml component-diagram
+' TurbineH — Internal Invoicing & Payment Tracking System (Submission 2, task #46)
+' UML component diagram of the layered architecture in architecture.md (#43):
+' Presentation <<boundary>> -> Application <<control>> -> Domain -> Infrastructure
+' <<infrastructure>> -> External systems <<external>>.
+' Provided interfaces are lollipops (solid line); required interfaces are dashed
+' <<requires>> dependencies. Domain ports are provided by infrastructure adapters
+' (dependency inversion) and required by the application controllers, as in the
+' course case study (Session 2.1, slide 21) and the class diagram (PR #66).
+
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam nodesep 40
+skinparam ranksep 55
+skinparam defaultFontSize 12
+
+skinparam component {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam interface {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+}
+skinparam rectangle {
+    BorderColor #2B3E6A
+    FontColor #2B3E6A
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam arrow {
+    Color #2B3E6A
+    FontSize 10
+}
+
+title Component diagram - TurbineH Invoicing & Collections System
+
+' ============================================================================
+' PRESENTATION LAYER
+' ============================================================================
+rectangle "Presentation Layer" #F5F7FA {
+    component "Web UI" as WebUI <<boundary>>
+    component "REST API" as RestAPI <<boundary>>
+}
+
+' ============================================================================
+' APPLICATION LAYER (one controller per group of use cases)
+' ============================================================================
+rectangle "Application Layer" #EBF0F5 {
+    component "Access and Users\n(UC-01, UC-03)" as AccessCtrl <<control>>
+    component "Customers and Subscriptions\n(UC-02, UC-04, UC-10)" as CustomerCtrl <<control>>
+    component "Invoicing\n(UC-05, UC-06, UC-15, UC-19, UC-20)" as InvoicingCtrl <<control>>
+    component "Collections\n(UC-07, UC-08, UC-16)" as CollectionsCtrl <<control>>
+    component "Approvals\n(UC-17)" as ApprovalCtrl <<control>>
+    component "Reporting and Operations\n(UC-09, UC-11, UC-12, UC-18)" as ReportingCtrl <<control>>
+    component "Configuration\n(UC-13)" as ConfigCtrl <<control>>
+    component "Audit and Backup\n(UC-14, UC-21, UC-22)" as AuditCtrl <<control>>
+    component "Scheduler" as Scheduler <<control>>
+}
+
+interface "AccessAPI" as IAccess
+interface "CustomerAPI" as ICustomer
+interface "InvoicingAPI" as IInvoicing
+interface "CollectionsAPI" as ICollections
+interface "ApprovalAPI" as IApproval
+interface "ReportingAPI" as IReporting
+interface "ConfigurationAPI" as IConfig
+interface "AuditBackupAPI" as IAudit
+
+AccessCtrl -up- IAccess
+CustomerCtrl -up- ICustomer
+InvoicingCtrl -up- IInvoicing
+CollectionsCtrl -up- ICollections
+ApprovalCtrl -up- IApproval
+ReportingCtrl -up- IReporting
+ConfigCtrl -up- IConfig
+AuditCtrl -up- IAudit
+
+' The Web UI uses every controller; the REST API only the operations open to
+' external applications (FR15): debt query (UC-11) and cancellation intake (UC-10).
+WebUI ..> IAccess : <<requires>>
+WebUI ..> ICustomer : <<requires>>
+WebUI ..> IInvoicing : <<requires>>
+WebUI ..> ICollections : <<requires>>
+WebUI ..> IApproval : <<requires>>
+WebUI ..> IReporting : <<requires>>
+WebUI ..> IConfig : <<requires>>
+WebUI ..> IAudit : <<requires>>
+RestAPI ..> IAccess : <<requires>>\nauthenticate client
+RestAPI ..> ICustomer : <<requires>>\ncancellation intake
+RestAPI ..> IReporting : <<requires>>\ndebt query
+
+' ============================================================================
+' DOMAIN LAYER (concepts of the domain model, #42)
+' ============================================================================
+rectangle "Domain Layer" #FFFFFF {
+    component "Customers and Subscriptions" as DomCustomers
+    component "Invoicing and Collection" as DomInvoicing
+    component "Governance and Automation" as DomGovernance
+}
+
+interface "CustomerModel" as ICustomerModel
+interface "InvoiceModel" as IInvoiceModel
+interface "GovernanceModel" as IGovernanceModel
+
+DomCustomers -up- ICustomerModel
+DomInvoicing -up- IInvoiceModel
+DomGovernance -up- IGovernanceModel
+
+AccessCtrl ..> IGovernanceModel
+CustomerCtrl ..> ICustomerModel
+CustomerCtrl ..> IInvoiceModel : outstanding debt
+InvoicingCtrl ..> IInvoiceModel
+InvoicingCtrl ..> ICustomerModel
+CollectionsCtrl ..> IInvoiceModel
+ApprovalCtrl ..> IGovernanceModel
+ApprovalCtrl ..> IInvoiceModel
+ReportingCtrl ..> IInvoiceModel
+ReportingCtrl ..> IGovernanceModel
+ConfigCtrl ..> IGovernanceModel
+AuditCtrl ..> IGovernanceModel
+
+' Every controller records audit entries and checks permissions through the
+' governance model; only the main dependency of each controller is drawn.
+
+' ============================================================================
+' INFRASTRUCTURE LAYER (implements the domain ports)
+' ============================================================================
+rectangle "Infrastructure Layer" #F5F7FA {
+    component "Persistence" as Persistence <<infrastructure>>
+    component "Payment Provider Adapter" as PayAdapter <<infrastructure>>
+    component "Email Adapter" as EmailAdapter <<infrastructure>>
+    component "WhatsApp Adapter" as WhatsAppAdapter <<infrastructure>>
+    component "PDF Generator" as PdfAdapter <<infrastructure>>
+    component "Document Storage" as StorageAdapter <<infrastructure>>
+    component "Backup Adapter" as BackupAdapter <<infrastructure>>
+    component "Password Hasher" as HasherAdapter <<infrastructure>>
+    component "Annual Revenue Adapter\n(simulated)" as RevenueAdapter <<infrastructure>>
+    component "System Timer" as Timer <<infrastructure>>
+}
+
+interface "Repositories" as IRepos
+interface "PaymentGateway" as IPayment
+interface "CommunicationService" as IComm
+interface "PdfRenderer" as IPdf
+interface "DocumentStorage" as IStorage
+interface "BackupEngine" as IBackup
+interface "PasswordHasher" as IHasher
+interface "AnnualRevenueProvider" as IRevenue
+interface "JobTrigger" as ITrigger
+
+Persistence -up- IRepos
+PayAdapter -up- IPayment
+EmailAdapter -up- IComm
+WhatsAppAdapter -up- IComm
+PdfAdapter -up- IPdf
+StorageAdapter -up- IStorage
+BackupAdapter -up- IBackup
+HasherAdapter -up- IHasher
+RevenueAdapter -up- IRevenue
+Scheduler -down- ITrigger
+
+' Domain components only depend on the repositories. The other ports are
+' domain interfaces called by the application controllers, so entities stay
+' free of infrastructure calls (same as the class diagram, PR #66).
+DomCustomers ..> IRepos : <<requires>>
+DomInvoicing ..> IRepos : <<requires>>
+DomGovernance ..> IRepos : <<requires>>
+AccessCtrl ..> IHasher : <<requires>>
+CustomerCtrl ..> IRevenue : <<requires>>\nannual revenue (FR5.3)
+InvoicingCtrl ..> IPdf : <<requires>>
+InvoicingCtrl ..> IStorage : <<requires>>\noriginal PDFs
+InvoicingCtrl ..> IComm : <<requires>>\nsend invoices
+CollectionsCtrl ..> IPayment : <<requires>>\npayment evidence
+CollectionsCtrl ..> IComm : <<requires>>\nreminders
+ReportingCtrl ..> IPdf : <<requires>>\nreports
+AuditCtrl ..> IBackup : <<requires>>\ncreate / restore
+Timer .up.> ITrigger : <<requires>>\ndue occurrence
+
+' The Scheduler runs automatic jobs through the same controllers as users.
+Scheduler ..> IInvoicing : monthly invoices (UC-06)
+Scheduler ..> ICollections : reminders (UC-08),\npayment queries (UC-07)
+Scheduler ..> IAudit : backups (UC-21)
+Scheduler ..> ICustomer : annual review tasks (UC-04)
+Scheduler ..> IReporting : scheduled summaries (UC-12)
+
+' ============================================================================
+' EXTERNAL SYSTEMS
+' ============================================================================
+component "Database Server" as DB <<external>>
+component "Payment Provider\n(Stripe / Revolut, simulated)" as ExtPay <<external>>
+component "Email Service / SMTP\n(simulated)" as ExtEmail <<external>>
+component "WhatsApp Business\n(simulated)" as ExtWhatsApp <<external>>
+component "Brain and other\nAPI clients" as ExtClients <<external>>
+
+interface "SQL" as ISql
+interface "PaymentsAPI" as IExtPay
+interface "SendEmail" as IExtEmail
+interface "SendMessage" as IExtWhatsApp
+interface "HTTPS / JSON" as IRest
+
+DB -up- ISql
+ExtPay -up- IExtPay
+ExtEmail -up- IExtEmail
+ExtWhatsApp -up- IExtWhatsApp
+RestAPI -up- IRest
+
+Persistence ..> ISql : <<requires>>
+PayAdapter ..> IExtPay : <<requires>>
+EmailAdapter ..> IExtEmail : <<requires>>
+WhatsAppAdapter ..> IExtWhatsApp : <<requires>>
+ExtClients ..> IRest : <<requires>>
+
+note right of Scheduler
+  Replaces the old Time actor (#27).
+  Contains no business logic: when an
+  occurrence is due it calls the same
+  controller a user would, and records
+  an AutomationRun.
+end note
+
+note bottom of PayAdapter
+  Simulated services: replacing them
+  with real providers only changes
+  this layer (NFR-07).
+end note
+
+@enduml
