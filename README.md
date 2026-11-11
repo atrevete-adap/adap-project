@@ -4,7 +4,8 @@
 > **Institution:** E.T.S. de Ingeniería Informática — Universidad de Málaga (UMA)  
 > **Academic Year:** 2026/2027  
 > **Team:** Atrévete  
-> **Target Deadline (Submission 1):** Week of October 20, 2026  
+> **Current submission:** Submission 2 — System Design (week of November 17, 2026)  
+> **Previous submission:** Submission 1 — Requirements Analysis and Use Cases (delivered, week of October 20, 2026)  
 
 ---
 
@@ -22,44 +23,64 @@ This project models and designs an **independent, internal responsive web applic
 
 ## 2. Team Members — Group "Atrévete"
 
-| Full Name | GitHub User | Role (Submission 1) |
-| :--- | :--- | :--- |
-| **Adam Antonio Ehmidi Álvarez** | `@T00sahic` | Scrum Master |
-| **Héctor Encinas García** | `@HecTPlay` | Team Member |
-| **Deniz Klaastjerk Inan** | `@DenizUMA` | Team Member |
-| **Víctor Navas Ramos** | `@victornr1` | Team Member |
-| **Pablo Pérez Arcas** | `@ByCur` | Team Member |
+| Full Name | GitHub User | Submission 1 | Submission 2 |
+| :--- | :--- | :--- | :--- |
+| **Adam Antonio Ehmidi Álvarez** | `@T00sahic` | Scrum Master | Team Member |
+| **Héctor Encinas García** | `@HecTPlay` | Team Member | Team Member |
+| **Deniz Klaastjerk Inan** | `@DenizUMA` | Team Member | Scrum Master |
+| **Víctor Navas Ramos** | `@victornr1` | Team Member | Team Member |
+| **Pablo Pérez Arcas** | `@ByCur` | Team Member | Team Member |
 
 - **Project Board (GitHub Projects):** [ADAP - Atrévete](https://github.com/orgs/atrevete-adap/projects)
+- **Workflow:** every change reaches `main` through a pull request reviewed by another member (branch protection on `main`).
 
 ---
 
-## 3. Repository Structure (Submission 1)
+## 3. Repository Structure
 
-- `doc/` — Compiled final deliverables in PDF format:
-  - `doc/requirements.pdf`
-  - `doc/use-case-diagram.pdf`
-  - `doc/use-case-specification.pdf`
-  - `doc/scrum-report.pdf`
+- `doc/` — Final deliverables in PDF format.
+  - Submission 1: `requirements.pdf`, `use-case-diagram.pdf`, `use-case-specification.pdf`, `scrum-report.pdf`.
+  - Submission 2: the PDFs of the Submission 2 artifacts are exported at the end of Sprint 5 (#54).
 - `doc/src/` — Editable source files:
-  - `doc/src/requirements.md` (Business, User, Functional & Non-Functional Requirements, plus contradictions and out-of-scope items)
-  - `doc/src/use-case-diagram.pu` (PlantUML source for the Use Case Diagram)
-  - [`doc/src/use-cases/README.md`](doc/src/use-cases/README.md) (contract inventory, shared rules and traceability; one Cockburn-style contract per file). `doc/src/use-case-specification.md` redirects to this index
-  - `doc/src/scrum-report.md` (Sprint planning, meetings, board snapshots & risk log)
-  - `doc/src/img/` (Board screenshots and exported use case diagram views)
-- `notes/` — Coordination and review notes, including the [Submission 2 handoff to Adam](notes/delivery2-use-case-handoff.md); excluded from the four Submission 1 PDFs.
-- `scripts/validate-use-cases.cjs` — Run with `node scripts/validate-use-cases.cjs` to check contract structure, links and traceability against the current requirement definitions.
+  - `requirements.md` — Business, User, Functional (with sub-requirements and MoSCoW priorities) and Non-Functional Requirements, contradictions and out-of-scope items.
+  - `use-case-diagram.pu` — PlantUML source of the use case diagram (overview and four views).
+  - [`use-cases/`](doc/src/use-cases/README.md) — one Cockburn-style contract per use case (UC-01 to UC-22) with an index and traceability; `use-case-specification.md` redirects to this index.
+  - `domain-model.pu` — Domain model: the main concepts of the problem domain, their attributes and associations.
+  - `architecture.md` — Architectural pattern (layered, client-server) and its rationale, the Scheduler, and the components per layer.
+  - `scrum-report.md` — Scrum Report of Submission 1.
+  - `img/` — Exported diagram images and GitHub Projects board screenshots.
+- `notes/` — Coordination and review notes; not part of the deliverables.
+- `scripts/validate-use-cases.cjs` — `node scripts/validate-use-cases.cjs` checks the use case contracts' structure, links and traceability against the requirements.
 - `README.md` — Project overview and documentation index.
 - `.gitignore` — Git ignore rules.
 
 ---
 
-## 4. Submission 1 — Milestone Plan (Deadline: Week of October 20, 2026)
+## 4. Submission 2 — System Design (Deadline: Week of November 17, 2026)
 
-| Milestone | Objective & Main Deliverables |
-| :--- | :--- |
-| **Milestone 1** | **Environment Setup & Project Management Kickoff:** Designate Scrum Master, initialize public GitHub repo (`doc/` & `doc/src/`), configure GitHub Projects board, and hold Sprint Planning. |
-| **Milestone 2** | **Requirements Elicitation & Documentation:** Analyze client interview notes and document `BR`, `UR`, `FR` (with dependencies), and `NFR` (with quantifiable metrics & verification tests) in `requirements.md`. |
-| **Milestone 3** | **UML Use Case Diagram Modeling:** Identify primary/secondary actors, system boundaries, core use cases, and `<<include>>`/`<<extend>>` relationships in `use-case-diagram.pu`. |
-| **Milestone 4** | **Use Case Specifications & Behavioral Contracts:** Document full Cockburn specifications in [`doc/src/use-cases/`](doc/src/use-cases/README.md) with strict traceability to `FR` and `NFR`. |
-| **Milestone 5** | **Sprint Review, Scrum Report & Peer Evaluation:** Hold Sprint Retrospective, compile `scrum-report.md` and all PDFs into `doc/`, complete Balls Method evaluation, and submit `.zip` + Repo URL. |
+Status as of 11/11/2026. Each artifact is tracked as an issue on the project board.
+
+| Artifact | Source (`doc/src/`) | Issue | Status |
+| :--- | :--- | :--- | :--- |
+| Domain model | `domain-model.pu` | #42 | Done |
+| Architecture pattern and rationale | `architecture.md` | #43 | Done |
+| Physical Entity-Relationship diagram | `er-diagram.pu` | #44 | In progress |
+| UML class diagram | `class-diagram.pu`, `class-diagram-traceability.md` | #45 | In review (PR #66) |
+| UML component diagram | `component-diagram.pu` | #46 | In review (PR #67) |
+| UML sequence diagrams (issue an invoice, monthly invoice generation, reconcile a payment, cancellation with debt query) | `sequence-*.pu` | #47–#50 | Planned (Sprint 5) |
+| Consistency check across the design artifacts | — | #51 | Planned (Sprint 5) |
+| Scrum Report (Markdown + PDF) | `scrum-report-delivery-2.md` | #53 | In progress (PR #39) |
+
+The feedback on Submission 1 that affects the design was applied first, in Sprint 3 (#27–#38): Functional Requirements reduced to sub-requirements with MoSCoW priorities, User Requirements in standard format with UR → FR traceability, measurable NFRs, use case diagram notation fixes, and the Time actor replaced by the system Scheduler.
+
+| Sprint | Dates | Goal |
+| :--- | :--- | :--- |
+| Sprint 3 | 28/10 – 04/11 | Apply the Submission 1 feedback that the design builds on. |
+| Sprint 4 | 04/11 – extended | Complete the design core: domain model, architecture, ER, class and component diagrams. |
+| Sprint 5 | after Sprint 4 – delivery | Sequence diagrams, consistency check, PDFs, presentation and submission. |
+
+---
+
+## 5. Submission 1 — Requirements Analysis and Use Cases (delivered)
+
+Requirements document, UML use case diagram, use case specifications and Scrum Report, exported to `doc/` and submitted in the week of October 20, 2026.
