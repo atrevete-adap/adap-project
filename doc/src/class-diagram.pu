@@ -1476,6 +1476,8 @@ InvoicingController ..> PdfRenderer
 InvoicingController ..> DocumentStorage
 InvoicingController ..> CommunicationService
 InvoicingController ..> ApprovalController
+InvoicingController ..> AccountingPeriodRepository
+InvoicingController ..> AuditRepository
 CollectionsController ..> PaymentGateway
 CollectionsController ..> PaymentRepository
 CollectionsController ..> InvoiceRepository
