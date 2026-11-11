@@ -5,7 +5,8 @@
 ' <<infrastructure>> -> External systems <<external>>.
 ' Provided interfaces are lollipops (solid line); required interfaces are dashed
 ' <<requires>> dependencies. Domain ports are provided by infrastructure adapters
-' (dependency inversion), as in the course case study (Session 2.1, slide 21).
+' (dependency inversion) and required by the application controllers, as in the
+' course case study (Session 2.1, slide 21) and the class diagram (PR #66).
 
 skinparam componentStyle uml2
 skinparam shadowing false
@@ -136,6 +137,9 @@ rectangle "Infrastructure Layer" #F5F7FA {
     component "WhatsApp Adapter" as WhatsAppAdapter <<infrastructure>>
     component "PDF Generator" as PdfAdapter <<infrastructure>>
     component "Document Storage" as StorageAdapter <<infrastructure>>
+    component "Backup Adapter" as BackupAdapter <<infrastructure>>
+    component "Password Hasher" as HasherAdapter <<infrastructure>>
+    component "Annual Revenue Adapter\n(simulated)" as RevenueAdapter <<infrastructure>>
     component "System Timer" as Timer <<infrastructure>>
 }
 
@@ -144,6 +148,9 @@ interface "PaymentGateway" as IPayment
 interface "CommunicationService" as IComm
 interface "PdfRenderer" as IPdf
 interface "DocumentStorage" as IStorage
+interface "BackupEngine" as IBackup
+interface "PasswordHasher" as IHasher
+interface "AnnualRevenueProvider" as IRevenue
 interface "JobTrigger" as ITrigger
 
 Persistence -up- IRepos
@@ -152,17 +159,27 @@ EmailAdapter -up- IComm
 WhatsAppAdapter -up- IComm
 PdfAdapter -up- IPdf
 StorageAdapter -up- IStorage
+BackupAdapter -up- IBackup
+HasherAdapter -up- IHasher
+RevenueAdapter -up- IRevenue
 Scheduler -down- ITrigger
 
+' Domain components only depend on the repositories. The other ports are
+' domain interfaces called by the application controllers, so entities stay
+' free of infrastructure calls (same as the class diagram, PR #66).
 DomCustomers ..> IRepos : <<requires>>
 DomInvoicing ..> IRepos : <<requires>>
 DomGovernance ..> IRepos : <<requires>>
-DomInvoicing ..> IPayment : <<requires>>\npayment evidence
-DomInvoicing ..> IComm : <<requires>>\ninvoices, reminders
-DomInvoicing ..> IPdf : <<requires>>
-DomInvoicing ..> IStorage : <<requires>>\noriginal PDFs
-DomGovernance ..> IStorage : <<requires>>\nbackups
-Timer ..> ITrigger : <<requires>>\ndue occurrence
+AccessCtrl ..> IHasher : <<requires>>
+CustomerCtrl ..> IRevenue : <<requires>>\nannual revenue (FR5.3)
+InvoicingCtrl ..> IPdf : <<requires>>
+InvoicingCtrl ..> IStorage : <<requires>>\noriginal PDFs
+InvoicingCtrl ..> IComm : <<requires>>\nsend invoices
+CollectionsCtrl ..> IPayment : <<requires>>\npayment evidence
+CollectionsCtrl ..> IComm : <<requires>>\nreminders
+ReportingCtrl ..> IPdf : <<requires>>\nreports
+AuditCtrl ..> IBackup : <<requires>>\ncreate / restore
+Timer .up.> ITrigger : <<requires>>\ndue occurrence
 
 ' The Scheduler runs automatic jobs through the same controllers as users.
 Scheduler ..> IInvoicing : monthly invoices (UC-06)
