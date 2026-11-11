@@ -1,0 +1,145 @@
+@startuml sequence-monthly-generation
+' TurbineH — Internal Invoicing & Payment Tracking System (Submission 2, task #48)
+' Sequence diagram for UC-06 "Generate monthly recurring invoices".
+' Professor's answer in #27: Time is not an actor; the scenario starts from the
+' Scheduler component of the architecture (architecture.md, component diagram).
+' Lifelines and operations follow the class diagram (PR #66). Kept short on
+' purpose: paused/inactive subscriptions are filtered by findBillable().
+
+skinparam boxPadding 10
+skinparam participantPadding 10
+skinparam shadowing false
+hide footbox
+
+skinparam participant {
+    BackgroundColor #FFFFFF
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+skinparam ArrowColor #2B3E6A
+skinparam sequence {
+    LifeLineBorderColor #2B3E6A
+    GroupBorderColor #2B3E6A
+}
+skinparam note {
+    BackgroundColor #FDE2B8
+    BorderColor #2B3E6A
+    FontColor #000000
+}
+
+title Sequence Diagram - Monthly Invoice Generation (UC-06; FR2.1, FR14.3)
+
+box "Application Layer" #EBF0F5
+    participant Sched as "scheduler : Scheduler" <<control>>
+    participant Ctrl as "invoicingCtrl : InvoicingController" <<control>>
+end box
+
+box "Domain Layer" #FFFFFF
+    participant Run as "run : AutomationRun"
+    participant SubRepo as "subscriptionRepo : SubscriptionRepository" <<interface>>
+    participant Sub as "sub : Subscription"
+    participant InvRepo as "invoiceRepo : InvoiceRepository" <<interface>>
+    participant Inv as "invoice : Invoice"
+    participant Config as "configRepo : ConfigurationRepository" <<interface>>
+    participant Pdf as "pdfRenderer : PdfRenderer" <<interface>>
+    participant Storage as "storage : DocumentStorage" <<interface>>
+    participant Notif as "alert : Notification"
+    participant RunRepo as "runRepo : AutomationRunRepository" <<interface>>
+end box
+
+autonumber "<b>[00]"
+
+[-> Sched : onTick(now)
+activate Sched
+note right of Sched
+  Started by the system timer on the first
+  day of the month (UC-13 policy). ctx is the
+  system ExecutionContext: no staff session.
+end note
+Sched -> Ctrl : generateMonthlyInvoices(ctx, period)
+activate Ctrl
+
+create Run
+Ctrl -> Run : <<create>> open(MONTHLY_INVOICING, now)
+
+Ctrl -> SubRepo : findBillable(period)
+activate SubRepo
+SubRepo --> Ctrl : subscriptions
+deactivate SubRepo
+
+loop for each subscription
+    Ctrl -> InvRepo : findForSubscriptionPeriod(sub, period)
+    activate InvRepo
+    InvRepo --> Ctrl : invoice [0..1]
+    deactivate InvRepo
+
+    alt already invoiced (FR14.3, no duplicates)
+        Ctrl -> Run : recordItem(ref, "issuance", SKIPPED, "already invoiced")
+    else not invoiced yet
+        Ctrl -> Sub : buildRecurringProposal(period)
+        activate Sub
+        Sub --> Ctrl : proposal
+        deactivate Sub
+
+        create Inv
+        Ctrl -> Inv : <<create>> createDraft(proposal)
+        Ctrl -> Inv : validateForIssuance()
+        activate Inv
+        Inv --> Ctrl : validation
+        deactivate Inv
+
+        alt draft not valid
+            Ctrl -> Run : recordItem(ref, "draft", FAILED, messages)
+        else draft valid
+            Ctrl -> Config : activeSeries(RECURRING)
+            activate Config
+            Config --> Ctrl : series
+            deactivate Config
+            Ctrl -> Inv : issue(series, now)
+            activate Inv
+            note right of Inv
+              number = series.nextNumber()
+              (FR2.4); issued data is frozen.
+            end note
+            Inv --> Ctrl : snapshot
+            deactivate Inv
+
+            Ctrl -> Pdf : renderInvoice(snapshot, number)
+            activate Pdf
+            Pdf --> Ctrl : content
+            deactivate Pdf
+            Ctrl -> Storage : store(content)
+            activate Storage
+            Storage --> Ctrl : documentRef
+            deactivate Storage
+            Ctrl -> Inv : attachOriginalDocument(document)
+            Ctrl -> InvRepo : save(invoice)
+            Ctrl -> Ctrl : sendInvoice(ctx, invoice)
+            note right of Ctrl
+              UC-20: email to the
+              eligible recipients.
+            end note
+            Ctrl -> Run : recordItem(ref, "delivery", CREATED)
+        end
+    end
+end
+
+opt any item failed
+    create Notif
+    Ctrl -> Notif : <<create>> create(staff, AUTOMATION_FAILURE, HIGH)
+end
+
+Ctrl -> Run : finish(now)
+Ctrl -> RunRepo : save(run)
+Ctrl --> Sched : run
+deactivate Ctrl
+deactivate Sched
+
+note over Sched, InvRepo
+  Recovery (1a): after an outage the Scheduler calls
+  generateMonthlyInvoices() again for the missed period.
+  Step [06] skips invoices already issued, so only the
+  missing ones are created.
+end note
+
+@enduml
