@@ -87,8 +87,12 @@ entity "customers" as customers {
     *working_currency : CHAR[3]
     *status : VARCHAR[40]
     business_area : VARCHAR[100]
-    tags : VARCHAR[255]
     *version : INT
+}
+
+entity "customer_tags" as customer_tags {
+    *customer_id : INT [PK, FK]
+    *tag : VARCHAR[50] [PK]
 }
 
 entity "contacts" as contacts {
@@ -324,15 +328,22 @@ entity "reminders" as reminders {
 entity "delivery_attempts" as delivery_attempts {
     *delivery_id : INT [PK]
     --
-    invoice_id : INT [FK]
+    *invoice_id : INT [FK]
     reminder_id : INT [FK]
-    template_id : INT [FK]
+    *template_id : INT [FK]
     *channel : VARCHAR[20]
     *requested_at : TIMESTAMP
     *status : VARCHAR[20]
     *idempotency_key : VARCHAR[100] [UNIQUE]
     provider_message_ref : VARCHAR[100]
     failure_reason : VARCHAR[500]
+}
+
+entity "delivery_events" as delivery_events {
+    *event_id : VARCHAR[100] [PK]
+    --
+    *delivery_id : INT [FK]
+    *processed_at : TIMESTAMP
 }
 
 entity "delivery_recipients" as delivery_recipients {
@@ -353,6 +364,13 @@ entity "payments" as payments {
     *evidence : TEXT
     *status : VARCHAR[30]
     discrepancy : DECIMAL[12,2]
+}
+
+entity "payment_events" as payment_events {
+    *event_id : VARCHAR[100] [PK]
+    --
+    *payment_id : INT [FK]
+    *processed_at : TIMESTAMP
 }
 
 entity "reconciliations" as reconciliations {
@@ -402,6 +420,14 @@ entity "comments" as comments {
     *created_at : TIMESTAMP
 }
 
+note right of comments
+  **Constraint (AnnotationTarget):**
+  Exactly one target is not null:
+  (customer_id IS NOT NULL)::int +
+  (invoice_id IS NOT NULL)::int +
+  (billing_issue_id IS NOT NULL)::int = 1.
+end note
+
 entity "comment_mentions" as comment_mentions {
     *comment_id : INT [PK, FK]
     *mentioned_user_id : INT [PK, FK]
@@ -420,6 +446,14 @@ entity "attachments" as attachments {
     *file_name : VARCHAR[255]
     *uploaded_at : TIMESTAMP
 }
+
+note right of attachments
+  **Constraint (AnnotationTarget):**
+  Exactly one target is not null:
+  (customer_id IS NOT NULL)::int +
+  (invoice_id IS NOT NULL)::int +
+  (billing_issue_id IS NOT NULL)::int = 1.
+end note
 
 entity "work_tasks" as work_tasks {
     *task_id : INT [PK]
@@ -473,6 +507,14 @@ entity "approval_requests" as approval_requests {
     decided_at : TIMESTAMP
 }
 
+note right of approval_requests
+  **Constraint (ApprovalSubject {xor}):**
+  Exactly one subject is not null:
+  (invoice_id IS NOT NULL)::int +
+  (commercial_exception_id IS NOT NULL)::int +
+  (annual_review_id IS NOT NULL)::int = 1.
+end note
+
 entity "billing_policies" as billing_policies {
     *policy_id : INT [PK]
     --
@@ -497,10 +539,15 @@ entity "billing_policies" as billing_policies {
     *backup_interval_hours : INT
 }
 
+entity "attachment_formats" as attachment_formats {
+    *policy_id : INT [PK, FK]
+    *format : VARCHAR[10] [PK]
+}
+
 entity "automation_runs" as automation_runs {
     *automation_run_id : INT [PK]
     --
-    policy_id : INT [FK]
+    *policy_id : INT [FK]
     *job_type : VARCHAR[40]
     *started_at : TIMESTAMP
     finished_at : TIMESTAMP
@@ -599,9 +646,11 @@ users ||..o{ audit_entries : "performs"
 api_clients ||..o{ audit_entries : "performs"
 
 ' Customers, Contacts & Subscriptions
+customers ||--o{ customer_tags : "tagged with"
 customers ||--o{ customer_contacts : "has"
 contacts ||--|{ customer_contacts : "linked to"
 customers ||..o{ subscriptions : "contracts"
+customers |o..o{ work_tasks : "concerns"
 subscriptions ||--|{ subscription_concepts : "includes"
 concepts ||--o{ subscription_concepts : "billed in"
 subscriptions ||--o{ subscription_pauses : "paused by"
@@ -614,7 +663,7 @@ subscriptions ||..o| cancellations : "ended by"
 ' Invoicing, Taxes & Documents
 customers ||..o{ invoices : "is billed with"
 subscriptions |o..o{ invoices : "generates"
-invoice_series ||..o{ invoices : "numbered in"
+invoice_series |o..o{ invoices : "numbered in"
 accounting_periods |o..o{ invoices : "belongs to"
 invoices ||--|{ invoice_lines : "contains"
 taxes ||..o{ invoice_lines : "taxed with"
@@ -626,12 +675,14 @@ invoices ||--o| invoice_documents : "preserved as"
 ' Collections, Reconciliations & Reminders
 invoices ||..o{ reconciliations : "settled through"
 payments ||..o{ reconciliations : "allocates"
+payments ||--|{ payment_events : "recorded from"
 users |o..o{ reconciliations : "allocates / reverses"
 invoices ||..o{ reminders : "followed up by"
 
 ' Dispatch & Delivery
 invoices ||..o{ delivery_attempts : "sent through"
 reminders |o..o{ delivery_attempts : "dispatched through"
+delivery_attempts ||--o{ delivery_events : "records"
 message_templates ||..o{ delivery_attempts : "uses"
 delivery_attempts ||--|{ delivery_recipients : "targets"
 contacts ||--o{ delivery_recipients : "receives"
@@ -660,6 +711,7 @@ annual_reviews |o..o{ approval_requests : "about"
 
 ' Automation, System & Backups
 billing_policies ||..o{ automation_runs : "governs"
+billing_policies ||--|{ attachment_formats : "allows"
 automation_runs ||--o{ automation_items : "records"
 automation_runs |o..o{ invoices : "generates"
 automation_runs |o..o{ reminders : "sends"
