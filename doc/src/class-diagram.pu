@@ -670,6 +670,7 @@ package "Domain entities" {
         - active: Boolean
         + validate(): ValidationResult
         + matches(invoice: Invoice, now: DateTime): Boolean
+        + matchesCustomer(customer: Customer, debt: DebtSnapshot, now: DateTime): Boolean
     }
 
     class AuditEntry <<entity>> $governance {
@@ -1373,6 +1374,11 @@ Subscription "0..1" -- "0..*" Invoice : generates
 Invoice "1" *-- "1..*" InvoiceLine : contains
 InvoiceLine "0..*" -- "0..1" Concept : based on
 Invoice "0..1" -- "0..*" Invoice : corrected by
+note on link
+  {a corrective invoice has no corrections
+  of its own: a further change corrects
+  the original (decision 1)}
+end note
 Invoice "1" -- "0..*" Reminder : followed up by
 Invoice "0..1" -- "0..*" BillingIssue : about
 User "1" -- "0..*" ApprovalRequest : requests
@@ -1663,8 +1669,8 @@ note left of Invoice
   adjustedTotal adds issued corrections only; allocatedAmount adds
   active allocations only. A corrective document reports 0 itself.
   Excess is never a payment or a refund. calculateObligations sums
-  per currency and never converts. The signed form of a correction
-  is a proposal: see the traceability file, section 4.
+  per currency and never converts. Corrections are signed
+  differences (traceability file, section 9, decision 1).
 end note
 
 note bottom of DeliveryAttempt
