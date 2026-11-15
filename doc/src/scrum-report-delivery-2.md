@@ -44,7 +44,7 @@ Responsibilities in Sprint 3 follow the authorship of each Submission 1 artifact
 * **Topic:** Review of the Submission 1 feedback (grade 8.6) and planning of Sprint 3.
 * **Results:** The feedback was split into 12 tasks (#27 to #38), each with a description, owner, labels, priority and the Submission 2 milestone. Since two feedback points conflict with the advice received in the 20/10 tutoring (fragmentation of the Functional Requirements and how to model scheduled processes without the Time actor), Deniz will ask the professor before that rework starts (#27); tasks #35 and #38 wait for the answer. The design tasks of Submission 2 will be added once the feedback fixes are under way.
 
-**28/10/2026 – about 12:00** (questions to the professor, in class)
+**28/10/2026 – about 12:00, 10 minutes** (questions to the professor, in class)
 
 * **Participants:** Deniz and the professor
 * **Topic:** The two Submission 1 feedback points that conflicted with the 20/10 tutoring (#27).
