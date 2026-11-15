@@ -108,11 +108,11 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 | #51 | Design: consistency check across design artifacts | Deniz | Medium | design, review | Sprint 5 | Done (PR #70, final check 15/11) | #44–#50 |
 | #52 | Balls method peer evaluation – Submission 2 | All members | High | scrum | After delivery | Planned (presentation session) | – |
 | #53 | Scrum Report – Submission 2 | Deniz | High | scrum | All sprints | In progress (PR #39) | – |
-| #54 | Export Submission 2 artifacts to PDF in doc/ | Adam | Medium | scrum | Sprint 5 | In progress | #51 |
-| #55 | Update README for Submission 2 | Deniz | Low | scrum | Sprint 5 | In progress (PR #68 merged, PR #74 in review) | #54 |
+| #54 | Export Submission 2 artifacts to PDF in doc/ | Adam | Medium | scrum | After Sprint 5 | Planned (before 17/11) | #51, #53 |
+| #55 | Update README for Submission 2 | Deniz | Low | scrum | Sprint 5 | Done (PR #68, PR #74) | – |
 | #56 | Presentation – Submission 2 slides | All members | Medium | scrum | After delivery | Planned (presentation session) | – |
 | #57 | Presentation – rehearsal with timer | All members | Medium | scrum | After delivery | Planned (presentation session) | #56 |
-| #58 | Submit .zip + repo URL to Campus Virtual – Submission 2 | Deniz | High | scrum | Sprint 5 | Todo (17/11) | #54, #55, #53 |
+| #58 | Submit .zip + repo URL to Campus Virtual – Submission 2 | Deniz | High | scrum | After Sprint 5 | Planned (17/11) | #54, #55, #53 |
 
 ## 3. Sprints Performed
 
@@ -165,10 +165,10 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 ### Sprint 5
 
 * **Start date:** 11/11/2026
-* **End date:** 17/11/2026 (Submission 2 delivery date)
+* **End date:** 15/11/2026 (closed once the Scrum Report was final; the planned end was the 17/11 delivery date)
 * **Sprint Goal:** Finish and submit Submission 2: complete the remaining sequence diagrams, check that all design artifacts are consistent, and deliver the PDFs, Scrum Report, peer evaluation, presentation and submission.
-* **Planned tasks:** #49 reconcile a payment (in review, PR #72), #50 cancellation with debt query, #51 final consistency check, #53 Scrum Report (closed in this sprint), #54 PDFs in `doc/`, #55 README and #58 submission. The presentation tasks (#52 balls method, #56 slides, #57 rehearsal) were initially planned here and later moved out of the sprint, since they take place after the delivery (see Completed tasks).
-* **Completed tasks (status on 15/11/2026):** #49 reconcile a payment (PR #72, 11/11), #50 cancellation with debt query (PR #75, 15/11), #51 final consistency check (closed on 15/11 with 0 problems across the class, component, ER and four sequence diagrams), the missing and outdated diagram images (domain model and class diagram, PR #76) and the README update (#55, PR #74). Pending until the delivery: #54 PDFs in `doc/` (Adam), the Scrum Report PDF (#53) and the submission (#58, 17/11). The presentation tasks — balls method (#52), slides (#56) and rehearsal (#57) — take place in the presentation session after the delivery, so during the sprint the team moved them out of Sprint 5; they stay on the board, planned for after 17/11.
+* **Planned tasks:** #49 reconcile a payment (in review, PR #72), #50 cancellation with debt query, #51 final consistency check, #53 Scrum Report (closed in this sprint), #54 PDFs in `doc/`, #55 README and #58 submission. #54 and #58 were moved out of the sprint on 15/11: the PDFs are exported from the final versions, including this report, so they can only start once the report is closed, and the submission follows them. The presentation tasks (#52 balls method, #56 slides, #57 rehearsal) were initially planned here and later moved out of the sprint, since they take place after the delivery (see Completed tasks).
+* **Completed tasks (status on 15/11/2026):** #49 reconcile a payment (PR #72, 11/11), #50 cancellation with debt query (PR #75, 15/11), #51 final consistency check (closed on 15/11 with 0 problems across the class, component, ER and four sequence diagrams), the missing and outdated diagram images (domain model and class diagram, PR #76) the README update (#55, PR #74) and this Scrum Report (#53, PR #39). After the sprint and before the delivery: #54 PDFs in `doc/` (Adam) and the submission (#58, 17/11). The presentation tasks — balls method (#52), slides (#56) and rehearsal (#57) — take place in the presentation session after the delivery, so during the sprint the team moved them out of Sprint 5; they stay on the board, planned for after 17/11.
 * **Meetings held:** 11/11/2026 (Discord call, planning). See Section 2.
 * **Issues encountered:** The cancellation sequence diagram (PR #75) stayed open from 11/11 to 15/11 without a review. When it was reviewed, it did not follow UC-10 in three places (the included UC-11 was started by the Administrator instead of the system, the outstanding invoices were never fetched, and the follow-up task and audit entry were missing) and its notation differed from the other three sequence diagrams. Several images were missing or outdated (the domain model image had never been generated, and the class diagram images did not show the dependencies added during the consistency check), and PR #74 waited days for an approval.
 * **Solutions applied:** On 15/11 the Scrum Master applied the review fixes to PR #75 and added the four class diagram dependencies the scenario needs, so the consistency script reported 0 problems, and rendered the missing and outdated images in VS Code so that the PDFs (#54) could start from complete diagrams. Final consistency check #51 was closed once all sequence diagrams were merged.
@@ -180,6 +180,12 @@ The Submission 2 design and delivery tasks were created on 28/10 in the product 
 ![Sprint 5 planning: Product Backlog table](img/sprint5-planning-product-backlog.png)
 
 The Product Backlog table above shows the board after Sprint 4 was closed and Sprint 5 was planned on 11/11, so it is the same view as the Sprint 4 retrospective table.
+
+#### Board Status at Sprint Retrospective
+
+![Sprint 5 retrospective: Sprint Backlog board](img/sprint5-retrospective-board.png)
+
+![Sprint 5 retrospective: Product Backlog table](img/sprint5-retrospective-product-backlog.png)
 
 ## 4. Issues and Risks
 
@@ -245,8 +251,8 @@ The Product Backlog table above shows the board after Sprint 4 was closed and Sp
   * **Status:** Resolved.
 * **Little time left for the PDFs and the presentation.**
   * **Impact:** The PDFs (#54) and the presentation depend on the final diagrams, which were complete only on 15/11.
-  * **Solution:** No design changes after 15/11; only the PDF export, the Scrum Report PDF and the submission remain.
-  * **Status:** Pending.
+  * **Solution:** No design changes after 15/11. Sprint 5 was closed with the final Scrum Report on 15/11, which leaves two days for the PDF export (#54) and the submission (#58).
+  * **Status:** Mitigated.
 
 ## 5. Final Assessment
 
