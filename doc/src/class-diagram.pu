@@ -1489,6 +1489,9 @@ AccessController ..> PasswordHasher
 CustomerSubscriptionController ..> CustomerRepository
 CustomerSubscriptionController ..> SubscriptionRepository
 CustomerSubscriptionController ..> AnnualRevenueProvider
+CustomerSubscriptionController ..> WorkRepository
+CustomerSubscriptionController ..> AuditRepository
+CustomerSubscriptionController ..> ReportingOperationsController
 InvoicingController ..> InvoiceRepository
 InvoicingController ..> SubscriptionRepository
 InvoicingController ..> AutomationRunRepository
@@ -1512,6 +1515,7 @@ ReportingOperationsController ..> WorkRepository
 ReportingOperationsController ..> ReportRepository
 ReportingOperationsController ..> AccountingPeriodRepository
 ReportingOperationsController ..> PdfRenderer
+ReportingOperationsController ..> InvoiceRepository
 ConfigurationController ..> ConfigurationRepository
 AuditBackupController ..> AuditRepository
 AuditBackupController ..> AutomationRunRepository
