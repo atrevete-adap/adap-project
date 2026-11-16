@@ -40,7 +40,7 @@ This project models and designs an **independent, internal responsive web applic
 
 - `doc/` — Final deliverables in PDF format.
   - Submission 1: `requirements.pdf`, `use-case-diagram.pdf`, `use-case-specification.pdf`, `scrum-report.pdf`.
-  - Submission 2: the PDFs of the Submission 2 artifacts are exported at the end of Sprint 5 (#54).
+  - Submission 2: `domain-model.pdf`, `architecture.pdf` (pattern, rationale and component diagram), `component-diagram.pdf`, `class-diagram.pdf` (seven views), `class-diagram-traceability.pdf`, `er-diagram.pdf`, `sequence-diagrams.pdf` (four scenarios) and `scrum-report-delivery-2.pdf`.
 - `doc/src/` — Editable source files:
   - `requirements.md` — Business, User, Functional (with sub-requirements and MoSCoW priorities) and Non-Functional Requirements, contradictions and out-of-scope items.
   - `use-case-diagram.pu` — PlantUML source of the use case diagram (overview and four views).
